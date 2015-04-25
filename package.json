@@ -1,0 +1,26 @@
+{
+  "name": "twitch-alarm",
+  "title": "Twitch Alarm",
+  "id": "jid1-PmBVeuWLfYr73g",
+  "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
+  "author": "hunter",
+  "license": "MPL 2.0",
+  "version": "0.101",
+  "icon" : "data/ico48.png",
+  "icon64": "data/ico64.png",
+  "preferences": [{
+    "name": "streamer_list",
+    "title": "Streamers to receive alerts from",
+    "description": "List each streamer's channel name, with a comma separating each individual channel",
+    "type": "string",
+    "value": ""
+  },
+  {
+    "name": "update_interval",
+    "title": "Time to wait between updates",
+    "description": "Number of seconds waited between checking for online streams",
+    "type": "integer",
+    "value": 1
+  }]
+}
+
