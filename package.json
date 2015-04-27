@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "0.106.1",
+  "version": "0.107",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -21,6 +21,13 @@
     "description": "Number of seconds waited between checking for online streams",
     "type": "integer",
     "value": 1
+  },
+  {
+   "name": "uniqueIds",
+   "title": "Do not play alarm on browser startup if you've already received an alarm for that particular stream",
+   "description": "This only applies to individual streams. If the streamer quits streaming and starts again later, you will receive an alarm for that",
+   "type": "bool",
+   "value" : false
   }]
 }
 
