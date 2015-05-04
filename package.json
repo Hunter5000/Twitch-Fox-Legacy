@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "0.107",
+  "version": "0.108",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -17,10 +17,17 @@
   },
   {
     "name": "update_interval",
-    "title": "Time to wait between updates",
+    "title": "Seconds to wait between updates",
     "description": "Number of seconds waited between checking for online streams",
     "type": "integer",
     "value": 1
+  },
+  {
+    "name": "debounce_interval",
+    "title": "Seconds it takes for a streamer who went offline to be registered as offline",
+    "description": "Low values may result in multiple alarms going off when a stream begins and ends due to Twitch API issues",
+    "type": "integer",
+    "value": 60
   },
   {
    "name": "uniqueIds",
