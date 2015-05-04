@@ -27,7 +27,7 @@
     "title": "Seconds it takes for a streamer who went offline to be registered as offline",
     "description": "Low values may result in multiple alarms going off when a stream begins and ends due to Twitch API issues",
     "type": "integer",
-    "value": 60
+    "value": 45
   },
   {
    "name": "uniqueIds",
