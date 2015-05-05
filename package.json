@@ -23,13 +23,6 @@
     "value": 1
   },
   {
-    "name": "alarm_length",
-    "title": "Length of alarm: indefinite if 0",
-    "description": "The length of the alarm can be limited to a specified number of seconds; when set to 0, it goes off until the user responds to it",
-    "type": "integer",
-    "value": 0
-  },
-  {
     "name": "debounce_interval",
     "title": "Seconds it takes for a streamer who went offline to be registered as offline",
     "description": "Low values may result in multiple alarms going off when a stream begins and ends due to Twitch API issues",
