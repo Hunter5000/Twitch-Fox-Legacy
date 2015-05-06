@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "0.109",
+  "version": "0.110",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -21,6 +21,13 @@
     "description": "Number of seconds waited between checking for online streams",
     "type": "integer",
     "value": 1
+  },
+  {
+   "name": "soundAlarmOff",
+   "title": "Disable sound alarm",
+   "description": "When this option is checked, the only alert will be the flashing badge on the add-on icon",
+   "type": "bool",
+   "value" : false
   },
   {
     "name": "alarm_length",
