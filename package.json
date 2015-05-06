@@ -5,13 +5,20 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "0.110",
+  "version": "0.2.0",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
     "name": "streamer_list",
     "title": "Streamers to receive alerts from",
     "description": "List each streamer's channel name, with a comma separating each individual channel",
+    "type": "string",
+    "value": ""
+  },
+  {
+    "name": "import_user",
+    "title": "User to import followed streams from",
+    "description": "After typing the username, type '//' to import their followed streamers",
     "type": "string",
     "value": ""
   },
