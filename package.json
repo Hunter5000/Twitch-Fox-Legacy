@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "0.2.0",
+  "version": "0.111.0",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -18,9 +18,15 @@
   {
     "name": "import_user",
     "title": "User to import followed streams from",
-    "description": "After typing the username, type '//' to import their followed streamers",
+    "description": "Type in the Twitch username of the user you wish to import followed streams from, then click the import button below",
     "type": "string",
     "value": ""
+  },
+  {
+    "type": "control",
+    "label": "Import followed streams",
+    "name": "importClick",
+    "title": "Click to import followed streams from the user specified above"
   },
   {
     "name": "update_interval",
