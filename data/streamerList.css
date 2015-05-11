@@ -1,0 +1,47 @@
+body {
+    background-color: white;
+}
+
+h1 {
+    font-size: 120%;
+}
+
+.option {
+    font-size: 90%;
+    border-radius: 5px;
+    background-color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    font-family: Helvetica;
+    z-index: 0;
+}
+.option:hover {
+    background-color: black;
+    color: white;
+    z-index: 3;
+    cursor: pointer;
+}
+li {
+    list-style-type: none;
+}
+a {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: black;
+}
+a:hover, a:focus {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+ul {
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    cursor: none;
+}
+a:visited {
+    color: black;
+}
