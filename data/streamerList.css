@@ -2,10 +2,10 @@ body {
     background-color: white;
 }
 
-h1 {
-    font-size: 120%;
+.checkbox {
+    text-align: center;
+    font-size: 90%;
 }
-
 .option {
     font-size: 90%;
     border-radius: 5px;
@@ -17,7 +17,7 @@ h1 {
     z-index: 0;
 }
 .option:hover {
-    background-color: black;
+    background-color: DarkSlateGray ;
     color: white;
     z-index: 3;
     cursor: pointer;
@@ -36,7 +36,6 @@ a:hover, a:focus {
     color: black;
     cursor: pointer;
 }
-
 ul {
     padding-left: 0;
     margin-top: 0;

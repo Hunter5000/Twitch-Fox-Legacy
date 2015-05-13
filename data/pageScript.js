@@ -1,9 +1,14 @@
-lastStreamer = null
-lastGame = null
 onlineStreamers = []
 onlineGames = []
+onlineTitles = []
+onlineViewers = []
+onlinePreviews = []
+onlineAvatars = []
+
 offlineStreamers = []
+
 alarmOn = false
+
 followedStreamers = []
 
 function onClick(obj) {
@@ -20,10 +25,139 @@ function containsValue(list_, obj) {
     }
 }
 
+function generateCard(status, name) {
+    //0 = last streamer, 1 = normal online streamer, 2 = offline streamer
+    if (status == 2) {
+        var mainLi = document.createElement("li")
+        mainLi.id = name
+        var mainA = document.createElement("a")
+        mainA.id = name + "!"
+        mainA.href = "#"
+        mainA.tabindex = "1"
+        mainA.className = "option"
+        mainA.textContent = name
+        mainA.style.color = "OrangeRed"
+        mainLi.appendChild(mainA)
+
+        return mainLi
+    } else {
+        var namekey = onlineStreamers.indexOf(name)
+        var game = onlineGames[namekey]
+        var title = onlineTitles[namekey]
+        var viewers = onlineViewers[namekey]
+        var preview = onlinePreviews[namekey]
+        var avatar = onlineAvatars[namekey]
+
+        var mainLi = document.createElement("li")
+        mainLi.id = name
+
+        var mainA = document.createElement("a")
+        mainA.href = "#"
+        mainA.tabindex = "1"
+        mainA.className = "option"
+        mainA.id = name + "!"
+
+        var mainTable = document.createElement("table")
+        if (status == 1) {
+            mainTable.style.borderBottom = "1px solid"
+        }
+        mainTable.style.width = "100%"
+        mainTable.border = "0"
+        mainTable.cellpadding = "4"
+        mainTable.cellspacing = "0"
+
+        var mainTbody = document.createElement("tbody")
+
+        var tr1 = document.createElement("tr")
+        var td1a = document.createElement("td")
+        td1a.rowSpan = "4"
+        var img1 = document.createElement("img")
+        img1.alt = ""
+        img1.height = "90"
+        img1.src = avatar
+        img1.width = "90"
+        img1.align = "left"
+        td1a.appendChild(img1)
+        tr1.appendChild(td1a)
+        var td1b = document.createElement("td")
+        var img2 = document.createElement("img")
+        img2.alt = ""
+        img2.src = "streamer.png"
+        var span1 = document.createElement("span")
+        span1.style.color = "DodgerBlue"
+        var bold1 = document.createElement("strong")
+        bold1.textContent = " " + name
+        span1.appendChild(bold1)
+        td1b.appendChild(img2)
+        td1b.appendChild(span1)
+        tr1.appendChild(td1b)
+        var td1c = document.createElement("td")
+        td1c.rowSpan = "4"
+        var img3 = document.createElement("img")
+        img3.alt = ""
+        img3.height = "90"
+        img3.src = preview
+        img3.width = "160"
+        img3.align = "right"
+        td1c.appendChild(img3)
+        tr1.appendChild(td1c)
+
+        var tr2 = document.createElement("tr")
+        var td2 = document.createElement("td")
+        var img4 = document.createElement("img")
+        img4.alt = ""
+        img4.src = "channel.png"
+        td2.appendChild(img4)
+        var span2 = document.createElement("span")
+        span2.textContent = ' "' + title + '"'
+        td2.appendChild(span2)
+        tr2.appendChild(td2)
+
+
+        var tr3 = document.createElement("tr")
+        var td3 = document.createElement("td")
+        var img5 = document.createElement("img")
+        img5.alt = ""
+        img5.src = "game.png"
+        td3.appendChild(img5)
+        var bold2 = document.createElement("strong")
+        bold2.textContent = " " + game
+        td3.appendChild(bold2)
+        tr3.appendChild(td3)
+
+
+        var tr4 = document.createElement("tr")
+        var td4 = document.createElement("td")
+        var img6 = document.createElement("img")
+        img6.alt = ""
+        img6.src = "viewers.png"
+        td4.appendChild(img6)
+        var span3 = document.createElement("span")
+        span3.textContent = " " + viewers
+        td4.appendChild(span3)
+        tr4.appendChild(td4)
+
+
+
+        mainTbody.appendChild(tr2)
+        mainTbody.appendChild(tr3)
+        mainTbody.appendChild(tr4)
+        mainTbody.insertBefore(tr1, mainTbody.childNodes[0])
+
+        mainTable.appendChild(mainTbody)
+        mainA.appendChild(mainTable)
+        mainLi.appendChild(mainA)
+
+        return mainLi
+    }
+
+
+
+}
+
+
 function updateList() {
     var alarmbtn = null
-
-
     var headers = [document.getElementById("!lastonline"), document.getElementById("!online"), document.getElementById("!offline")]
 
     for (var key in headers) {
@@ -54,65 +188,24 @@ function updateList() {
         document.body.removeChild(document.getElementById("!alarm"))
     }
 
-    if (lastStreamer) {
-        var lastElement = document.createElement("li");
-        lastElement.id = lastStreamer
-        var lastA = document.createElement("a")
-        var lastBold = document.createElement("b")
-        var lastSpan = document.createElement("span")
-        var lastSpan2 = document.createElement("span2")
-        lastA.id = lastStreamer + "!"
-        lastA.href = "#"
-        lastA.tabindex = "1"
-        lastA.setAttribute("class", "option")
-        lastBold.textContent = lastStreamer + ":"
-        lastSpan.style.color = "blue"
-        lastSpan2.textContent = " Playing " + lastGame
-        lastSpan.appendChild(lastBold)
-        lastA.appendChild(lastSpan)
-        lastA.appendChild(lastSpan2)
-        lastElement.appendChild(lastA)
+    if (onlineStreamers[0]) {
+        var lastElement = generateCard(0, onlineStreamers[0])
         document.getElementById("!lastonline").appendChild(lastElement)
             //'<li> <a href="#" tabindex="1" class="option" id="' + lastStreamer + '"> <span style="color:blue"> <b> ' + lastStreamer + ": </b> </span> Playing " + lastGame + '</a></li> '
     }
 
     for (var key in onlineStreamers) {
-        if (key != (onlineStreamers.length - 1)) {
-            var onlineElement = document.createElement("li")
-            onlineElement.id = onlineStreamers[key]
-            var onlineA = document.createElement("a")
-            var onlineSpan = document.createElement("span")
-            var onlineSpan2 = document.createElement("span")
-            var onlineSpan = document.createElement("span")
-            onlineA.id = onlineStreamers[key] + "!"
-            onlineA.href = "#"
-            onlineA.tabindex = "1"
-            onlineA.setAttribute("class", "option")
-            onlineSpan.style.color = "blue"
-            onlineSpan.textContent = onlineStreamers[key] + ":"
-            onlineSpan2.textContent = " Playing " + onlineGames[key]
-            onlineA.appendChild(onlineSpan)
-            onlineA.appendChild(onlineSpan2)
-            onlineElement.appendChild(onlineA)
-            document.getElementById("!online").insertBefore(onlineElement, document.getElementById("!online").childNodes[0])
+        if (key != 0) {
+            var onlineElement = generateCard(1, onlineStreamers[key])
+            document.getElementById("!online").appendChild(onlineElement)
                 //<li> <a href="#" tabindex="1" class="option" id="' + onlineStreamers[key] + '"> <span style="color:blue">  <b>' + onlineStreamers[key] + ": </b> </span> Playing " + onlineGames[key] + '</a></li> '
         }
     }
 
     for (var key in offlineStreamers) {
         if (offlineStreamers[key] != "") {
-            var offlineElement = document.createElement("li")
-            offlineElement.id = offlineStreamers[key]
-            var offlineA = document.createElement("a")
-            offlineA.id = onlineStreamers[key] + "!"
-            offlineA.href = "#"
-            offlineA.tabindex = "1"
-            offlineA.setAttribute("class", "option")
-            offlineA.id = offlineStreamers[key] + "!"
-            offlineA.textContent = offlineStreamers[key]
-            offlineA.style.color = "red"
-            offlineElement.appendChild(offlineA)
-            document.getElementById("!offline").insertBefore(offlineElement, document.getElementById("!offline").childNodes[0])
+            var offlineElement = generateCard(2, offlineStreamers[key])
+            document.getElementById("!offline").appendChild(offlineElement)
                 //'<li> <a style="color:red" href="#" tabindex="1" class="option" id="' + offlineStreamers[key] + '">' + offlineStreamers[key] + '</a></li> '
         }
     }
@@ -134,13 +227,15 @@ function updateList() {
 
 addon.port.on("updatePage", function(payload) {
     //console.log("Payload received")
-    lastStreamer = payload[0]
-    lastGame = payload[1]
-    onlineStreamers = payload[2]
-    onlineGames = payload[3]
-    offlineStreamers = payload[4]
-    alarmOn = payload[5]
-    followedStreamers = payload[6]
+    onlineStreamers = payload[0]
+    onlineGames = payload[1]
+    onlineTitles = payload[2]
+    onlineViewers = payload[3]
+    onlinePreviews = payload[4]
+    onlineAvatars = payload[5]
+    offlineStreamers = payload[6]
+    alarmOn = payload[7]
+    followedStreamers = payload[8]
     updateList()
 })
 
