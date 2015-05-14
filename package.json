@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -32,6 +32,37 @@
     "title": "Seconds to wait between updates",
     "type": "integer",
     "value": 1
+  },
+  {
+    "name": "sortingMethod",
+    "type": "radio",
+    "title": "Sorting method for online streamers",
+    "description": "'Most recent' sorts streams from most recent to oldest. 'Most viewers' sorts streams from ones with the most viewers to ones with the least",
+    "value": "L",
+    "options": [
+        {
+            "value": "L",
+            "label": "Most recent"
+        },
+        {
+            "value": "V",
+            "label": "Most viewers"
+        }
+    ]
+  },
+  {
+    "name": "defaultHide2",
+    "title": "Hide offline streamers",
+    "type": "bool",
+    "value": false,
+    "description": "If enabled, offline streamers will not be listed in the interface"
+  },
+  {
+    "name": "defaultHide",
+    "title": "Hide online streamer information by default",
+    "type": "bool",
+    "value": false,
+    "description": "If enabled, the name of online streamers will only be shown unless you manually unhide their information in the menu"
   },
   {
    "name": "soundAlarmOff",
