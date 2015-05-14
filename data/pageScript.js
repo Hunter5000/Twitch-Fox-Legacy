@@ -25,7 +25,7 @@ function onClick(obj) {
 function onRightClick(obj) {
     var objname = obj.id.substring(0, obj.id.length - 1)
     if (obj.parentNode.id == "!last") {
-      return;
+        return;
     }
     obj.oncontextmenu = function() {
         if (!containsValue(hiddenStreamers, objname)) {
@@ -47,39 +47,39 @@ function containsValue(list_, obj) {
 }
 
 document.getElementById("!showhide").onclick = function() {
-  if (defaultHidden) {
-    for (var key in onlineStreamers) {
-      if (!containsValue(hiddenStreamers, onlineStreamers[key])) {
-        hiddenStreamers.unshift(onlineStreamers[key])
-      }
+    if (defaultHidden) {
+        for (var key in onlineStreamers) {
+            if (!containsValue(hiddenStreamers, onlineStreamers[key])) {
+                hiddenStreamers.unshift(onlineStreamers[key])
+            }
+        }
+    } else {
+        for (var key in onlineStreamers) {
+            if (containsValue(hiddenStreamers, onlineStreamers[key])) {
+                var namekey = hiddenStreamers.indexOf(onlineStreamers[key])
+                hiddenStreamers.splice(namekey, 1)
+            }
+        }
     }
-  } else {
-    for (var key in onlineStreamers) {
-      if (containsValue(hiddenStreamers, onlineStreamers[key])) {
-        var namekey = hiddenStreamers.indexOf(onlineStreamers[key])
-        hiddenStreamers.splice(namekey, 1)
-      }
-    }
-  }
-  updateList()
+    updateList()
 }
 
 document.getElementById("!showhide").oncontextmenu = function() {
-  if (!defaultHidden) {
-    for (var key in onlineStreamers) {
-      if (!containsValue(hiddenStreamers, onlineStreamers[key])) {
-        hiddenStreamers.unshift(onlineStreamers[key])
-      }
+    if (!defaultHidden) {
+        for (var key in onlineStreamers) {
+            if (!containsValue(hiddenStreamers, onlineStreamers[key])) {
+                hiddenStreamers.unshift(onlineStreamers[key])
+            }
+        }
+    } else {
+        for (var key in onlineStreamers) {
+            if (containsValue(hiddenStreamers, onlineStreamers[key])) {
+                var namekey = hiddenStreamers.indexOf(onlineStreamers[key])
+                hiddenStreamers.splice(namekey, 1)
+            }
+        }
     }
-  } else {
-    for (var key in onlineStreamers) {
-      if (containsValue(hiddenStreamers, onlineStreamers[key])) {
-        var namekey = hiddenStreamers.indexOf(onlineStreamers[key])
-        hiddenStreamers.splice(namekey, 1)
-      }
-    }
-  }
-  updateList()
+    updateList()
 }
 
 function generateCard(status, name) {
@@ -102,8 +102,11 @@ function generateCard(status, name) {
         var viewers = onlineViewers[namekey]
         var preview = onlinePreviews[namekey]
         var avatar = onlineAvatars[namekey]
+        if (avatar == null) {
+            avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
+        }
 
-        if (((containsValue(hiddenStreamers, name) && !defaultHidden) || (!containsValue(hiddenStreamers,name) && defaultHidden)) && (status == 1)) {
+        if (((containsValue(hiddenStreamers, name) && !defaultHidden) || (!containsValue(hiddenStreamers, name) && defaultHidden)) && (status == 1)) {
             var mainLi = document.createElement("li")
             mainLi.id = name
             var mainA = document.createElement("a")
@@ -112,7 +115,7 @@ function generateCard(status, name) {
             mainA.textContent = name
             mainA.style.color = "DodgerBlue"
             mainLi.appendChild(mainA)
-            
+
             return mainLi
         }
 
@@ -177,8 +180,16 @@ function generateCard(status, name) {
         img4.src = "channel.png"
         td2.appendChild(img4)
         var span2 = document.createElement("span")
-        span2.textContent = ' "' + title + '"'
-        td2.appendChild(span2)
+        if (title != "") {
+            span2.textContent = ' "' + title + '"'
+            td2.appendChild(span2)
+        } else {
+            var ital1 = document.createElement("i")
+            span2.textContent = " None"
+            ital1.appendChild(span2)
+            td2.appendChild(ital1)
+        }
+
         tr2.appendChild(td2)
 
 
@@ -189,8 +200,16 @@ function generateCard(status, name) {
         img5.src = "game.png"
         td3.appendChild(img5)
         var bold2 = document.createElement("strong")
-        bold2.textContent = " " + game
-        td3.appendChild(bold2)
+        if (game != null) {
+            bold2.textContent = " " + game
+            td3.appendChild(bold2)
+        } else {
+            var ital2 = document.createElement("i")
+            bold2.textContent = " None"
+            ital2.appendChild(bold2)
+            td3.appendChild(ital2)
+        }
+
         tr3.appendChild(td3)
 
 
@@ -227,54 +246,59 @@ function generateCard(status, name) {
 function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
-    
+
     var most_recent = onlineStreamers[0]
-    
+
     if (sortingMethod == "V") {
-      var newNames = []
-      var newGames = []
-      var newPreviews = []
-      var newAvatars =[]
-      for (var key in newViewers) {
-        newViewers[key] = Number(newViewers[key])
-      }
-      var newViewers = onlineViewers.concat().sort(function(a, b){return b-a});
-      var newViewers2 = newViewers
-      var leng = newViewers.length
-      for (i = 0; i < leng; i++) {
-        var namekey = onlineViewers.indexOf(newViewers[i])
-        newNames.push(onlineStreamers[namekey])
-        newGames.push(onlineGames[namekey])
-        newPreviews.push(onlinePreviews[namekey])
-        newAvatars.push(onlineAvatars[namekey])
-        onlineViewers[namekey] = "none"
-        
-      }
-      onlineStreamers = newNames
-      onlineGames = newGames
-      onlinePreviews = newPreviews
-      onlineAvatars = newAvatars
-      onlineViewers = newViewers2
-}
-    
-    if (offlineHide) {
-      document.getElementById("online!").style.display = "none"
-      document.getElementById("offline!").style.display = "none"
-    } else {
-      document.getElementById("online!").style.display = "inline"
-      document.getElementById("offline!").style.display = "inline"
+        var newNames = []
+        var newGames = []
+        var newPreviews = []
+        var newTitles = []
+        var newAvatars = []
+        for (var key in newViewers) {
+            newViewers[key] = Number(newViewers[key])
+        }
+        var newViewers = onlineViewers.concat().sort(function(a, b) {
+            return b - a
+        });
+        var newViewers2 = newViewers
+        var leng = newViewers.length
+        for (i = 0; i < leng; i++) {
+            var namekey = onlineViewers.indexOf(newViewers[i])
+            newNames.push(onlineStreamers[namekey])
+            newGames.push(onlineGames[namekey])
+            newTitles.push(onlineTitles[namekey])
+            newPreviews.push(onlinePreviews[namekey])
+            newAvatars.push(onlineAvatars[namekey])
+            onlineViewers[namekey] = "none"
+
+        }
+        onlineStreamers = newNames
+        onlineGames = newGames
+        onlinePreviews = newPreviews
+        onlineAvatars = newAvatars
+        onlineTitles = newTitles
+        onlineViewers = newViewers2
     }
-    
+
+    if (offlineHide) {
+        document.getElementById("online!").style.display = "none"
+        document.getElementById("offline!").style.display = "none"
+    } else {
+        document.getElementById("online!").style.display = "inline"
+        document.getElementById("offline!").style.display = "inline"
+    }
+
     for (var key in headers) {
         while (headers[key].firstChild) {
             headers[key].removeChild(headers[key].firstChild);
         }
     }
-    
+
     for (var key in hiddenStreamers) {
-      if (!containsValue(onlineStreamers, hiddenStreamers[key])) {
-        hiddenStreamers.splice(key, 1)
-      }
+        if (!containsValue(onlineStreamers, hiddenStreamers[key])) {
+            hiddenStreamers.splice(key, 1)
+        }
     }
 
     if (alarmOn) {
@@ -323,11 +347,11 @@ function updateList() {
 
     for (var key in offlineStreamers) {
         if (offlineStreamers[key] != "") {
-          if (!offlineHide) {
-            var offlineElement = generateCard(2, offlineStreamers[key])
-            document.getElementById("!offline").appendChild(offlineElement)
-                //'<li> <a style="color:red" href="#" tabindex="1" class="option" id="' + offlineStreamers[key] + '">' + offlineStreamers[key] + '</a></li> '
-          }
+            if (!offlineHide) {
+                var offlineElement = generateCard(2, offlineStreamers[key])
+                document.getElementById("!offline").appendChild(offlineElement)
+                    //'<li> <a style="color:red" href="#" tabindex="1" class="option" id="' + offlineStreamers[key] + '">' + offlineStreamers[key] + '</a></li> '
+            }
         }
     }
 
@@ -345,8 +369,8 @@ function updateList() {
     for (var key in followedStreamers) {
         if (document.getElementById(followedStreamers[key] + "!")) {
             onClick(document.getElementById(followedStreamers[key] + "!"))
-            if (containsValue(onlineStreamers,followedStreamers[key])) {
-              onRightClick(document.getElementById(followedStreamers[key] + "!"))
+            if (containsValue(onlineStreamers, followedStreamers[key])) {
+                onRightClick(document.getElementById(followedStreamers[key] + "!"))
             }
         }
     }
