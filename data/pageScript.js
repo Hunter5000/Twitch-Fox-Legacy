@@ -4,16 +4,12 @@ onlineTitles = []
 onlineViewers = []
 onlinePreviews = []
 onlineAvatars = []
-
 offlineStreamers = []
-
 hiddenStreamers = []
-
 alarmOn = false
 defaultHidden = false
 offlineHide = false
 sortingMethod = "L"
-
 followedStreamers = []
 
 function onClick(obj) {
@@ -93,7 +89,6 @@ function generateCard(status, name) {
         mainA.textContent = name
         mainA.style.color = "OrangeRed"
         mainLi.appendChild(mainA)
-
         return mainLi
     } else {
         var namekey = onlineStreamers.indexOf(name)
@@ -105,7 +100,6 @@ function generateCard(status, name) {
         if (avatar == null) {
             avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
         }
-
         if (((containsValue(hiddenStreamers, name) && !defaultHidden) || (!containsValue(hiddenStreamers, name) && defaultHidden)) && (status == 1)) {
             var mainLi = document.createElement("li")
             mainLi.id = name
@@ -115,10 +109,8 @@ function generateCard(status, name) {
             mainA.textContent = name
             mainA.style.color = "DodgerBlue"
             mainLi.appendChild(mainA)
-
             return mainLi
         }
-
         var mainLi = document.createElement("li")
         mainLi.id = name
         if (status == 0) {
@@ -127,7 +119,6 @@ function generateCard(status, name) {
         var mainA = document.createElement("a")
         mainA.className = "option"
         mainA.id = name + "!"
-
         var mainTable = document.createElement("table")
         if ((status == 1) && (namekey != onlineStreamers.length - 1)) {
             mainTable.style.borderBottom = "1px solid"
@@ -136,9 +127,7 @@ function generateCard(status, name) {
         mainTable.border = "0"
         mainTable.cellpadding = "4"
         mainTable.cellspacing = "0"
-
         var mainTbody = document.createElement("tbody")
-
         var tr1 = document.createElement("tr")
         var td1a = document.createElement("td")
         td1a.rowSpan = "4"
@@ -172,7 +161,6 @@ function generateCard(status, name) {
         img3.align = "right"
         td1c.appendChild(img3)
         tr1.appendChild(td1c)
-
         var tr2 = document.createElement("tr")
         var td2 = document.createElement("td")
         var img4 = document.createElement("img")
@@ -189,10 +177,7 @@ function generateCard(status, name) {
             ital1.appendChild(span2)
             td2.appendChild(ital1)
         }
-
         tr2.appendChild(td2)
-
-
         var tr3 = document.createElement("tr")
         var td3 = document.createElement("td")
         var img5 = document.createElement("img")
@@ -209,10 +194,7 @@ function generateCard(status, name) {
             ital2.appendChild(bold2)
             td3.appendChild(ital2)
         }
-
         tr3.appendChild(td3)
-
-
         var tr4 = document.createElement("tr")
         var td4 = document.createElement("td")
         var img6 = document.createElement("img")
@@ -223,30 +205,20 @@ function generateCard(status, name) {
         span3.textContent = " " + viewers.toString()
         td4.appendChild(span3)
         tr4.appendChild(td4)
-
-
-
         mainTbody.appendChild(tr2)
         mainTbody.appendChild(tr3)
         mainTbody.appendChild(tr4)
         mainTbody.insertBefore(tr1, mainTbody.childNodes[0])
-
         mainTable.appendChild(mainTbody)
         mainA.appendChild(mainTable)
         mainLi.appendChild(mainA)
-
         return mainLi
     }
-
-
-
 }
-
 
 function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
-
     var most_recent = onlineStreamers[0]
 
     if (sortingMethod == "V") {
@@ -271,7 +243,6 @@ function updateList() {
             newPreviews.push(onlinePreviews[namekey])
             newAvatars.push(onlineAvatars[namekey])
             onlineViewers[namekey] = "none"
-
         }
         onlineStreamers = newNames
         onlineGames = newGames
@@ -280,7 +251,6 @@ function updateList() {
         onlineTitles = newTitles
         onlineViewers = newViewers2
     }
-
     if (offlineHide) {
         document.getElementById("online!").style.display = "none"
         document.getElementById("offline!").style.display = "none"
@@ -288,19 +258,16 @@ function updateList() {
         document.getElementById("online!").style.display = "inline"
         document.getElementById("offline!").style.display = "inline"
     }
-
     for (var key in headers) {
         while (headers[key].firstChild) {
             headers[key].removeChild(headers[key].firstChild);
         }
     }
-
     for (var key in hiddenStreamers) {
         if (!containsValue(onlineStreamers, hiddenStreamers[key])) {
             hiddenStreamers.splice(key, 1)
         }
     }
-
     if (alarmOn) {
         if (!document.getElementById("!alarm")) {
             var alarmElement = document.createElement("li");
@@ -319,8 +286,7 @@ function updateList() {
             document.body.insertBefore(breakElement, document.body.childNodes[0])
             document.body.insertBefore(lastElement, document.body.childNodes[0])
             document.body.insertBefore(alarmElement, document.body.childNodes[0])
-
-            //'<li> <h1> <a style="color:lime" href="#" tabindex="1" class="option" id="alarm">Click to end alarm</a></h1></li> '
+                //'<li> <h1> <a style="color:lime" href="#" tabindex="1" class="option" id="alarm">Click to end alarm</a></h1></li> '
         }
 
     } else if (!(alarmOn) && document.getElementById("!alarm") && document.getElementById("!last") && document.getElementById("!break")) {
@@ -328,7 +294,6 @@ function updateList() {
         document.body.removeChild(document.getElementById("!last"))
         document.body.removeChild(document.getElementById("!break"))
     }
-
     for (var key in onlineStreamers) {
         var isLast = false
         if (document.getElementById("!last")) {
@@ -341,10 +306,8 @@ function updateList() {
             var onlineElement = generateCard(1, onlineStreamers[key])
             document.getElementById("!online").appendChild(onlineElement)
         }
-
         //<li> <a href="#" tabindex="1" class="option" id="' + onlineStreamers[key] + '"> <span style="color:blue">  <b>' + onlineStreamers[key] + ": </b> </span> Playing " + onlineGames[key] + '</a></li> '
     }
-
     for (var key in offlineStreamers) {
         if (offlineStreamers[key] != "") {
             if (!offlineHide) {
@@ -354,7 +317,6 @@ function updateList() {
             }
         }
     }
-
     var alarmbtn = document.getElementById("!alarm!")
     var lastbtn = document.getElementById("!last")
     if (alarmbtn && lastbtn) {
@@ -365,7 +327,6 @@ function updateList() {
             addon.port.emit("endAlarm", "End the alarm!");
         };
     }
-
     for (var key in followedStreamers) {
         if (document.getElementById(followedStreamers[key] + "!")) {
             onClick(document.getElementById(followedStreamers[key] + "!"))
@@ -374,7 +335,6 @@ function updateList() {
             }
         }
     }
-
 }
 
 addon.port.on("updatePage", function(payload) {

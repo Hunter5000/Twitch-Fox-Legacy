@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -18,6 +18,7 @@
   {
     "name": "import_user",
     "title": "User to import followed streams from",
+    "description": "Type in the Twitch username of the user you wish to import followed streams from, then click the import button below",
     "type": "string",
     "value": ""
   },
@@ -30,6 +31,7 @@
   {
     "name": "update_interval",
     "title": "Seconds to wait between updates",
+    "description": "Number of seconds waited between checking for online streams",
     "type": "integer",
     "value": 1
   },
@@ -67,24 +69,28 @@
   {
    "name": "soundAlarmOff",
    "title": "Disable sound alarm",
+   "description": "When this option is checked, the only alert will be the flashing badge on the add-on icon",
    "type": "bool",
    "value" : false
   },
   {
     "name": "alarm_length",
     "title": "Length of alarm: indefinite if 0",
+    "description": "The length of the alarm can be limited to a specified number of seconds; when set to 0, it goes off until the user responds to it",
     "type": "integer",
     "value": 0
   },
   {
     "name": "debounce_interval",
     "title": "Seconds it takes for a streamer who went offline to be registered as offline",
+    "description": "Low values may result in multiple alarms going off when a stream begins and ends due to Twitch API issues",
     "type": "integer",
-    "value": 45
+    "value": 60
   },
   {
    "name": "uniqueIds",
    "title": "Do not play alarm on browser startup if you've already received an alarm for that particular stream",
+   "description": "This only applies to individual streams. If the streamer quits streaming and starts again later, you will receive an alarm for that",
    "type": "bool",
    "value" : false
   }]
