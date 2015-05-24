@@ -2,7 +2,6 @@ onlineStreamers = []
 onlineGames = []
 onlineTitles = []
 onlineViewers = []
-onlinePreviews = []
 onlineAvatars = []
 offlineStreamers = []
 hiddenStreamers = []
@@ -95,7 +94,6 @@ function generateCard(status, name) {
         var game = onlineGames[namekey]
         var title = onlineTitles[namekey]
         var viewers = onlineViewers[namekey]
-        var preview = onlinePreviews[namekey]
         var avatar = onlineAvatars[namekey]
         if (avatar == null) {
             avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
@@ -156,7 +154,7 @@ function generateCard(status, name) {
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
-        img3.src = preview
+        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-320x180.jpg"
         img3.width = "160"
         img3.align = "right"
         td1c.appendChild(img3)
@@ -224,7 +222,6 @@ function updateList() {
     if (sortingMethod == "V") {
         var newNames = []
         var newGames = []
-        var newPreviews = []
         var newTitles = []
         var newAvatars = []
         for (var key in newViewers) {
@@ -240,13 +237,11 @@ function updateList() {
             newNames.push(onlineStreamers[namekey])
             newGames.push(onlineGames[namekey])
             newTitles.push(onlineTitles[namekey])
-            newPreviews.push(onlinePreviews[namekey])
             newAvatars.push(onlineAvatars[namekey])
             onlineViewers[namekey] = "none"
         }
         onlineStreamers = newNames
         onlineGames = newGames
-        onlinePreviews = newPreviews
         onlineAvatars = newAvatars
         onlineTitles = newTitles
         onlineViewers = newViewers2
@@ -343,14 +338,13 @@ addon.port.on("updatePage", function(payload) {
     onlineGames = payload[1]
     onlineTitles = payload[2]
     onlineViewers = payload[3]
-    onlinePreviews = payload[4]
-    onlineAvatars = payload[5]
-    offlineStreamers = payload[6]
-    alarmOn = payload[7]
-    followedStreamers = payload[8]
-    defaultHidden = payload[9]
-    offlineHide = payload[10]
-    sortingMethod = payload[11]
+    onlineAvatars = payload[4]
+    offlineStreamers = payload[5]
+    alarmOn = payload[6]
+    followedStreamers = payload[7]
+    defaultHidden = payload[8]
+    offlineHide = payload[9]
+    sortingMethod = payload[10]
     updateList()
 })
 
