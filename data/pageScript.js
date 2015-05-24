@@ -154,6 +154,7 @@ function generateCard(status, name) {
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
+        img3.src = "http://static-cdn.jtvnw.net/ttv-static/404_preview-320x180.jpg"
         img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-320x180.jpg"
         img3.width = "160"
         img3.align = "right"
