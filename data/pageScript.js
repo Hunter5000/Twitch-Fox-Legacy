@@ -11,6 +11,8 @@ offlineHide = false
 sortingMethod = "L"
 followedStreamers = []
 
+offset = 0
+
 function onClick(obj) {
     obj.onclick = function() {
         addon.port.emit("openTab", (obj.id.substring(0, obj.id.length - 1)))
@@ -154,7 +156,7 @@ function generateCard(status, name) {
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
-        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg" + "?" + String(Math.ceil((new Date().getTime()) / 1000))
+        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg?" + String(offset)
         img3.width = "160"
         img3.align = "right"
         td1c.appendChild(img3)
@@ -210,6 +212,7 @@ function generateCard(status, name) {
         mainTable.appendChild(mainTbody)
         mainA.appendChild(mainTable)
         mainLi.appendChild(mainA)
+        offset += 1
         return mainLi
     }
 }
