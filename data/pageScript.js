@@ -154,7 +154,7 @@ function generateCard(status, name) {
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
-        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg" + "?" + String(Math.ceil((new Date().getTime())/1000))
+        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg" + "?" + String(Math.ceil((new Date().getTime()) / 1000))
         img3.width = "160"
         img3.align = "right"
         td1c.appendChild(img3)
