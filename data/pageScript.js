@@ -10,12 +10,28 @@ defaultHidden = false
 offlineHide = false
 sortingMethod = "L"
 followedStreamers = []
+useLive = null
+openChat = false
 
 offset = 0
 
 function onClick(obj) {
     obj.onclick = function() {
-        addon.port.emit("openTab", (obj.id.substring(0, obj.id.length - 1)))
+        var actname = (obj.id.substring(0, obj.id.length - 1))
+        if (containsValue(onlineStreamers, actname)) {
+            if (useLive == "A" || useLive == "C") {
+                addon.port.emit("openTab", actname)
+            }
+            if (useLive == "B" || useLive == "C") {
+                addon.port.emit("openLive", actname)
+            }
+            if (openChat) {
+                var baseurl = "http://www.twitch.tv/" + actname + "/chat?popout="
+                window.open(baseurl, '_blank', 'right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no')
+            }
+        } else {
+            addon.port.emit("openTab", actname)
+        }
     }
 }
 
@@ -348,6 +364,8 @@ addon.port.on("updatePage", function(payload) {
     defaultHidden = payload[8]
     offlineHide = payload[9]
     sortingMethod = payload[10]
+    useLive = payload[11]
+    openChat = payload[12]
     updateList()
 })
 

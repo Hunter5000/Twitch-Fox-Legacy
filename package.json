@@ -5,7 +5,7 @@
   "description": "An alarm that plays a sound notification when specified Twitch streamers go live.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "1.3.9",
+  "version": "1.4.0",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
@@ -14,6 +14,19 @@
     "description": "List each streamer's channel name, with a comma separating each individual channel",
     "type": "string",
     "value": ""
+  },
+  {
+    "name": "addremName",
+    "title": "Add/remove a user to/from the list above",
+    "description": "Will add if not in the list and remove if in the list. Execute by clicking the button below",
+    "type": "string",
+    "value": ""
+  },
+  {
+    "type": "control",
+    "label": "Add/remove user",
+    "name": "addremClick",
+    "title": "Click to add/remove the user specified above"
   },
   {
     "name": "import_user",
@@ -93,6 +106,75 @@
    "description": "This only applies to individual streams. If the streamer quits streaming and starts again later, you will receive an alarm for that",
    "type": "bool",
    "value" : false
+  },
+  {
+   "name": "openPopout",
+   "title": "Open the stream's popout chat when you open the stream",
+   "description": "If enabled, will open the stream's chat in a popout window if the streamer is online",
+   "type": "bool",
+   "value" : false
+  },
+  {
+    "name": "enableLivestreamer",
+    "title": "Enable support for the command-line utility Livestreamer",
+    "description": "If Livestreamer is enabled, it will be used to automatically open streams in your media player of choice. Livestreamer is free software, and can be downloaded at http://livestreamer.io/ (Note: Will always open in a new tab if the streamer is offline)",
+    "type": "radio",
+    "value": "A",
+    "options": [
+        {
+            "value": "A",
+            "label": "Do not use"
+        },
+        {
+            "value": "B",
+            "label": "Use Livestreamer, do not open a new tab"
+        },
+        {
+            "value": "C",
+            "label": "Use Livestreamer and open a new tab"
+        }
+    ]
+  },
+  {
+    "name": "liveQuality",
+    "type": "radio",
+    "title": "Quality that livestreamer will open in (Only applicable if Livestreamer is used)",
+    "description": "'Best' automatically chooses the best option and 'Worst' automatically chooses the worst",
+    "value": "best",
+    "options": [
+        {
+            "value": "best",
+            "label": "Best"
+        },
+        {
+            "value": "source",
+            "label": "Source"
+        },
+        {
+            "value": "high",
+            "label": "High"
+        },
+        {
+            "value": "medium",
+            "label": "Medium"
+        },
+        {
+            "value": "low",
+            "label": "Low"
+        },
+        {
+            "value": "mobile",
+            "label": "Mobile"
+        },
+        {
+            "value": "worst",
+            "label": "Worst"
+        },
+        {
+            "value": "audio",
+            "label": "Audio"
+        }
+    ]
   }]
 }
 
