@@ -8,21 +8,22 @@ hiddenStreamers = []
 alarmOn = false
 defaultHidden = false
 offlineHide = false
-sortingMethod = "L"
+sortingMethod = "recent"
 followedStreamers = []
-useLive = null
-openChat = false
+previewWait = 30
 
-offset = 0
+openTab = false
+useLive = false
+openChat = false
 
 function onClick(obj) {
     obj.onclick = function() {
         var actname = (obj.id.substring(0, obj.id.length - 1))
         if (containsValue(onlineStreamers, actname)) {
-            if (useLive == "A" || useLive == "C") {
+            if (openTab) {
                 addon.port.emit("openTab", actname)
             }
-            if (useLive == "B" || useLive == "C") {
+            if (useLive) {
                 addon.port.emit("openLive", actname)
             }
             if (openChat) {
@@ -57,6 +58,10 @@ function containsValue(list_, obj) {
     } else {
         return false
     }
+}
+
+document.getElementById("!settings").onclick = function() {
+  addon.port.emit("openSettings")
 }
 
 document.getElementById("!showhide").onclick = function() {
@@ -172,7 +177,10 @@ function generateCard(status, name) {
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
-        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg?" + String(offset)
+        var unix = new Date().getTime()
+        unix = Math.ceil(unix/1000)
+        unix = Math.ceil(unix/previewWait)
+        img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg?" + String(unix)
         img3.width = "160"
         img3.align = "right"
         td1c.appendChild(img3)
@@ -228,7 +236,6 @@ function generateCard(status, name) {
         mainTable.appendChild(mainTbody)
         mainA.appendChild(mainTable)
         mainLi.appendChild(mainA)
-        offset += 1
         return mainLi
     }
 }
@@ -238,7 +245,7 @@ function updateList() {
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
     var most_recent = onlineStreamers[0]
 
-    if (sortingMethod == "V") {
+    if (sortingMethod == "viewers") {
         var newNames = []
         var newGames = []
         var newTitles = []
@@ -364,8 +371,10 @@ addon.port.on("updatePage", function(payload) {
     defaultHidden = payload[8]
     offlineHide = payload[9]
     sortingMethod = payload[10]
-    useLive = payload[11]
-    openChat = payload[12]
+    openTab = payload[11]
+    useLive = payload[12]
+    openChat = payload[13]
+    previewWait = payload[14]
     updateList()
 })
 

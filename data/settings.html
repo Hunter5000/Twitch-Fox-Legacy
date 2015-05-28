@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Settings</title>
+
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="settings.css" />
+
+    <script type="text/javascript">
+        var tabLinks = new Array();
+        var contentDivs = new Array();
+
+        function init() {
+
+            var tabListItems = document.getElementById('tabs').childNodes;
+            for (var i = 0; i < tabListItems.length; i++) {
+                if (tabListItems[i].nodeName == "LI") {
+                    var tabLink = getFirstChildWithTagName(tabListItems[i], 'A');
+                    var id = getHash(tabLink.getAttribute('href'));
+                    tabLinks[id] = tabLink;
+                    contentDivs[id] = document.getElementById(id);
+                }
+            }
+
+            var i = 0;
+
+            for (var id in tabLinks) {
+                tabLinks[id].onclick = showTab;
+                tabLinks[id].onfocus = function() {
+                    this.blur()
+                };
+                if (i == 0) tabLinks[id].className = 'selected';
+                i++;
+            }
+
+            var i = 0;
+
+            for (var id in contentDivs) {
+                if (i != 0) contentDivs[id].className = 'tabContent hide';
+                i++;
+            }
+        }
+
+        function showTab() {
+            var selectedId = getHash(this.getAttribute('href'));
+
+            for (var id in contentDivs) {
+                if (id == selectedId) {
+                    tabLinks[id].className = 'selected';
+                    contentDivs[id].className = 'tabContent';
+                } else {
+                    tabLinks[id].className = '';
+                    contentDivs[id].className = 'tabContent hide';
+                }
+            }
+
+            // Stop the browser following the link
+            return false;
+        }
+
+        function getFirstChildWithTagName(element, tagName) {
+            for (var i = 0; i < element.childNodes.length; i++) {
+                if (element.childNodes[i].nodeName == tagName) return element.childNodes[i];
+            }
+        }
+
+        function getHash(url) {
+            var hashPos = url.lastIndexOf('#');
+            return url.substring(hashPos + 1);
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1 style="text-align:center"> Settings</h1>
+    <ul id="tabs">
+        <li>
+            <a href="#followed"> <img src="streamer.png"> Manage followed streamers</a>
+        </li>
+        <li>
+            <a href="#alarm"> <img src="alarm.png"> Alarm settings</a>
+        </li>
+        <li>
+            <a href="#interface"> <img src="interface.png"> Interface settings</a>
+        </li>
+        <li>
+            <a href="#about"> <img src="ico16.png"> About</a>
+        </li>
+    </ul>
+    <div class="tabContent" id="followed">
+        <div>
+            <button type="button" id="followdefault">Clear followed streamers</button>
+            <br>
+            <br>
+            <form>
+                <input type="text" id="followinput">
+                <button type="button" id="followsubmit">Add to followed streamer list</button>
+            </form>
+            <p style="font-weight: bold">Followed streamers:</p>
+            <select style="width: 100%" id="followlist" size="10">
+                
+                <!-- <option value=" (your value here) "> (displayed text) </option> -->
+                
+            </select>
+            <br>
+            <button type="button" id="removeselected">Remove selected streamer from list</button>
+            <form>
+                <p style="font-weight: bold">User to import followed streamers from:</p>
+                <input type="text" id="importinput">
+                <button type="button" id="importsubmit">Import followed streamers</button>
+            </form>
+
+        </div>
+    </div>
+    <div class="tabContent" id="alarm">
+        <div>
+            <button type="button" id="alarmdefault">Reset to default</button>
+            <br>
+            <br>
+            <form style="font-weight: bold">
+                Seconds to wait between updating followed streamers:
+                <input type="number" id="updatelen" min="1" value="1">
+            </form>
+            <br>
+            <form style="font-weight: bold">
+                Enable sound alarm:
+                <input type="checkbox" id="soundalarm" checked>
+            </form>
+            <br>
+            <form style="font-weight: bold">
+                Set maximum alarm length:
+                <input type="checkbox" id="alarmlimit">
+            </form>
+            <br>
+            <form style="font-weight: bold; display: none" id="maxalarm">
+                Maximum alarm length (seconds):
+                <input type="number" id="alarmlen" min="1" value="10">
+                <br>
+                <br>
+            </form>
+            <form>
+                <span style="font-weight: bold">Seconds before a streamer is updated as offline:</span>
+                <input type="number" id="debounce" min="0" value="60">
+                <br>
+                (prevents multiple alarms from firing due to Twitch API issues)
+            </form>
+            <br>
+            <form style="font-weight: bold">
+                Do not receive an alarm for a unique stream you've already received an alarm for:
+                <input type="checkbox" id="uniqueids">
+            </form>
+
+        </div>
+    </div>
+    <div class="tabContent" id="interface">
+        </ul>
+        </h2>
+        <div>
+            <button type="button" id="interfacedefault">Reset to default</button>
+            <br>
+            <br>
+            <form>
+                <span style="font-weight: bold">Method to sort online streamers:</span>
+                <br>
+                <input type="radio" name="sortradio" id="sortrecent" checked>Most recent
+                <br>
+                <input type="radio" name="sortradio" id="sortviewers">Most viewers
+            </form>
+            <br>
+            
+            <form>
+                <span style="font-weight: bold">Minimum wait time between stream preview updates:</span>
+                <input type="number" id="previewwait" min="1" value="30">
+                <br>
+                (Small values can produce lag if you have many followed streamers)
+            </form>
+            
+            <br>
+            <form style="font-weight: bold">
+                Hide offline streamers:
+                <input type="checkbox" id="hideoff">
+            </form>
+            <br>
+            <form style="font-weight: bold">
+                Hide online stream information by default:
+                <input type="checkbox" id="hideinfo">
+            </form>
+            <br>
+            <form>
+                <span style="font-weight: bold">When an online streamer is clicked...</span>
+                <br>
+                <input type="checkbox" id="opentab" checked> Open their Twitch page in a new tab
+                <br>
+                <input type="checkbox" id="livestreamer"> Open their stream using the free software <a href="http://livestreamer.io/" target="_blank">Livestreamer</a>
+                <br>
+                <input type="checkbox" id="popout"> Open their stream's chat in a popout window
+            </form>
+            <span style="display: none" id="livespan">
+                <br>
+            <span style="font-weight: bold">Livestreamer quality:</span>
+            <br>
+            (Best will automatically select the best video quality, worst will automatically select the worst video quality)
+            <br>
+            <select id="livequality">
+                <option value="best">Best</option>
+                <option value="source">Source</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+                <option value="mobile">Mobile</option>
+                <option value="worst">Worst</option>
+                <option value="audio">Audio</option>
+            </select>
+            </span>
+        </div>
+    </div>
+    <div class="tabContent" id="about">
+        </ul>
+        </h2>
+        <div>
+            <p>Thank you for using my add-on!</p>
+            <p>I've made this add-on in my spare time and if you want to support me by giving feedback or even donating money, I'd be very grateful! You can do so on the <a href="https://addons.mozilla.org/en-US/firefox/addon/twitch-alarm/" target="_blank">add-on page.</a></p>
+            <p>If you are a programmer yourself with knowledge of JavaScript, HTML, or CSS, I'd love if you left feedback or even helped development on the <a href="https://github.com/Hunter5000/Twitch-Alarm/" target="_blank">GitHub page.</a></p>
+            <p>Perhaps even better, if you are a programmer already, is if you can speak a language other than English fluently. I want to localize my add-on for my userbase, which is nearly 2/3 non-English speaking. You could help by creating versions of my GitHub files with strings localized in other languages. </p>
+            <p>If you would like to personally contact me, you can <a href="mailto:hunter8750@gmail.com">email me</a> or add me on <a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a></p>
+            <p>-Hunter</p>
+        </div>
+    </div>
+    <script src="settingScript.js"></script>
+</body>
+</html>
