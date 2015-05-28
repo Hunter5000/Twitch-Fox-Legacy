@@ -71,8 +71,9 @@
         }
     </script>
 </head>
+
 <body onload="init()">
-    <h1 style="text-align:center"> Settings</h1>
+    <h1 style="text-align:center"> <img src="settings.png"> Settings</h1>
     <ul id="tabs">
         <li>
             <a href="#followed"> <img src="streamer.png"> Manage followed streamers</a>
@@ -98,9 +99,9 @@
             </form>
             <p style="font-weight: bold">Followed streamers:</p>
             <select style="width: 100%" id="followlist" size="10">
-                
+
                 <!-- <option value=" (your value here) "> (displayed text) </option> -->
-                
+
             </select>
             <br>
             <button type="button" id="removeselected">Remove selected streamer from list</button>
@@ -141,8 +142,7 @@
             <form>
                 <span style="font-weight: bold">Seconds before a streamer is updated as offline:</span>
                 <input type="number" id="debounce" min="0" value="60">
-                <br>
-                (prevents multiple alarms from firing due to Twitch API issues)
+                <br> (prevents multiple alarms from firing due to Twitch API issues)
             </form>
             <br>
             <form style="font-weight: bold">
@@ -167,14 +167,13 @@
                 <input type="radio" name="sortradio" id="sortviewers">Most viewers
             </form>
             <br>
-            
+
             <form>
                 <span style="font-weight: bold">Minimum wait time between stream preview updates:</span>
                 <input type="number" id="previewwait" min="1" value="30">
-                <br>
-                (Small values can produce lag if you have many followed streamers)
+                <br> (Small values can produce lag if you have many followed streamers)
             </form>
-            
+
             <br>
             <form style="font-weight: bold">
                 Hide offline streamers:
@@ -198,8 +197,7 @@
             <span style="display: none" id="livespan">
                 <br>
             <span style="font-weight: bold">Livestreamer quality:</span>
-            <br>
-            (Best will automatically select the best video quality, worst will automatically select the worst video quality)
+            <br> (Best will automatically select the best video quality, worst will automatically select the worst video quality)
             <br>
             <select id="livequality">
                 <option value="best">Best</option>
@@ -228,4 +226,5 @@
     </div>
     <script src="settingScript.js"></script>
 </body>
+
 </html>

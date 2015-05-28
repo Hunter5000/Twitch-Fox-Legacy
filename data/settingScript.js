@@ -49,31 +49,31 @@ interQual = document.getElementById("livequality")
 
 //Follower settings
 
-followClear.onclick=function() {
+followClear.onclick = function() {
     followedStreamers = []
     updateSettings()
 }
 
-followSubmit.onclick=function() {
-    if (followAdd.value!="") {
+followSubmit.onclick = function() {
+    if (followAdd.value != "") {
         var curvalue = followAdd.value
         curvalue = curvalue.replace(/ /g, "");
         curvalue = curvalue.toLowerCase()
         followedStreamers.unshift(curvalue)
         updateSettings()
     }
-    followAdd.value=""
+    followAdd.value = ""
 }
 
-followRemove.onclick=function() {
+followRemove.onclick = function() {
     if (followList.selectedIndex != "-1") {
-       followedStreamers.splice(followList.selectedIndex, 1)
-       updateSettings()
+        followedStreamers.splice(followList.selectedIndex, 1)
+        updateSettings()
     }
 }
 
-followImport.onclick=function() {
-    if (followImporter.value!="") {
+followImport.onclick = function() {
+    if (followImporter.value != "") {
         addon.port.emit("importUser", followImporter.value)
     }
     followImporter.value = ""
@@ -81,50 +81,50 @@ followImport.onclick=function() {
 
 //Alarm settings
 
-alarmDefault.onclick=function() {
-updateInterval = 1
-soundAlarm = true
-alarmLimit = false
-alarmLength = 10
-uniqueIds = false
-streamIds = []
-deBounce = 60
-updateSettings()
+alarmDefault.onclick = function() {
+    updateInterval = 1
+    soundAlarm = true
+    alarmLimit = false
+    alarmLength = 10
+    uniqueIds = false
+    streamIds = []
+    deBounce = 60
+    updateSettings()
 }
 
-alarmWait.onchange=function() {
+alarmWait.onchange = function() {
     updateInterval = alarmWait.value
     updateSettings()
 }
 
-alarmSound.onchange=function() {
+alarmSound.onchange = function() {
     soundAlarm = alarmSound.checked
     updateSettings()
 }
 
-alarmLim.onchange=function() {
+alarmLim.onchange = function() {
     alarmLimit = alarmLim.checked
     updateSettings()
 }
 
-alarmLen.onchange=function() {
+alarmLen.onchange = function() {
     alarmLength = alarmLen.value
     updateSettings()
 }
 
-alarmDeb.onchange=function() {
+alarmDeb.onchange = function() {
     deBounce = alarmDeb.value
     updateSettings()
 }
 
-alarmId.onchange=function() {
+alarmId.onchange = function() {
     uniqueIds = alarmId.checked
     updateSettings()
 }
 
 //Interface settings
 
-interDefault.onclick=function() {
+interDefault.onclick = function() {
     liveQuality = "best"
     hideInfo = false
     hideOffline = false
@@ -136,7 +136,7 @@ interDefault.onclick=function() {
     updateSettings()
 }
 
-interRecent.onclick=function() {
+interRecent.onclick = function() {
     if (interRecent.checked) {
         sortMethod = "recent"
     } else if (interViewers.checked) {
@@ -145,7 +145,7 @@ interRecent.onclick=function() {
     updateSettings()
 }
 
-interViewers.onclick=function() {
+interViewers.onclick = function() {
     if (interRecent.checked) {
         sortMethod = "recent"
     } else if (interViewers.checked) {
@@ -154,37 +154,37 @@ interViewers.onclick=function() {
     updateSettings()
 }
 
-interPreview.onchange=function() {
+interPreview.onchange = function() {
     previewWait = interPreview.value
     updateSettings()
 }
 
-interHideoff.onchange=function() {
+interHideoff.onchange = function() {
     hideOffline = interHideoff.checked
     updateSettings()
 }
 
-interHideinfo.onchange=function() {
+interHideinfo.onchange = function() {
     hideInfo = interHideinfo.checked
     updateSettings()
 }
 
-interTab.onchange=function() {
+interTab.onchange = function() {
     openTab = interTab.checked
     updateSettings()
 }
 
-interLive.onchange=function() {
+interLive.onchange = function() {
     openLive = interLive.checked
     updateSettings()
 }
 
-interChat.onchange=function() {
+interChat.onchange = function() {
     openPopout = interChat.checked
     updateSettings()
 }
 
-interQual.onchange=function() {
+interQual.onchange = function() {
     liveQuality = interQual.value
     updateSettings()
 }
@@ -207,7 +207,7 @@ function updateFollowed() {
 
 function updateSettings() {
     updateFollowed()
-    
+
     alarmWait.value = updateInterval
     alarmSound.checked = soundAlarm
     alarmLim.checked = alarmLimit
@@ -219,13 +219,13 @@ function updateSettings() {
     alarmLen.value = alarmLength
     alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
-    
-    if (sortMethod=="recent") {
+
+    if (sortMethod == "recent") {
         interRecent.checked = true
         interViewers.checked = false
-    } else if (sortMethod=="viewers"){
+    } else if (sortMethod == "viewers") {
         interViewers.checked = true
-        interRecent.checked= false
+        interRecent.checked = false
     }
     interHideoff.checked = hideOffline
     interHideinfo.checked = hideInfo
@@ -238,24 +238,24 @@ function updateSettings() {
     } else {
         interSpan.style.display = "none"
     }
-    if (liveQuality=="best") {
+    if (liveQuality == "best") {
         interQual.selectedIndex = 0
-    } else if (liveQuality=="source") {
+    } else if (liveQuality == "source") {
         interQual.selectedIndex = 1
-    } else if (liveQuality=="high") {
+    } else if (liveQuality == "high") {
         interQual.selectedIndex = 2
-    } else if (liveQuality=="medium") {
+    } else if (liveQuality == "medium") {
         interQual.selectedIndex = 3
-    } else if (liveQuality=="low") {
+    } else if (liveQuality == "low") {
         interQual.selectedIndex = 4
-    } else if (liveQuality=="mobile") {
+    } else if (liveQuality == "mobile") {
         interQual.selectedIndex = 5
-    } else if (liveQuality=="worst") {
+    } else if (liveQuality == "worst") {
         interQual.selectedIndex = 6
-    } else if (liveQuality=="audio") {
+    } else if (liveQuality == "audio") {
         interQual.selectedIndex = 7
     }
-    
+
     exportSettings()
 }
 

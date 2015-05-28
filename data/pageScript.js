@@ -61,7 +61,7 @@ function containsValue(list_, obj) {
 }
 
 document.getElementById("!settings").onclick = function() {
-  addon.port.emit("openSettings")
+    addon.port.emit("openSettings")
 }
 
 document.getElementById("!showhide").onclick = function() {
@@ -178,8 +178,8 @@ function generateCard(status, name) {
         img3.alt = ""
         img3.height = "90"
         var unix = new Date().getTime()
-        unix = Math.ceil(unix/1000)
-        unix = Math.ceil(unix/previewWait)
+        unix = Math.ceil(unix / 1000)
+        unix = Math.ceil(unix / previewWait)
         img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-160x90.jpg?" + String(unix)
         img3.width = "160"
         img3.align = "right"
