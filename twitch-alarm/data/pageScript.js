@@ -332,11 +332,16 @@ function updateList() {
             var alarmElement = document.createElement("li");
             var alarmhead = document.createElement("h1")
             var alarmA = document.createElement("a")
+            var alarmStrong = document.createElement("strong")
+            var alarmSpan = document.createElement("span")
             alarmElement.id = "!alarm"
             alarmA.id = "!alarm!"
-            alarmA.textContent = (most_recent + " has come online! Click here or below to end the alarm.")
+            alarmStrong.textContent = most_recent
+            alarmSpan.textContent = " has come online! Click here or below to end the alarm."
             alarmA.setAttribute("class", "option")
-            alarmA.style.color = "lime"
+            alarmA.style.color = "YellowGreen"
+            alarmA.appendChild(alarmStrong)
+            alarmA.appendChild(alarmSpan)
             alarmhead.appendChild(alarmA)
             alarmElement.appendChild(alarmhead)
             var breakElement = document.createElement("hr")
