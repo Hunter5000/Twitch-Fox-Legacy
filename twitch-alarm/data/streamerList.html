@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="streamerList.css" />
+</head>
+
+<body>
+
+    <a id="!settings" class="option" style="font-weight: bold; color: DarkCyan">
+        <h1>
+		<img style="vertical-align: text-bottom" src="settings.png"/>
+		Settings
+	  </h1>
+    </a>
+
+
+    <span id="showhide!" style="display: none">
+    <a id="!showhide" class="option">
+        <h2>
+		  <img alt="" height="16" src="leftclick.png" width="16"/>
+		  <span style= "color: DodgerBlue">Show all</span>
+    <img alt="" height="16" src="rightclick.png" width="16" />
+    <span style="color: OrangeRed">Hide all</span>
+    </h2>
+    </a>
+    </span>
+
+    <h3 id="!tutorial1" style="display: none">
+	  <span>Click </span>
+	  <img alt="" height="16" src="rightclick.png" width="16"/>
+	  <span> on an online streamer to toggle hiding or showing streamer information</span>
+	</h3>
+
+    <hr>
+
+    <span id="!tutorial2" style="display: none; font-size: large">
+	  <span>You aren't following any streamers! <br><br> To add new followed streamers and receive notifications for them, press	<img style="vertical-align: text-top" src="settings.png"/> <span style="font-weight: bold; color: DarkCyan; font-size: larger">Settings </span> above to access the settings menu, where you can either <strong>add</strong> an individual channel to follow or <strong>import</strong> followers from an existing Twitch user.
+    <br>
+    <br> You can also change many other options to best suit your Twitch experience.</span>
+    </span>
+
+    <span id="!onlinespan" style="display: none">
+
+    <h1 id="online!">Online Streamers</h1>
+    <ul id="!online">
+
+    </ul>
+	
+	
+	</span>
+
+    <span id="!offlinespan" style="display: none">
+	<hr>
+	
+    <h1 id="offline!">Offline Streamers</h1>
+    <ul id="!offline">
+
+    </ul>
+	</span>
+
+    <script src="pageScript.js"></script>
+</body>
+
+</html>

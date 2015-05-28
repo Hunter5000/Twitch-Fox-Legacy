@@ -1,20 +1,24 @@
-onlineStreamers = []
-onlineGames = []
-onlineTitles = []
-onlineViewers = []
-onlineAvatars = []
-offlineStreamers = []
-hiddenStreamers = []
-alarmOn = false
-defaultHidden = false
-offlineHide = false
-sortingMethod = "recent"
-followedStreamers = []
-previewWait = 30
+//Imported variables
+onlineStreamers = null
+onlineGames = null
+onlineTitles = null
+onlineViewers = null
+onlineAvatars = null
+offlineStreamers = null
+alarmOn = null
+defaultHidden = null
+offlineHide = null
+sortingMethod = null
+followedStreamers = null
+previewWait = null
+openTab = null
+useLive = null
+openChat = null
+tutorial = null
 
-openTab = false
-useLive = false
-openChat = false
+//Unique variables
+
+hiddenStreamers = []
 
 function onClick(obj) {
     obj.onclick = function() {
@@ -245,6 +249,40 @@ function updateList() {
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
     var most_recent = onlineStreamers[0]
 
+    if (onlineStreamers.length > 0) {
+        if (tutorial) {
+            document.getElementById("!tutorial1").style.display = "inline"
+        } else {
+            document.getElementById("!tutorial1").style.display = "none"
+        }
+        document.getElementById("showhide!").style.display = "inline"
+    } else {
+        document.getElementById("showhide!").style.display = "none"
+        document.getElementById("!tutorial1").style.display = "none"
+    }
+
+    if (!(onlineStreamers.length < 1) || (onlineStreamers[0] == "")) {
+        document.getElementById("online!").textContent = "Online Streamers (" + onlineStreamers.length + ")"
+        document.getElementById("!onlinespan").style.display = "inline"
+    } else {
+        document.getElementById("online!").textContent = "Online Streamers"
+        document.getElementById("!onlinespan").style.display = "none"
+    }
+
+    if (!(offlineStreamers.length < 1) || (offlineStreamers[0] == "")) {
+        document.getElementById("offline!").textContent = "Offline Streamers (" + offlineStreamers.length + ")"
+        document.getElementById("!offlinespan").style.display = "inline"
+    } else {
+        document.getElementById("offline!").textContent = "Offline Streamers"
+        document.getElementById("!offlinespan").style.display = "none"
+    }
+
+    if ((!(onlineStreamers.length > 0) || (onlineStreamers[0] == "")) && (!(offlineStreamers.length > 0) || (offlineStreamers[0] == "")) && tutorial) {
+        document.getElementById("!tutorial2").style.display = "inline"
+    } else {
+        document.getElementById("!tutorial2").style.display = "none"
+    }
+
     if (sortingMethod == "viewers") {
         var newNames = []
         var newGames = []
@@ -375,7 +413,6 @@ addon.port.on("updatePage", function(payload) {
     useLive = payload[12]
     openChat = payload[13]
     previewWait = payload[14]
+    tutorial = payload[15]
     updateList()
 })
-
-updateList()

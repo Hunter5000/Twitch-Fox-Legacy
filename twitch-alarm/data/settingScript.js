@@ -1,25 +1,45 @@
-followedStreamers = []
+//Follower variables
+followedStreamers = null
 
-updateInterval = 1
-soundAlarm = true
-alarmLimit = false
-alarmLength = 10
-uniqueIds = false
-streamIds = []
-deBounce = 60
+//Alarm variables
 
-liveQuality = "best"
-hideInfo = false
-hideOffline = false
-sortMethod = "recent"
-openTab = true
-openLive = false
-openPopout = false
-previewWait = 30
+updateInterval = null
+soundAlarm = null
+alarmLimit = null
+alarmLength = null
+uniqueIds = null
+streamIds = null
+deBounce = null
+
+
+//Interface variables
+
+liveQuality = null
+hideInfo = null
+hideOffline = null
+sortMethod = null
+openTab = null
+openLive = null
+openPopout = null
+previewWait = null
+tutorialOn = null
+
+//Other variables
+
+curVersion = null
+
+//Settings variables
+
+searchTerm = ""
+searchNum = 0
+
+//HTML elements
 
 followClear = document.getElementById("followdefault")
 followAdd = document.getElementById("followinput")
 followSubmit = document.getElementById("followsubmit")
+followP = document.getElementById("followedp")
+followSearch = document.getElementById("followsearch")
 followList = document.getElementById("followlist")
 followRemove = document.getElementById("removeselected")
 followImporter = document.getElementById("importinput")
@@ -35,6 +55,7 @@ alarmDeb = document.getElementById("debounce")
 alarmId = document.getElementById("uniqueids")
 
 interDefault = document.getElementById("interfacedefault")
+interTutorial = document.getElementById("tutorial")
 interRadio = document.getElementById("sortradio")
 interRecent = document.getElementById("sortrecent")
 interViewers = document.getElementById("sortviewers")
@@ -47,6 +68,8 @@ interChat = document.getElementById("popout")
 interSpan = document.getElementById("livespan")
 interQual = document.getElementById("livequality")
 
+versionSpan = document.getElementById("versionspan")
+
 //Follower settings
 
 followClear.onclick = function() {
@@ -58,6 +81,7 @@ followSubmit.onclick = function() {
     if (followAdd.value != "") {
         var curvalue = followAdd.value
         curvalue = curvalue.replace(/ /g, "");
+        curvalue = curvalue.replace("!", "");
         curvalue = curvalue.toLowerCase()
         followedStreamers.unshift(curvalue)
         updateSettings()
@@ -65,9 +89,15 @@ followSubmit.onclick = function() {
     followAdd.value = ""
 }
 
+followSearch.oninput = function() {
+    searchTerm = followSearch.value
+    updateFollowed()
+}
+
 followRemove.onclick = function() {
     if (followList.selectedIndex != "-1") {
-        followedStreamers.splice(followList.selectedIndex, 1)
+        var indexkey = followedStreamers.indexOf(followList.value)
+        followedStreamers.splice(indexkey, 1)
         updateSettings()
     }
 }
@@ -82,6 +112,8 @@ followImport.onclick = function() {
 //Alarm settings
 
 alarmDefault.onclick = function() {
+    //Default alarm settings
+
     updateInterval = 1
     soundAlarm = true
     alarmLimit = false
@@ -125,6 +157,8 @@ alarmId.onchange = function() {
 //Interface settings
 
 interDefault.onclick = function() {
+    //Default interface settings
+
     liveQuality = "best"
     hideInfo = false
     hideOffline = false
@@ -133,6 +167,12 @@ interDefault.onclick = function() {
     openLive = false
     openPopout = false
     previewWait = 30
+    tutorialOn = true
+    updateSettings()
+}
+
+interTutorial.onchange = function() {
+    tutorialOn = interTutorial.checked
     updateSettings()
 }
 
@@ -197,11 +237,28 @@ function updateFollowed() {
     while (followList.firstChild) {
         followList.removeChild(followList.firstChild);
     }
+    var searchcount = 0
     for (var key in followedStreamers) {
-        var newCard = document.createElement("option")
-        newCard.value = followedStreamers[key]
-        newCard.textContent = followedStreamers[key]
-        followList.appendChild(newCard)
+        if (followedStreamers[key].search(searchTerm) != -1) {
+            searchcount += 1
+            var newCard = document.createElement("option")
+            newCard.value = followedStreamers[key]
+            newCard.textContent = followedStreamers[key]
+            followList.appendChild(newCard)
+        }
+    }
+    searchNum = searchcount
+
+    if (followedStreamers.length > 0) {
+        if ((followedStreamers[0] != "") && (searchNum == followedStreamers.length)) {
+            followP.textContent = "Followed streamers (" + followedStreamers.length + "):"
+        } else if ((followedStreamers[0] != "") && (searchNum != followedStreamers.length)) {
+            followP.textContent = "Followed streamers (" + followedStreamers.length + " total, showing " + searchNum + "):"
+        } else {
+            followP.textContent = "Followed streamers:"
+        }
+    } else {
+        followP.textContent = "Followed streamers:"
     }
 }
 
@@ -220,6 +277,8 @@ function updateSettings() {
     alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
 
+    versionSpan.textContent = curVersion
+
     if (sortMethod == "recent") {
         interRecent.checked = true
         interViewers.checked = false
@@ -227,6 +286,8 @@ function updateSettings() {
         interViewers.checked = true
         interRecent.checked = false
     }
+
+    interTutorial.checked = tutorialOn
     interHideoff.checked = hideOffline
     interHideinfo.checked = hideInfo
     interTab.checked = openTab
@@ -276,7 +337,8 @@ function exportSettings() {
         openTab,
         openLive,
         openPopout,
-        previewWait
+        previewWait,
+        tutorialOn,
     ])
 }
 
@@ -298,6 +360,8 @@ addon.port.on("onSettings", function(payload) {
     openLive = payload[13]
     openPopout = payload[14]
     previewWait = payload[15]
-    updateFollowed()
+    tutorialOn = payload[16]
+    curVersion = payload[17]
+
     updateSettings()
 })

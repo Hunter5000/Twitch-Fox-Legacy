@@ -10,7 +10,12 @@ var preferences = require("sdk/simple-prefs")
 
 if (!ss.storage.firstTime) {
     ss.storage.firstTime = true
+
+    //Default settings
+    //Follower
     ss.storage.followedStreamers = []
+
+    //Alarm
     ss.storage.updateInterval = 1
     ss.storage.soundAlarm = true
     ss.storage.alarmLimit = false
@@ -18,6 +23,8 @@ if (!ss.storage.firstTime) {
     ss.storage.uniqueIds = false
     ss.storage.streamIds = []
     ss.storage.debounce = 60
+
+    //Interface
     ss.storage.liveQuality = "best"
     ss.storage.hideInfo = false
     ss.storage.hideOffline = false
@@ -25,7 +32,8 @@ if (!ss.storage.firstTime) {
     ss.storage.openTab = true
     ss.storage.openLive = false
     ss.storage.openPopout = false
-    ss.storage.previewWait = 60
+    ss.storage.previewWait = 30
+    ss.storage.tutorialOn = true
 }
 
 var online_streamers = [];
@@ -483,6 +491,7 @@ panel.port.on("openSettings", function(payload) {
 })
 
 settingsPanel.port.on("importSettings", function(payload) {
+    //Retrieve setting updates
     ss.storage.followedStreamers = payload[0]
     ss.storage.updateInterval = payload[1]
     ss.storage.soundAlarm = payload[2]
@@ -499,6 +508,7 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.openLive = payload[13]
     ss.storage.openPopout = payload[14]
     ss.storage.previewWait = payload[15]
+    ss.storage.tutorialOn = payload[16]
 
     followedStreamers = payload[0]
 })
@@ -525,6 +535,7 @@ preferences.on("settingsButton", function() {
 
 function panelUpdate() {
     //Should update when something has changed or alarm turns off
+    //Give the settings to the panel
     panel.port.emit("updatePage", [
         online_streamers,
         online_games,
@@ -540,7 +551,8 @@ function panelUpdate() {
         ss.storage.openTab,
         ss.storage.openLive,
         ss.storage.openPopout,
-        ss.storage.previewWait
+        ss.storage.previewWait,
+        ss.storage.tutorialOn
     ]);
 }
 
@@ -562,7 +574,9 @@ function packageSettings() {
         ss.storage.openTab,
         ss.storage.openLive,
         ss.storage.openPopout,
-        ss.storage.previewWait
+        ss.storage.previewWait,
+        ss.storage.tutorialOn,
+        self.version
     ])
 }
 

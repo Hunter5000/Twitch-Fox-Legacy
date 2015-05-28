@@ -95,9 +95,14 @@
             <br>
             <form>
                 <input type="text" id="followinput">
-                <button type="button" id="followsubmit">Add to followed streamer list</button>
+                <button type="button" id="followsubmit">Add input to followed streamer list</button>
             </form>
-            <p style="font-weight: bold">Followed streamers:</p>
+            <p style="font-weight: bold" id="followedp">Followed streamers:</p>
+            <form>
+                Search followed streamers
+                <input type="text" id="followsearch">
+            </form>
+            <br>
             <select style="width: 100%" id="followlist" size="10">
 
                 <!-- <option value=" (your value here) "> (displayed text) </option> -->
@@ -159,6 +164,11 @@
             <button type="button" id="interfacedefault">Reset to default</button>
             <br>
             <br>
+            <form style="font-weight: bold">
+                Show tutorial messages:
+                <input type="checkbox" id="tutorial">
+            </form>
+            <br>
             <form>
                 <span style="font-weight: bold">Method to sort online streamers:</span>
                 <br>
@@ -216,12 +226,13 @@
         </ul>
         </h2>
         <div>
+            <p style="font-weight: bold">Twitch Alarm, version <span id="versionspan" style="font-size: larger"></span></p>
             <p>Thank you for using my add-on!</p>
-            <p>I've made this add-on in my spare time and if you want to support me by giving feedback or even donating money, I'd be very grateful! You can do so on the <a href="https://addons.mozilla.org/en-US/firefox/addon/twitch-alarm/" target="_blank">add-on page.</a></p>
+            <p>I've made this add-on in my spare time and if you would like to support me by giving feedback or even donating money, I'd be very grateful! You can do so on the <a href="https://addons.mozilla.org/en-US/firefox/addon/twitch-alarm/" target="_blank">add-on page.</a></p>
             <p>If you are a programmer yourself with knowledge of JavaScript, HTML, or CSS, I'd love if you left feedback or even helped development on the <a href="https://github.com/Hunter5000/Twitch-Alarm/" target="_blank">GitHub page.</a></p>
             <p>Perhaps even better, if you are a programmer already, is if you can speak a language other than English fluently. I want to localize my add-on for my userbase, which is nearly 2/3 non-English speaking. You could help by creating versions of my GitHub files with strings localized in other languages. </p>
-            <p>If you would like to personally contact me, you can <a href="mailto:hunter8750@gmail.com">email me</a> or add me on <a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a></p>
-            <p>-Hunter</p>
+            <p>If you would like to personally contact me, you can <a href="mailto:hunter8750@gmail.com">email me</a> or add me on <a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a>.</p>
+            <p style="font-weight: bold; font-size: larger">-Hunter</p>
         </div>
     </div>
     <script src="settingScript.js"></script>
