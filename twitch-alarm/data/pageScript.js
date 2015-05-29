@@ -19,6 +19,9 @@ tutorial = null
 //Unique variables
 
 hiddenStreamers = []
+searchTerm = ""
+searchOn = 0
+searchOff = 0
 
 function onClick(obj) {
     obj.onclick = function() {
@@ -35,7 +38,9 @@ function onClick(obj) {
                 window.open(baseurl, '_blank', 'right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no')
             }
         } else {
-            addon.port.emit("openTab", actname)
+            if (openTab) {
+                addon.port.emit("openTab", actname)
+            }
         }
     }
 }
@@ -102,6 +107,59 @@ document.getElementById("!showhide").oncontextmenu = function() {
         }
     }
     updateList()
+}
+
+function performSearch() {
+    searchOff = 0
+    searchOn = 0
+    for (var key in followedStreamers) {
+        if (document.getElementById(followedStreamers[key])) {
+            if (followedStreamers[key].search(searchTerm) != -1) {
+                var elem = document.getElementById(followedStreamers[key])
+                elem.style.display = "inline"
+                if (elem.parentElement.id == "!offline") {
+                    searchOff += 1
+                } else {
+                    searchOn += 1
+                }
+            } else {
+                var elem = document.getElementById(followedStreamers[key])
+                elem.style.display = "none"
+            }
+
+        }
+    }
+    
+    if (searchOff > 0) {
+        document.getElementById("!offlinespan").style.display = "inline"
+    } else {
+        document.getElementById("!offlinespan").style.display = "none"
+    }
+
+    if (searchOn > 0) {
+        document.getElementById("!onlinespan").style.display = "inline"
+    } else {
+        document.getElementById("!onlinespan").style.display = "none"
+    }
+
+    if (searchOn == onlineStreamers.length) {
+        document.getElementById("online!!").textContent = "Online Streamers (" + onlineStreamers.length + ")"
+    } else if (searchOn != onlineStreamers.length) {
+        document.getElementById("online!!").textContent = "Online Streamers (" + onlineStreamers.length + " total, showing " + searchOn + ")"
+    }
+
+    if (searchOff == offlineStreamers.length) {
+        document.getElementById("offline!!").textContent = "Offline Streamers (" + offlineStreamers.length + ")"
+    } else if (searchOff != offlineStreamers.length) {
+        document.getElementById("offline!!").textContent = "Offline Streamers (" + offlineStreamers.length + " total, showing " + searchOff + ")"
+    }
+
+}
+
+
+document.getElementById("!followsearch").oninput = function() {
+    searchTerm = document.getElementById("!followsearch").value
+    performSearch()
 }
 
 function generateCard(status, name) {
@@ -255,32 +313,10 @@ function updateList() {
         } else {
             document.getElementById("!tutorial1").style.display = "none"
         }
-        document.getElementById("showhide!").style.display = "inline"
+        document.getElementById("showhide!!").style.display = "inline"
     } else {
-        document.getElementById("showhide!").style.display = "none"
+        document.getElementById("showhide!!").style.display = "none"
         document.getElementById("!tutorial1").style.display = "none"
-    }
-
-    if (!(onlineStreamers.length < 1) || (onlineStreamers[0] == "")) {
-        document.getElementById("online!").textContent = "Online Streamers (" + onlineStreamers.length + ")"
-        document.getElementById("!onlinespan").style.display = "inline"
-    } else {
-        document.getElementById("online!").textContent = "Online Streamers"
-        document.getElementById("!onlinespan").style.display = "none"
-    }
-
-    if (!(offlineStreamers.length < 1) || (offlineStreamers[0] == "")) {
-        document.getElementById("offline!").textContent = "Offline Streamers (" + offlineStreamers.length + ")"
-        document.getElementById("!offlinespan").style.display = "inline"
-    } else {
-        document.getElementById("offline!").textContent = "Offline Streamers"
-        document.getElementById("!offlinespan").style.display = "none"
-    }
-
-    if ((!(onlineStreamers.length > 0) || (onlineStreamers[0] == "")) && (!(offlineStreamers.length > 0) || (offlineStreamers[0] == "")) && tutorial) {
-        document.getElementById("!tutorial2").style.display = "inline"
-    } else {
-        document.getElementById("!tutorial2").style.display = "none"
     }
 
     if (sortingMethod == "viewers") {
@@ -311,11 +347,11 @@ function updateList() {
         onlineViewers = newViewers2
     }
     if (offlineHide) {
-        document.getElementById("online!").style.display = "none"
-        document.getElementById("offline!").style.display = "none"
+        document.getElementById("!onlinespan").style.display = "none"
+        document.getElementById("!offlinespan").style.display = "none"
     } else {
-        document.getElementById("online!").style.display = "inline"
-        document.getElementById("offline!").style.display = "inline"
+        document.getElementById("!onlinespan").style.display = "inline"
+        document.getElementById("!offlinespan").style.display = "inline"
     }
     for (var key in headers) {
         while (headers[key].firstChild) {
@@ -337,9 +373,9 @@ function updateList() {
             alarmElement.id = "!alarm"
             alarmA.id = "!alarm!"
             alarmStrong.textContent = most_recent
-            alarmSpan.textContent = " has come online! Click here or below to end the alarm."
+            alarmSpan.textContent = " has come online!! Click here or below to end the alarm."
             alarmA.setAttribute("class", "option")
-            alarmA.style.color = "YellowGreen"
+            alarmA.style.color = "DodgerBlue"
             alarmA.appendChild(alarmStrong)
             alarmA.appendChild(alarmSpan)
             alarmhead.appendChild(alarmA)
@@ -381,6 +417,21 @@ function updateList() {
             }
         }
     }
+
+    performSearch()
+
+    if ((!(onlineStreamers.length > 0) || (onlineStreamers[0] == "")) && (!(offlineStreamers.length > 0) || (offlineStreamers[0] == "")) && tutorial) {
+        document.getElementById("!tutorial2").style.display = "inline"
+    } else {
+        document.getElementById("!tutorial2").style.display = "none"
+    }
+    
+    if ((!(onlineStreamers.length > 0) || (onlineStreamers[0] == "")) && (!(offlineStreamers.length > 0) || (offlineStreamers[0] == ""))) {
+        document.getElementById("!searchform").style.display = "none"
+    } else {
+        document.getElementById("!searchform").style.display = "inline"
+    }
+
     var alarmbtn = document.getElementById("!alarm!")
     var lastbtn = document.getElementById("!last")
     if (alarmbtn && lastbtn) {
