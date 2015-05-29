@@ -8,31 +8,62 @@ var pgworkr = require("sdk/page-worker")
 var ss = require("sdk/simple-storage");
 var preferences = require("sdk/simple-prefs")
 
-if (!ss.storage.firstTime) {
-    ss.storage.firstTime = true
-
-    //Default settings
-    //Follower
+//Default settings
+//Follower
+if (typeof(ss.storage.followedStreamers) == "undefined") {
     ss.storage.followedStreamers = []
+}
 
-    //Alarm
+//Alarm
+if (typeof(ss.storage.updateInterval) == "undefined") {
     ss.storage.updateInterval = 1
-    ss.storage.soundAlarm = true
-    ss.storage.alarmLimit = false
-    ss.storage.alarmLength = 10
-    ss.storage.uniqueIds = false
-    ss.storage.streamIds = []
-    ss.storage.debounce = 60
+}
 
-    //Interface
+if (typeof(ss.storage.soundAlarm) == "undefined") {
+    ss.storage.soundAlarm = true
+}
+if (typeof(ss.storage.alarmLimit) == "undefined") {
+    ss.storage.alarmLimit = false
+}
+if (typeof(ss.storage.alarmLength) == "undefined") {
+    ss.storage.alarmLength = 10
+}
+if (typeof(ss.storage.uniqueIds) == "undefined") {
+    ss.storage.uniqueIds = false
+}
+if (typeof(ss.storage.streamIds) == "undefined") {
+    ss.storage.streamIds = []
+}
+if (typeof(ss.storage.debounce) == "undefined") {
+    ss.storage.debounce = 60
+}
+
+//Interface
+if (typeof(ss.storage.liveQuality) == "undefined") {
     ss.storage.liveQuality = "best"
+}
+if (typeof(ss.storage.hideInfo) == "undefined") {
     ss.storage.hideInfo = false
+}
+if (typeof(ss.storage.hideOffline) == "undefined") {
     ss.storage.hideOffline = false
+}
+if (typeof(ss.storage.sortMethod) == "undefined") {
     ss.storage.sortMethod = "recent"
+}
+if (typeof(ss.storage.openTab) == "undefined") {
     ss.storage.openTab = true
+}
+if (typeof(ss.storage.openLive) == "undefined") {
     ss.storage.openLive = false
+}
+if (typeof(ss.storage.openPopout) == "undefined") {
     ss.storage.openPopout = false
+}
+if (typeof(ss.storage.previewWait) == "undefined") {
     ss.storage.previewWait = 30
+}
+if (typeof(ss.storage.tutorialOn) == "undefined") {
     ss.storage.tutorialOn = true
 }
 
