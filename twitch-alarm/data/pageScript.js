@@ -38,9 +38,7 @@ function onClick(obj) {
                 window.open(baseurl, '_blank', 'right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no')
             }
         } else {
-            if (openTab) {
-                addon.port.emit("openTab", actname)
-            }
+            addon.port.emit("openTab", actname)
         }
     }
 }

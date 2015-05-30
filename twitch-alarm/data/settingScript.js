@@ -35,6 +35,7 @@ searchNum = 0
 
 //HTML elements
 
+followRefresh = document.getElementById("forcereload")
 followClear = document.getElementById("followdefault")
 followAdd = document.getElementById("followinput")
 followSubmit = document.getElementById("followsubmit")
@@ -135,6 +136,10 @@ versionSpan = document.getElementById("versionspan")
         }
 
 //Follower settings
+
+followRefresh.onclick = function() {
+    addon.port.emit("forceRefresh")
+}
 
 followClear.onclick = function() {
     followedStreamers = []

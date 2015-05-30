@@ -123,7 +123,7 @@ var panel = panels.Panel({
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
     width: 650,
-    height: 550,
+    height: 580,
     //onHide: handleHide
 });
 
@@ -546,6 +546,18 @@ settingsPanel.port.on("importSettings", function(payload) {
 
 settingsPanel.port.on("importUser", function(payload) {
     importFollowers(payload, 0)
+})
+
+settingsPanel.port.on("forceRefresh", function() {
+    online_streamers = []
+    online_games = []
+    online_titles = []
+    online_viewers = []
+    online_avatars = []
+    offline_streamers = []
+    counter_names = []
+    counter_nums = []
+    ss.storage.streamIds = []
 })
 
 panel.port.on("endAlarm", function() {
