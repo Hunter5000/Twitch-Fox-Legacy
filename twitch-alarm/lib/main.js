@@ -29,7 +29,7 @@ if (typeof(ss.storage.alarmLength) == "undefined") {
     ss.storage.alarmLength = 10
 }
 if (typeof(ss.storage.uniqueIds) == "undefined") {
-    ss.storage.uniqueIds = false
+    ss.storage.uniqueIds = true
 }
 if (typeof(ss.storage.streamIds) == "undefined") {
     ss.storage.streamIds = []
@@ -73,8 +73,6 @@ var online_titles = [];
 var online_viewers = [];
 var online_avatars = [];
 var offline_streamers = [];
-var counter_names = [];
-var counter_nums = [];
 
 var followedStreamers = ss.storage.followedStreamers
 var waittime = ss.storage.updateInterval
@@ -344,91 +342,38 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
     //Let's update the panel too while we're changing values...
 }
 
-function counterTest(_name, _on) {
-    if (_on) {
-        var magicnum = Math.ceil(ss.storage.debounce / waittime)
-        var nameindex = counter_names.indexOf(_name)
-        counter_nums[nameindex] = (counter_nums[nameindex] + 1)
-        console.log(_name, counter_nums[nameindex])
-        if (counter_nums[nameindex] >= magicnum) {
-            //Streamer is confirmed offline
-            console.log(_name + " has been offline for enough consecutive time. Confirmed as offline.")
-            manageOnlineStreamers(0, _name)
-            counter_names.splice(nameindex, 1);
-            counter_nums.splice(nameindex, 1);
-        }
-    } else {
-        console.log(_name + " may have gone offline. Starting counter test...")
-        counter_names.push(_name)
-        counter_nums.push(0)
-    }
-}
-
 function cleanOnlineStreamers() {
     for (var key in online_streamers) {
         var keyname = online_streamers[key]
         checkChannel(function(response) {
-            var counterOn = false
-            counterOn = containsValue(counter_names, keyname)
-            if (response.json == null) {
-                //Channel cannot be found
-                counterTest(keyname, counterOn)
-            } else {
-                if (typeof response.json.status != 'undefined' && response.json.status != 200) {
-                    //Bad response
-                    counterTest(keyname, counterOn)
+            if (response.json != null) {
+                var stream = response.json.stream
+                if (stream != null) {
+                    //Streamer is online as normal
+                    //Update
+                    var strname = stream.channel.name
+                    var game = stream.channel.game
+                    var title = stream.channel.status
+                    var viewers = stream.viewers
+                    var avatar = stream.channel.logo
+                    var namekey = online_streamers.indexOf(strname)
+                    if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
+                        //Something has changed... time to update
+                        manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                    }
                 } else {
-                    var stream = response.json.stream
-                    if (stream == null) {
-                        //Stream cannot be found
-                        counterTest(keyname, counterOn)
-                    }
-                    if ((stream != null) && (counterOn)) {
-                        //Streamer is back online
-                        console.log(keyname + " has come back online. Counter test concluded.")
-                        var index1 = counter_names.indexOf(keyname)
-                        counter_names.splice(index1, 1)
-                        counter_nums.splice(index1, 1)
-
-                        //Update
-                        var strname = stream.channel.name
-                        var game = stream.channel.game
-                        var title = stream.channel.status
-                        var viewers = stream.viewers
-                        var avatar = stream.channel.logo
-                        var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
-                            //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
-                        }
-                    }
-                    if ((stream != null) && (!counterOn)) {
-                        //Streamer is online as normal
-
-                        //Update
-                        var strname = stream.channel.name
-                        var game = stream.channel.game
-                        var title = stream.channel.status
-                        var viewers = stream.viewers
-                        var avatar = stream.channel.logo
-                        var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
-                            //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
-                        }
-                    }
+                    //Stream cannot be found
+                    manageOnlineStreamers(0, _name)
                 }
+            } else {
+                //Response cannot be found
+                manageOnlineStreamers(0, _name)
             }
         }, keyname)
         if (!(containsValue(followedStreamers, keyname))) {
             //Streamer has been unfollowed
             //console.log("Removing " + keyname + " from the online streamers list for being unfollowed")
             manageOnlineStreamers(0, keyname)
-            var index2 = counter_names.indexOf(keyname)
-            if (index2 > -1) {
-                counter_names.splice(index2, 1)
-                counter_nums.splice(index2, 1)
-            }
         }
     }
 }
@@ -572,8 +517,6 @@ settingsPanel.port.on("forceRefresh", function() {
     online_viewers = []
     online_avatars = []
     offline_streamers = []
-    counter_names = []
-    counter_nums = []
         //ss.storage.streamIds = []
 })
 
