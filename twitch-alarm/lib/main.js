@@ -557,6 +557,8 @@ settingsPanel.port.on("forceRefresh", function() {
     online_viewers = []
     online_avatars = []
     offline_streamers = []
+    counter_names = [];
+    counter_nums = [];
         //ss.storage.streamIds = []
 })
 
