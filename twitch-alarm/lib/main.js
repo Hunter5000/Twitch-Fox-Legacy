@@ -400,18 +400,20 @@ function cleanOnlineStreamers() {
     }
 }
 
-function addStrId(id_) {
-    if (ss.storage.streamIds.length > 999) {
-        ss.storage.splice(0, 1)
-    }
-    ss.storage.streamIds.push(id_)
-}
-
 function checkStrId(id_) {
     if (!containsValue(ss.storage.streamIds, id_) || !ss.storage.uniqueIds) {
         return true
     } else {
         return false
+    }
+}
+
+function addStrId(id_) {
+    if (!containsValue(ss.storage.streamIds, id_)) {
+        if (ss.storage.streamIds.length > 999) {
+            ss.storage.splice(0, 1)
+        }
+        ss.storage.streamIds.push(id_)
     }
 }
 
@@ -457,7 +459,6 @@ function updateChannels() {
                 //New streamer has come online
                 manageOnlineStreamers(1, strname, game, title, viewers, avatar)
                 if ((!alarmOn) && checkStrId(strid)) {
-                    addStrId(strid)
                     alarmOn = true
                     alarmCause = strname
                     playAlert()
@@ -466,6 +467,7 @@ function updateChannels() {
                         panelUpdate()
                     }
                 }
+                addStrId(strid)
             }
         } else {
             //Followed streamer is still offline
