@@ -197,7 +197,7 @@ alarmDefault.onclick = function() {
     soundAlarm = true
     alarmLimit = false
     alarmLength = 10
-    uniqueIds = true
+    uniqueIds = false
     streamIds = []
     deBounce = 60
     updateSettings()
