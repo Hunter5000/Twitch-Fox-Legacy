@@ -397,7 +397,6 @@ function addStrId(id_) {
 
 function updateChannels() {
     updateBadge()
-    offline_streamers = generateOfflineStreamers()
     if (!(containsValue(followedStreamers, alarmCause)) && (alarmCause != "")) {
         //console.log("Alarm cause is no longer being followed")
         clearInterval(alarm_interval)
@@ -417,24 +416,18 @@ function updateChannels() {
         }
     }
     cleanOnlineStreamers()
+    offline_streamers = generateOfflineStreamers()
     checkChannels(function(response) {
-        if (response.json == null) {
-            return;
-        }
-        if (typeof response.json.status != 'undefined' && response.json.status != 200) {
-            //console.error("Error: [" + response.json.status + "] " + response.json.message);
-            return;
-        }
-        var stream = response.json.stream
-        if (stream != null) {
-            var strname = stream.channel.name
-            var game = stream.channel.game
-            var title = stream.channel.status
-            var viewers = stream.viewers
-            var avatar = stream.channel.logo
-            var strid = stream._id
-            if (!(containsValue(online_streamers, strname))) {
-                //New streamer has come online
+        if (response.json != null) {
+            var stream = response.json.stream
+            if (stream != null) {
+                var strname = stream.channel.name
+                var game = stream.channel.game
+                var title = stream.channel.status
+                var viewers = stream.viewers
+                var avatar = stream.channel.logo
+                var strid = stream._id
+                    //New streamer has come online
                 manageOnlineStreamers(1, strname, game, title, viewers, avatar)
                 if ((!alarmOn) && checkStrId(strid)) {
                     alarmOn = true
@@ -446,11 +439,13 @@ function updateChannels() {
                     }
                 }
                 addStrId(strid)
+            } else {
+                //Followed streamer is still offline
             }
         } else {
-            //Followed streamer is still offline
+            //Response not found
         }
-    }, followedStreamers);
+    }, offline_streamers);
 }
 
 update_interval = setInterval(updateChannels, waittime * 1000);
