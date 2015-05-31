@@ -10,60 +10,60 @@ var preferences = require("sdk/simple-prefs")
 
 //Default settings
 //Follower
-if (typeof(ss.storage.followedStreamers) == "undefined") {
+if (ss.storage.followedStreamers == null) {
     ss.storage.followedStreamers = []
 }
 
 //Alarm
-if (typeof(ss.storage.updateInterval) == "undefined") {
+if (ss.storage.updateInterval == null) {
     ss.storage.updateInterval = 1
 }
 
-if (typeof(ss.storage.soundAlarm) == "undefined") {
+if (ss.storage.soundAlarm == null) {
     ss.storage.soundAlarm = true
 }
-if (typeof(ss.storage.alarmLimit) == "undefined") {
+if (ss.storage.alarmLimit == null) {
     ss.storage.alarmLimit = false
 }
-if (typeof(ss.storage.alarmLength) == "undefined") {
+if (ss.storage.alarmLength == null) {
     ss.storage.alarmLength = 10
 }
-if (typeof(ss.storage.uniqueIds) == "undefined") {
+if (ss.storage.uniqueIds == null) {
     ss.storage.uniqueIds = true
 }
-if (typeof(ss.storage.streamIds) == "undefined") {
+if (ss.storage.streamIds == null) {
     ss.storage.streamIds = []
 }
-if (typeof(ss.storage.debounce) == "undefined") {
+if (ss.storage.debounce == null) {
     ss.storage.debounce = 60
 }
 
 //Interface
-if (typeof(ss.storage.liveQuality) == "undefined") {
+if (ss.storage.liveQuality == null) {
     ss.storage.liveQuality = "best"
 }
-if (typeof(ss.storage.hideInfo) == "undefined") {
+if (ss.storage.hideInfo == null) {
     ss.storage.hideInfo = false
 }
-if (typeof(ss.storage.hideOffline) == "undefined") {
+if (ss.storage.hideOffline == null) {
     ss.storage.hideOffline = false
 }
-if (typeof(ss.storage.sortMethod) == "undefined") {
+if (ss.storage.sortMethod == null) {
     ss.storage.sortMethod = "recent"
 }
-if (typeof(ss.storage.openTab) == "undefined") {
+if (ss.storage.openTab == null) {
     ss.storage.openTab = true
 }
-if (typeof(ss.storage.openLive) == "undefined") {
+if (ss.storage.openLive == null) {
     ss.storage.openLive = false
 }
-if (typeof(ss.storage.openPopout) == "undefined") {
+if (ss.storage.openPopout == null) {
     ss.storage.openPopout = false
 }
-if (typeof(ss.storage.previewWait) == "undefined") {
+if (ss.storage.previewWait == null) {
     ss.storage.previewWait = 30
 }
-if (typeof(ss.storage.tutorialOn) == "undefined") {
+if (ss.storage.tutorialOn == null) {
     ss.storage.tutorialOn = true
 }
 
@@ -75,6 +75,7 @@ var online_avatars = [];
 var offline_streamers = [];
 var counter_names = [];
 var counter_nums = [];
+var counter_off = 0
 
 var followedStreamers = ss.storage.followedStreamers
 var waittime = ss.storage.updateInterval
@@ -257,8 +258,9 @@ function checkChannel(callbackFunc, channel) {
     if (typeof(channel) != "string") {
         return;
     }
+    counter_off = counter_off + 1
     var request = Request({
-        url: "https://api.twitch.tv/kraken/streams/" + channel,
+        url: "https://api.twitch.tv/kraken/streams/" + channel + "?" + counter_off,
         onComplete: callbackFunc,
         headers: httpHeaders
     });
@@ -632,6 +634,7 @@ exports.onUnload = function(reason) {
         
         //Followers
         ss.storage.followedStreamers = null
+        
         //Alarm
         ss.storage.updateInterval = null
         ss.storage.soundAlarm = null
@@ -640,6 +643,7 @@ exports.onUnload = function(reason) {
         ss.storage.uniqueIds = null
         ss.storage.streamIds = null
         ss.storage.debounce = null
+        
         //Interface
         ss.storage.liveQuality = null
         ss.storage.hideInfo = null
@@ -650,6 +654,7 @@ exports.onUnload = function(reason) {
         ss.storage.openPopout = null
         ss.storage.previewWait = null
         ss.storage.tutorialOn = null
+        
         console.log("Good bye!")
     } else {
         console.log("Good night!")
