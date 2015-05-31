@@ -51,6 +51,7 @@ alarmSound = document.getElementById("soundalarm")
 alarmMax = document.getElementById("maxalarm")
 alarmLim = document.getElementById("alarmlimit")
 alarmLen = document.getElementById("alarmlen")
+alarmDeb = document.getElementById("debounce")
 alarmId = document.getElementById("uniqueids")
 
 interDefault = document.getElementById("interfacedefault")
@@ -197,6 +198,7 @@ alarmDefault.onclick = function() {
     alarmLength = 10
     uniqueIds = true
     streamIds = []
+    deBounce = 60
     updateSettings()
 }
 
@@ -217,6 +219,11 @@ alarmLim.onchange = function() {
 
 alarmLen.onchange = function() {
     alarmLength = alarmLen.value
+    updateSettings()
+}
+
+alarmDeb.onchange = function() {
+    deBounce = alarmDeb.value
     updateSettings()
 }
 
@@ -345,6 +352,7 @@ function updateSettings() {
         alarmMax.style.display = "none"
     }
     alarmLen.value = alarmLength
+    alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
 
     versionSpan.textContent = curVersion
@@ -364,6 +372,7 @@ function updateSettings() {
     interLive.checked = openLive
     interChat.checked = openPopout
     interPreview.value = previewWait
+    
     if (interLive.checked) {
         interSpan.style.display = "inline"
     } else {
@@ -398,7 +407,7 @@ function exportSettings() {
         alarmLimit,
         alarmLength,
         uniqueIds,
-        streamIds,
+        streamIds ,
         deBounce,
         liveQuality,
         hideInfo,

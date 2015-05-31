@@ -73,6 +73,8 @@ var online_titles = [];
 var online_viewers = [];
 var online_avatars = [];
 var offline_streamers = [];
+var counter_names = [];
+var counter_nums = [];
 
 var followedStreamers = ss.storage.followedStreamers
 var waittime = ss.storage.updateInterval
@@ -342,32 +344,75 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
     //Let's update the panel too while we're changing values...
 }
 
+function counterTest(_name, _on) {
+    if (_on) {
+        var magicnum = Math.ceil(ss.storage.debounce / waittime)
+        var nameindex = counter_names.indexOf(_name)
+        counter_nums[nameindex] = (counter_nums[nameindex] + 1)
+        console.log(_name, counter_nums[nameindex])
+        if (counter_nums[nameindex] >= magicnum) {
+            //Streamer is confirmed offline
+            console.log(_name + " has been offline for enough consecutive time. Confirmed as offline.")
+            manageOnlineStreamers(0, _name)
+            counter_names.splice(nameindex, 1);
+            counter_nums.splice(nameindex, 1);
+        }
+    } else {
+        console.log(_name + " may have gone offline. Starting counter test...")
+        counter_names.push(_name)
+        counter_nums.push(0)
+    }
+}
+
 function cleanOnlineStreamers() {
     for (var key in online_streamers) {
         var keyname = online_streamers[key]
+        var counterOn = containsValue(counter_names, keyname)
         checkChannel(function(response) {
             if (response.json != null) {
                 var stream = response.json.stream
                 if (stream != null) {
-                    //Streamer is online as normal
-                    //Update
-                    var strname = stream.channel.name
-                    var game = stream.channel.game
-                    var title = stream.channel.status
-                    var viewers = stream.viewers
-                    var avatar = stream.channel.logo
-                    var namekey = online_streamers.indexOf(strname)
-                    if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
-                        //Something has changed... time to update
-                        manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                    if (!counterOn) {
+                        //Streamer is online as normal
+                        //Update
+                        var strname = stream.channel.name
+                        var game = stream.channel.game
+                        var title = stream.channel.status
+                        var viewers = stream.viewers
+                        var avatar = stream.channel.logo
+                        var namekey = online_streamers.indexOf(strname)
+                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
+                            //Something has changed... time to update
+                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                        }
+                    } else {
+                        //Stream has come back online
+                        //Remove from counter system
+
+                        var countIndex = counter_names.indexOf(keyname)
+                        counter_names.splice(countIndex, 1)
+                        counter_num.splice(countIndex, 1)
+                        addStrId(response.json.stream._id)
+
+                        //Update
+                        var strname = stream.channel.name
+                        var game = stream.channel.game
+                        var title = stream.channel.status
+                        var viewers = stream.viewers
+                        var avatar = stream.channel.logo
+                        var namekey = online_streamers.indexOf(strname)
+                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
+                            //Something has changed... time to update
+                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                        }
                     }
                 } else {
                     //Stream cannot be found
-                    manageOnlineStreamers(0, _name)
+                    counterTest(keyname, counterOn)
                 }
             } else {
                 //Response cannot be found
-                manageOnlineStreamers(0, _name)
+                counterTest(keyname, counterOn)
             }
         }, keyname)
         if (!(containsValue(followedStreamers, keyname))) {
@@ -577,5 +622,36 @@ function packageSettings() {
         self.version
     ])
 }
+
+exports.onUnload = function(reason) {
+    console.log(reason)
+    if ((reason == "disable") || (reason == "uninstall")) {
+        //Reset all of the storage values
+        
+        //Followers
+        ss.storage.followedStreamers = null
+        //Alarm
+        ss.storage.updateInterval = null
+        ss.storage.soundAlarm = null
+        ss.storage.alarmLimit = null
+        ss.storage.alarmLength = null
+        ss.storage.uniqueIds = null
+        ss.storage.streamIds = null
+        ss.storage.debounce = null
+        //Interface
+        ss.storage.liveQuality = null
+        ss.storage.hideInfo = null
+        ss.storage.hideOffline = null
+        ss.storage.sortMethod = null
+        ss.storage.openTab = null
+        ss.storage.openLive = null
+        ss.storage.openPopout = null
+        ss.storage.previewWait = null
+        ss.storage.tutorialOn = null
+        console.log("Good bye!")
+    } else {
+        console.log("Good night!")
+    }
+};
 
 updateChannels();

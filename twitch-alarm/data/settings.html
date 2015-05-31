@@ -86,6 +86,11 @@
                 <br>
             </form>
             <form>
+                <span style="font-weight: bold">Seconds before a streamer is updated as offline:</span>
+                <input type="number" id="debounce" min="0" value="60">
+                <br> (prevents multiple alarms from firing due to Twitch API issues)
+            </form>
+            <br>
             <form style="font-weight: bold">
                 Do not receive an alarm for a unique stream you've already received an alarm for:
                 <input type="checkbox" id="uniqueids">
