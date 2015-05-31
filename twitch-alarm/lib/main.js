@@ -339,47 +339,16 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
     //Let's update the panel too while we're changing values...
 }
 
-function manageUniqueIds(addcheckrem, value1, id) {
-    //0 to add/update, 1 to check, 2 to remove
-    if (ss.storage.uniqueIds) {
-        if (addcheckrem == 1) {
-            for (var key in ss.storage.streamIds) {
-                var tabl = ss.storage.streamIds[key].split(",")
-                var name = tabl[0]
-                var id2 = tabl[1]
-                if (name == value1) {
-                    return (id == id2)
-                }
-            }
-        } else {
-            for (var key in ss.storage.streamIds) {
-                var tabl = ss.storage.streamIds[key].split(",")
-                var name = tabl[0]
-                if (name == value1) {
-                    ss.storage.streamIds.splice(key, 1)
-                }
-            }
-            if (addcheckrem == 0) {
-                ss.storage.streamIds.unshift(value1 + "," + id)
-            }
-        }
-    } else {
-        //console.log("Unique stream ID storage system disabled")
-    }
-
-}
-
 function cleanOnlineStreamers() {
     for (var key in online_streamers) {
         var keyname = online_streamers[key]
         if (!(containsValue(followedStreamers, keyname))) {
             //Streamer has been unfollowed
             //console.log("Removing " + keyname + " from the online streamers list for being unfollowed")
-            manageUniqueIds(2, keyname)
             manageOnlineStreamers(0, keyname)
         }
         checkChannel(function(response) {
-            if (response.json == null) {
+            /* if (response.json == null) {
                 //Error has occured
                 return;
             }
@@ -387,9 +356,9 @@ function cleanOnlineStreamers() {
                 //Error has occured
                 //console.error("Error: [" + response.json.status + "] " + response.json.message);
                 return;
-            }
+            } */
             var stream = response.json.stream
-            if (stream == null) {
+            if ((stream == null) || (typeof response.json.status != 'undefined' && response.json.status != 200) || (response.json == null)) {
                 if (!(containsValue(counter_names, keyname))) {
                     //Twitch API says streamer is online
                     console.log(keyname + " may have gone offline. Starting counter test...")
@@ -403,7 +372,6 @@ function cleanOnlineStreamers() {
                     if (counter_nums[index1] >= magicnum) {
                         //Streamer is confirmed offline
                         console.log(keyname + " has been offline for enough consecutive time. Confirmed as offline.")
-                        manageUniqueIds(2, keyname)
                         manageOnlineStreamers(0, keyname)
                         counter_names.splice(index1, 1);
                         counter_nums.splice(index1, 1);
@@ -415,7 +383,6 @@ function cleanOnlineStreamers() {
                 var index2 = counter_names.indexOf(keyname)
                 counter_names.splice(index2, 1)
                 counter_nums.splice(index2, 1)
-                manageUniqueIds(0, keyname, stream._id)
             } else {
                 //Streamer is online as normal
                 var strname = stream.channel.name
@@ -430,6 +397,21 @@ function cleanOnlineStreamers() {
                 }
             }
         }, keyname)
+    }
+}
+
+function addStrId(id_) {
+    if (ss.storage.streamIds.length > 999) {
+        ss.storage.splice(0, 1)
+    }
+    ss.storage.streamIds.push(id_)
+}
+
+function checkStrId(id_) {
+    if (!containsValue(ss.storage.streamIds, id_) || !ss.storage.uniqueIds) {
+        return true
+    } else {
+        return false
     }
 }
 
@@ -474,7 +456,8 @@ function updateChannels() {
             if (!(containsValue(online_streamers, strname))) {
                 //New streamer has come online
                 manageOnlineStreamers(1, strname, game, title, viewers, avatar)
-                if ((!alarmOn) && !(manageUniqueIds(1, strname, strid))) {
+                if ((!alarmOn) && checkStrId(strid)) {
+                    addStrId(strid)
                     alarmOn = true
                     alarmCause = strname
                     playAlert()
@@ -483,7 +466,6 @@ function updateChannels() {
                         panelUpdate()
                     }
                 }
-                manageUniqueIds(0, strname, strid)
             }
         } else {
             //Followed streamer is still offline
@@ -557,7 +539,7 @@ settingsPanel.port.on("forceRefresh", function() {
     offline_streamers = []
     counter_names = []
     counter_nums = []
-    ss.storage.streamIds = []
+        //ss.storage.streamIds = []
 })
 
 panel.port.on("endAlarm", function() {
