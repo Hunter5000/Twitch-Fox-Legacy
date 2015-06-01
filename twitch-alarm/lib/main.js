@@ -77,7 +77,6 @@ var counter_names = [];
 var counter_nums = [];
 var counter_off = 0
 
-var followedStreamers = ss.storage.followedStreamers
 var waittime = ss.storage.updateInterval
 
 var blank = self.data.url("blank.html")
@@ -391,7 +390,7 @@ function cleanOnlineStreamers() {
                         //Stream has come back online
                         //Remove from counter system
                         console.log(chann + " has come back online. Confirmed as online.")
-                        
+
                         var countIndex = counter_names.indexOf(chann)
                         counter_names.splice(countIndex, 1)
                         counter_nums.splice(countIndex, 1)
@@ -415,12 +414,13 @@ function cleanOnlineStreamers() {
                 }
             } else {
                 //Response cannot be found
-                //counterTest(keyname, counterOn)
+                //This means that a streamer who was online got deleted... perhaps due to an admin shutdown?
+                //We cannot be truly sure of who we're responding too... so run for the hills!
+                forceRefresh()
             }
         }, online_streamers[key])
-        if (!(containsValue(followedStreamers, online_streamers[key]))) {
+        if (!(containsValue(ss.storage.followedStreamers, online_streamers[key]))) {
             //Streamer has been unfollowed
-            //console.log("Removing " + keyname + " from the online streamers list for being unfollowed")
             manageOnlineStreamers(0, online_streamers[key])
         }
     }
@@ -445,7 +445,7 @@ function addStrId(id_) {
 
 function updateChannels() {
     updateBadge()
-    if (!(containsValue(followedStreamers, alarmCause)) && (alarmCause != "")) {
+    if (!(containsValue(ss.storage.followedStreamers, alarmCause)) && (alarmCause != "")) {
         //console.log("Alarm cause is no longer being followed")
         clearInterval(alarm_interval)
         alarmOn = false
@@ -488,7 +488,7 @@ function updateChannels() {
                 }
                 addStrId(strid)
             } else {
-                //Followed streamer is still offline
+                //Offline streamer is still offline
             }
         } else {
             //Response not found
@@ -501,12 +501,23 @@ updateChannels()
 
 function generateOfflineStreamers() {
     var offstreamers = []
-    for (var key in followedStreamers) {
-        if (!(containsValue(online_streamers, followedStreamers[key]))) {
-            offstreamers.push(followedStreamers[key])
+    for (var key in ss.storage.followedStreamers) {
+        if (!(containsValue(online_streamers, ss.storage.followedStreamers[key]))) {
+            offstreamers.push(ss.storage.followedStreamers[key])
         }
     }
     return offstreamers
+}
+
+function forceRefresh() {
+    online_streamers = []
+    online_games = []
+    online_titles = []
+    online_viewers = []
+    online_avatars = []
+    offline_streamers = []
+    counter_names = []
+    counter_nums = []
 }
 
 panel.on("show", function() {
@@ -545,8 +556,6 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.openPopout = payload[14]
     ss.storage.previewWait = payload[15]
     ss.storage.tutorialOn = payload[16]
-
-    followedStreamers = payload[0]
 })
 
 settingsPanel.port.on("importUser", function(payload) {
@@ -554,15 +563,7 @@ settingsPanel.port.on("importUser", function(payload) {
 })
 
 settingsPanel.port.on("forceRefresh", function() {
-    online_streamers = []
-    online_games = []
-    online_titles = []
-    online_viewers = []
-    online_avatars = []
-    offline_streamers = []
-    counter_names = [];
-    counter_nums = [];
-        //ss.storage.streamIds = []
+    forceRefresh()
 })
 
 panel.port.on("endAlarm", function() {
@@ -592,7 +593,7 @@ function panelUpdate() {
         online_avatars,
         offline_streamers,
         alarmOn,
-        followedStreamers,
+        ss.storage.followedStreamers,
         ss.storage.hideInfo,
         ss.storage.hideOffline,
         ss.storage.sortMethod,
@@ -632,10 +633,10 @@ exports.onUnload = function(reason) {
     console.log(reason)
     if ((reason == "disable") || (reason == "uninstall")) {
         //Reset all of the storage values
-        
+
         //Followers
         ss.storage.followedStreamers = null
-        
+
         //Alarm
         ss.storage.updateInterval = null
         ss.storage.soundAlarm = null
@@ -644,7 +645,7 @@ exports.onUnload = function(reason) {
         ss.storage.uniqueIds = null
         ss.storage.streamIds = null
         ss.storage.debounce = null
-        
+
         //Interface
         ss.storage.liveQuality = null
         ss.storage.hideInfo = null
@@ -655,7 +656,7 @@ exports.onUnload = function(reason) {
         ss.storage.openPopout = null
         ss.storage.previewWait = null
         ss.storage.tutorialOn = null
-        
+
         console.log("Good bye!")
     } else {
         console.log("Good night!")
