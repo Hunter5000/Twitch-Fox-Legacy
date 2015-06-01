@@ -393,7 +393,7 @@ function cleanOnlineStreamers() {
 
                         var countIndex = counter_names.indexOf(keyname)
                         counter_names.splice(countIndex, 1)
-                        counter_num.splice(countIndex, 1)
+                        counter_nums.splice(countIndex, 1)
                         addStrId(response.json.stream._id)
 
                         //Update
