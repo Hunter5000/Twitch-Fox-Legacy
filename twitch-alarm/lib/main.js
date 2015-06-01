@@ -368,11 +368,11 @@ function counterTest(_name, _on) {
 
 function cleanOnlineStreamers() {
     for (var key in online_streamers) {
-        var keyname = online_streamers[key]
-        var counterOn = containsValue(counter_names, keyname)
         checkChannel(function(response) {
             if (response.json != null) {
                 var stream = response.json.stream
+                var chann = response.json._links.self.split("/streams/")[1]
+                var counterOn = containsValue(counter_names, chann)
                 if (stream != null) {
                     if (!counterOn) {
                         //Streamer is online as normal
@@ -390,8 +390,9 @@ function cleanOnlineStreamers() {
                     } else {
                         //Stream has come back online
                         //Remove from counter system
-
-                        var countIndex = counter_names.indexOf(keyname)
+                        console.log(chann + " has come back online. Confirmed as online.")
+                        
+                        var countIndex = counter_names.indexOf(chann)
                         counter_names.splice(countIndex, 1)
                         counter_nums.splice(countIndex, 1)
                         addStrId(response.json.stream._id)
@@ -410,17 +411,17 @@ function cleanOnlineStreamers() {
                     }
                 } else {
                     //Stream cannot be found
-                    counterTest(keyname, counterOn)
+                    counterTest(chann, counterOn)
                 }
             } else {
                 //Response cannot be found
-                counterTest(keyname, counterOn)
+                //counterTest(keyname, counterOn)
             }
-        }, keyname)
-        if (!(containsValue(followedStreamers, keyname))) {
+        }, online_streamers[key])
+        if (!(containsValue(followedStreamers, online_streamers[key]))) {
             //Streamer has been unfollowed
             //console.log("Removing " + keyname + " from the online streamers list for being unfollowed")
-            manageOnlineStreamers(0, keyname)
+            manageOnlineStreamers(0, online_streamers[key])
         }
     }
 }
