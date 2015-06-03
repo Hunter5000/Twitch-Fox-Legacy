@@ -110,21 +110,30 @@ document.getElementById("!showhide").oncontextmenu = function() {
 function performSearch() {
     searchOff = 0
     searchOn = 0
-    for (var key in followedStreamers) {
-        if (document.getElementById(followedStreamers[key])) {
-            if (followedStreamers[key].search(searchTerm) != -1) {
-                var elem = document.getElementById(followedStreamers[key])
+    for (var key in offlineStreamers) {
+        if (document.getElementById(offlineStreamers[key])) {
+            if (offlineStreamers[key].toLowerCase().search(searchTerm) != -1) {
+                var elem = document.getElementById(offlineStreamers[key])
                 elem.style.display = "inline"
-                if (elem.parentElement.id == "!offline") {
-                    searchOff += 1
-                } else {
-                    searchOn += 1
-                }
+                searchOff += 1
             } else {
-                var elem = document.getElementById(followedStreamers[key])
+                var elem = document.getElementById(offlineStreamers[key])
                 elem.style.display = "none"
             }
 
+        }
+    }
+    
+    for (var key in onlineStreamers) {
+        if (document.getElementById(onlineStreamers[key])) {
+            if ((onlineStreamers[key].toLowerCase().search(searchTerm) != -1) || (onlineGames[key].toLowerCase().search(searchTerm) != -1) || (onlineTitles[key].toLowerCase().search(searchTerm) != -1)) {
+                var elem = document.getElementById(onlineStreamers[key])
+                elem.style.display = "inline"
+                searchOn += 1
+            } else {
+                var elem = document.getElementById(onlineStreamers[key])
+                elem.style.display = "none"
+            }
         }
     }
     
@@ -139,24 +148,39 @@ function performSearch() {
     } else {
         document.getElementById("!onlinespan").style.display = "none"
     }
+    
+    if ((searchOn>0) && (searchOff>0)) {
+      document.getElementById("!onoffdiv").style.display = "inline"
+    } else {
+      document.getElementById("!onoffdiv").style.display = "none"
+    }
 
     if (searchOn == onlineStreamers.length) {
-        document.getElementById("online!!").textContent = "Online Streamers (" + onlineStreamers.length + ")"
-    } else if (searchOn != onlineStreamers.length) {
-        document.getElementById("online!!").textContent = "Online Streamers (" + onlineStreamers.length + " total, showing " + searchOn + ")"
+        document.getElementById("!onlinep1").textContent = " (" + onlineStreamers.length + ")"
+        document.getElementById("!onlinep2").style.display = "none"
+        document.getElementById("!onlinep3").textContent = ""
+    } else if (searchOn != onlineStreamers.length) {     
+        document.getElementById("!onlinep1").textContent = " (" + onlineStreamers.length + " "
+        document.getElementById("!onlinep2").style.display = "inline"
+        document.getElementById("!onlinep3").textContent = " " + searchOn + ")"
     }
 
     if (searchOff == offlineStreamers.length) {
-        document.getElementById("offline!!").textContent = "Offline Streamers (" + offlineStreamers.length + ")"
-    } else if (searchOff != offlineStreamers.length) {
-        document.getElementById("offline!!").textContent = "Offline Streamers (" + offlineStreamers.length + " total, showing " + searchOff + ")"
+        document.getElementById("!offlinep1").textContent = " (" + offlineStreamers.length + ")"
+        document.getElementById("!offlinep2").style.display = "none"
+        document.getElementById("!offlinep3").textContent = ""
+        
+    } else if (searchOff != offlineStreamers.length) {  
+        document.getElementById("!offlinep1").textContent = " (" + onlineStreamers.length + " "
+        document.getElementById("!offlinep2").style.display = "inline"
+        document.getElementById("!offlinep3").textContent = " " + searchOff + ")"
     }
 
 }
 
 
 document.getElementById("!followsearch").oninput = function() {
-    searchTerm = document.getElementById("!followsearch").value
+    searchTerm = document.getElementById("!followsearch").value.toLowerCase()
     performSearch()
 }
 
@@ -194,13 +218,14 @@ function generateCard(status, name) {
         }
         var mainLi = document.createElement("li")
         mainLi.id = name
-        if (status == 0) {
-            mainLi.id = "!last"
-        }
         var mainA = document.createElement("a")
         mainA.className = "option"
         mainA.id = name + "!"
         var mainTable = document.createElement("table")
+        if (status == 0) {
+            mainLi.id = "!last"
+            mainTable.style.backgroundColor = "gold"
+        }
         if ((status == 1) && (namekey != onlineStreamers.length - 1)) {
             mainTable.style.borderBottom = "1px solid"
         }
@@ -304,7 +329,7 @@ function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
     var most_recent = onlineStreamers[0]
-
+    
     if (onlineStreamers.length > 0) {
         if (tutorial) {
             document.getElementById("!tutorial1").style.display = "inline"
@@ -362,35 +387,24 @@ function updateList() {
         }
     }
     if (alarmOn) {
-        if (!document.getElementById("!alarm")) {
-            var alarmElement = document.createElement("li");
+        if (!document.getElementById("!break")) {
             var alarmhead = document.createElement("h1")
-            var alarmA = document.createElement("a")
-            var alarmStrong = document.createElement("strong")
-            var alarmSpan = document.createElement("span")
-            alarmElement.id = "!alarm"
-            alarmA.id = "!alarm!"
-            alarmStrong.textContent = most_recent
-            alarmSpan.textContent = " has come online!! Click here or below to end the alarm."
-            alarmA.setAttribute("class", "option")
-            alarmA.style.color = "DodgerBlue"
-            alarmA.appendChild(alarmStrong)
-            alarmA.appendChild(alarmSpan)
-            alarmhead.appendChild(alarmA)
-            alarmElement.appendChild(alarmhead)
             var breakElement = document.createElement("hr")
             breakElement.id = "!break"
             var lastElement = generateCard(0, most_recent)
-            document.body.insertBefore(breakElement, document.body.childNodes[0])
-            document.body.insertBefore(lastElement, document.body.childNodes[0])
-            document.body.insertBefore(alarmElement, document.body.childNodes[0])
+            document.body.insertBefore(breakElement, document.body.childNodes[2])
+            document.body.insertBefore(lastElement, document.body.childNodes[2])
                 //'<li> <h1> <a style="color:lime" href="#" tabindex="1" class="option" id="alarm">Click to end alarm</a></h1></li> '
         }
-
-    } else if (!(alarmOn) && document.getElementById("!alarm") && document.getElementById("!last") && document.getElementById("!break")) {
-        document.body.removeChild(document.getElementById("!alarm"))
+        if (tutorial) {
+          document.getElementById("!tutorial3").style.display = "inline"
+        } else {
+          document.getElementById("!tutorial3").style.display = "none"
+        }
+    } else if ((!alarmOn) && document.getElementById("!last") && document.getElementById("!break")) {
         document.body.removeChild(document.getElementById("!last"))
         document.body.removeChild(document.getElementById("!break"))
+        document.getElementById("!tutorial3").style.display = "none"
     }
     for (var key in onlineStreamers) {
         var isLast = false
@@ -430,15 +444,14 @@ function updateList() {
         document.getElementById("!searchform").style.display = "inline"
     }
 
-    var alarmbtn = document.getElementById("!alarm!")
     var lastbtn = document.getElementById("!last")
-    if (alarmbtn && lastbtn) {
-        alarmbtn.onclick = function() {
-            addon.port.emit("endAlarm", "End the alarm!");
-        };
+    if (lastbtn) {
         lastbtn.onclick = function() {
             addon.port.emit("endAlarm", "End the alarm!");
         };
+        lastbtn.oncontextmenu = function() {
+          addon.port.emit("endAlarm", "End the alarm!");
+        }
     }
     for (var key in followedStreamers) {
         if (document.getElementById(followedStreamers[key] + "!")) {

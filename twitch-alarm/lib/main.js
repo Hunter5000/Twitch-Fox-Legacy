@@ -2,6 +2,7 @@ var {
     ToggleButton
 } = require("sdk/ui/button/toggle");
 
+var _ = require("sdk/l10n").get;
 var panels = require("sdk/panel")
 var self = require("sdk/self");
 var pgworkr = require("sdk/page-worker")
@@ -35,7 +36,7 @@ if (ss.storage.streamIds == null) {
     ss.storage.streamIds = []
 }
 if (ss.storage.debounce == null) {
-    ss.storage.debounce = 60
+    ss.storage.debounce = 40
 }
 
 //Interface
@@ -102,7 +103,7 @@ var httpHeaders = {
 
 var button = ToggleButton({
     id: "my-button",
-    label: "Click to open the followed streamers list",
+    label: _("clickOpen_"),
     icon: {
         "16": "./ico16.png",
         "32": "./ico32.png",
@@ -136,7 +137,7 @@ function openSettings() {
 
 function handleChange(state) {
     if (state.checked) {
-        button.label = "Click to close the followed streamers list"
+        button.label = _("clickClose_")
         panelOn = true
         panel.show({
             position: button
@@ -145,7 +146,7 @@ function handleChange(state) {
 }
 
 function handleHide() {
-    button.label = "Click to open the followed streamers list"
+    button.label = _("clickOpen_")
     panelOn = false
     button.state('window', {
         checked: false

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Settings</title>
+    <title><span data-l10n-id="settings_"></span></title>
 
     <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" href="settings.css" />
@@ -10,34 +10,34 @@
 </head>
 
 <body onload="init()">
-    <h1 style="text-align:center"> <img src="settings.png"> Settings</h1>
+    <h1 style="text-align:center"><img src="settings.png"><span> </span><span data-l10n-id="settings_"></span></h1>
     <ul id="tabs">
         <li>
-            <a href="#followed"> <img src="streamer.png"> Manage followed streamers</a>
+            <a href="#followed"> <img src="streamer.png"><span> </span><span data-l10n-id="manageFollowed_"></span></a>
         </li>
         <li>
-            <a href="#alarm"> <img src="alarm.png"> Alarm settings</a>
+            <a href="#alarm"> <img src="alarm.png"><span> </span><span data-l10n-id="alarmSettings_"></span></a>
         </li>
         <li>
-            <a href="#interface"> <img src="interface.png"> Interface settings</a>
+            <a href="#interface"> <img src="interface.png"><span> </span><span data-l10n-id="interfaceSettings_"></span></a>
         </li>
         <li>
-            <a href="#about"> <img src="ico16.png"> About</a>
+            <a href="#about"> <img src="ico16.png"><span> </span><span data-l10n-id="about_"></span></a>
         </li>
     </ul>
     <div class="tabContent" id="followed">
         <div>
             <br>
-            <button type="button" id="followdefault">Clear all followed streamers</button>
+            <button type="button" id="followdefault"><span data-l10n-id="clearAll_"></span></button>
             <br>
             <br>
             <form>
                 <input type="text" id="followinput">
-                <button type="button" id="followsubmit">Add input to followed streamer list</button>
+                <button type="button" id="followsubmit"><span data-l10n-id="addInput_"></span></button>
             </form>
-            <p style="font-weight: bold" id="followedp">Followed streamers:</p>
+            <p style="font-weight: bold"><span data-l10n-id="followedStreamers_"></span><span id="followedp1"></span><span id="followedp2" style="display: none" data-l10n-id="totalShowing_"></span><span id="followedp3">:</span></p>
             <form>
-                Search followed streamers
+                <span data-l10n-id="searchFollowed_"></span>
                 <input type="text" id="followsearch">
             </form>
             <br>
@@ -47,52 +47,52 @@
 
             </select>
             <br>
-            <button type="button" id="removeselected">Remove selected streamer from list</button>
+            <button type="button" id="removeselected"><span data-l10n-id="removeSelected_"></span></button>
             <form>
-                <p style="font-weight: bold">User to import followed streamers from:</p>
+                <p style="font-weight: bold"><span data-l10n-id="userTo_"></span></p>
                 <input type="text" id="importinput">
-                <button type="button" id="importsubmit">Import followed streamers</button>
+                <button type="button" id="importsubmit"><span data-l10n-id="importFollowed_"></span></button>
             </form>
             <br>
-            <button type="button" id="forcereload">Force refresh followed streamer statuses</button>
+            <button type="button" id="forcereload"><span data-l10n-id="forceRefresh_"></span></button>
             <br>
         </div>
     </div>
     <div class="tabContent" id="alarm">
         <div>
             <br>
-            <button type="button" id="alarmdefault">Reset to default</button>
+            <button type="button" id="alarmdefault"><span data-l10n-id="resetTo_"></span></button>
             <br>
             <br>
             <form style="font-weight: bold">
-                Seconds to wait between updating followed streamers:
+                <span data-l10n-id="secondsTo_"></span>
                 <input type="number" id="updatelen" min="1" value="1">
             </form>
             <br>
             <form style="font-weight: bold">
-                Enable sound alarm:
+                <span data-l10n-id="enableSound_"></span>
                 <input type="checkbox" id="soundalarm" checked>
             </form>
             <br>
             <form style="font-weight: bold">
-                Set maximum alarm length:
+                <span data-l10n-id="setMaximum_"></span>
                 <input type="checkbox" id="alarmlimit">
             </form>
             <br>
             <form style="font-weight: bold; display: none" id="maxalarm">
-                Maximum alarm length (seconds):
+                <span data-l10n-id="maximumAlarm_"></span>
                 <input type="number" id="alarmlen" min="1" value="10">
                 <br>
                 <br>
             </form>
             <form>
-                <span style="font-weight: bold">Seconds before a streamer is updated as offline:</span>
+                <span style="font-weight: bold" data-l10n-id="secondsBefore_"></span>
                 <input type="number" id="debounce" min="0" value="60">
-                <br> (prevents multiple alarms from firing due to Twitch API issues)
+                <br> <span data-l10n-id="preventsMultiple_"></span>
             </form>
             <br>
             <form style="font-weight: bold">
-                Do not receive an alarm for a unique stream you've already received an alarm for:
+                <span data-l10n-id="doNot_"></span>
                 <input type="checkbox" id="uniqueids">
             </form>
 
@@ -101,75 +101,75 @@
     <div class="tabContent" id="interface">
         <div>
             <br>
-            <button type="button" id="interfacedefault">Reset to default</button>
+            <button type="button" id="interfacedefault"><span data-l10n-id="resetTo_"></span></button>
             <br>
             <br>
             <form style="font-weight: bold">
-                Show tutorial messages:
+                <span data-l10n-id="showTutorial_"></span>
                 <input type="checkbox" id="tutorial">
             </form>
             <br>
             <form>
-                <span style="font-weight: bold">Method to sort online streamers:</span>
+                <span style="font-weight: bold"><span data-l10n-id="methodTo_"></span></span>
                 <br>
-                <input type="radio" name="sortradio" id="sortrecent" checked>Most recent
+                <input type="radio" name="sortradio" id="sortrecent" checked><span data-l10n-id="mostRecent_"></span>
                 <br>
-                <input type="radio" name="sortradio" id="sortviewers">Most viewers
+                <input type="radio" name="sortradio" id="sortviewers"><span data-l10n-id="mostViewers_"></span>
             </form>
             <br>
 
             <form>
-                <span style="font-weight: bold">Minimum wait time between stream preview updates:</span>
+                <span style="font-weight: bold"><span data-l10n-id="minimumWait_"></span></span>
                 <input type="number" id="previewwait" min="1" value="30">
-                <br> (Small values can produce lag if you have many followed streamers)
+                <br> <span data-l10n-id="smallValues_"></span>
             </form>
 
             <br>
             <form style="font-weight: bold">
-                Hide offline streamers:
+                <span data-l10n-id="hideOffline_"></span>
                 <input type="checkbox" id="hideoff">
             </form>
             <br>
             <form style="font-weight: bold">
-                Hide online stream information by default:
+                 <span data-l10n-id="hideOnline_"></span>
                 <input type="checkbox" id="hideinfo">
             </form>
             <br>
             <form>
-                <span style="font-weight: bold">When an online streamer is clicked...</span>
+                <span style="font-weight: bold"><span data-l10n-id="whenAn_"></span></span>
                 <br>
-                <input type="checkbox" id="opentab" checked> Open their Twitch page in a new tab
+                <input type="checkbox" id="opentab" checked><span data-l10n-id="openTwitch_"></span>
                 <br>
-                <input type="checkbox" id="livestreamer"> Open their stream using the free software <a href="http://livestreamer.io/" target="_blank">Livestreamer</a>
+                <input type="checkbox" id="livestreamer"><span data-l10n-id="openLive_"></span><span> </span><a href="http://livestreamer.io/" target="_blank">Livestreamer</a><span> </span><span data-l10n-id="openLive2_"></span>
                 <br>
-                <input type="checkbox" id="popout"> Open their stream's chat in a popout window
+                <input type="checkbox" id="popout"><span data-l10n-id="openChat_"></span>
             </form>
             <span style="display: none" id="livespan">
                 <br>
-            <span style="font-weight: bold">Livestreamer quality:</span>
-            <br> (Best will automatically select the best video quality, worst will automatically select the worst video quality)
+            <span style="font-weight: bold"><span data-l10n-id="livestreamerQuality_"></span></span>
+            <br><span data-l10n-id="bestWill_"></span>
             <br>
             <select id="livequality">
-                <option value="best">Best</option>
-                <option value="source">Source</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-                <option value="mobile">Mobile</option>
-                <option value="worst">Worst</option>
-                <option value="audio">Audio</option>
+                <option value="best" data-l10n-id="best_"></option>
+                <option value="source" data-l10n-id="source_"></option>
+                <option value="high" data-l10n-id="high_"></option>
+                <option value="medium" data-l10n-id="medium_"></option>
+                <option value="low" data-l10n-id="low_"></option>
+                <option value="mobile" data-l10n-id="mobile_"></option>
+                <option value="worst" data-l10n-id="worst_"></option>
+                <option value="audio" data-l10n-id="audio_"></option>
             </select>
             </span>
         </div>
     </div>
     <div class="tabContent" id="about">
         <div>
-            <p style="font-weight: bold">Twitch Alarm, version <span id="versionspan" style="font-size: larger"></span></p>
-            <p>Thank you for using my add-on!</p>
-            <p>I've made this add-on in my spare time and if you would like to support me by giving feedback or even donating money, I'd be very grateful! You can do so on the <a href="https://addons.mozilla.org/en-US/firefox/addon/twitch-alarm/" target="_blank">add-on page.</a></p>
-            <p>If you are a programmer yourself with knowledge of JavaScript, HTML, or CSS, I'd love if you left feedback or even helped development on the <a href="https://github.com/Hunter5000/Twitch-Alarm/" target="_blank">GitHub page.</a></p>
-            <p>Perhaps even better, if you are a programmer already, is if you can speak a language other than English fluently. I want to localize my add-on for my userbase, which is nearly 2/3 non-English speaking. You could help by creating versions of my GitHub files with strings localized in other languages. </p>
-            <p>If you would like to personally contact me, you can <a href="mailto:hunter8750@gmail.com">email me</a> or add me on <a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a>.</p>
+            <p style="font-weight: bold">Twitch Alarm, <span data-l10n-id="version_"></span><span> </span><span id="versionspan" style="font-size: larger"></span><span> </span><span data-l10n-id="version2_"></span></p>
+            <p><span data-l10n-id="thankYou_"></span></p>
+            <p><span data-l10n-id="iveMade_"></span><span> </span><a href="https://addons.mozilla.org/en-US/firefox/addon/twitch-alarm/" target="_blank"><span data-l10n-id="addonPage_"></span></a><span> </span><span data-l10n-id="addonPage2_"></span></p>
+            <p><span data-l10n-id="ifYoure_"></span><span> </span><a href="https://github.com/Hunter5000/Twitch-Alarm/" target="_blank"><span data-l10n-id="gitHub_"></span></a><span> </span><span data-l10n-id="gitHub2_"></span></p>
+            <p><span data-l10n-id="perhapsEven_"></span></p>
+            <p><span data-l10n-id="ifYou_"></span><span> </span><a href="mailto:hunter8750@gmail.com"><span data-l10n-id="emailMe_"></span></a><span> </span><span data-l10n-id="orAdd_"></span><span> </span><a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a><span> </span><span data-l10n-id="steam2_"></span></p>
             <p style="font-weight: bold; font-size: larger">-Hunter</p>
         </div>
     </div>

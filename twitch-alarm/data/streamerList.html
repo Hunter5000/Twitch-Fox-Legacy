@@ -8,10 +8,20 @@
 
 <body>
 
+    <h3 id="!tutorial3" style="display: none">
+	  <span data-l10n-id="click_"></span>
+	  <img alt="" height="16" src="leftclick.png" width="16"/>
+	  <span data-l10n-id="toGo_"></span>
+	  <img alt="" height="16" src="rightclick.png" width="16"/>
+	  <span data-l10n-id="toDismiss_"></span>
+	  <br>
+	  <br>
+	</h3>
+
     <a id="!settings" class="option" style="font-weight: bold; color: DarkCyan">
         <h1>
 		<img style="vertical-align: text-bottom" src="settings.png"/>
-		Settings
+		<span data-l10n-id="settings_"></span>
 	  </h1>
     </a>
 
@@ -20,46 +30,51 @@
     <a id="!showhide" class="option">
         <h2>
 		  <img alt="" height="16" src="leftclick.png" width="16"/>
-		  <span style= "color: DodgerBlue">Show all</span>
+		  <span data-l10n-id="showAll_" style= "color: DodgerBlue"></span>
     <img alt="" height="16" src="rightclick.png" width="16" />
-    <span style="color: OrangeRed">Hide all</span>
+    <span data-l10n-id="hideAll_" style="color: OrangeRed"></span>
     </h2>
     </a>
     </span>
 
-
     <h3 id="!tutorial1" style="display: none">
-	  <span>Click </span>
+	  <span data-l10n-id="click_"></span>
 	  <img alt="" height="16" src="rightclick.png" width="16"/>
-	  <span> on an online streamer to toggle hiding or showing streamer information</span>
+	  <span data-l10n-id="onAn_" ></span>
 	</h3>
 
     <hr>
 
     <form id="!searchform" style="display: none">
-        <h3>Search streamers: </h3>
+        <h3 data-l10n-id="searchStreamers_"></h3>
         <input type="text" id="!followsearch">
     </form>
 
     <span id="!tutorial2" style="display: none; font-size: large">
-	  <span>You aren't following any streamers! <br><br> To add new followed streamers and receive notifications for them, press	<img style="vertical-align: text-top" src="settings.png"/> <span style="font-weight: bold; color: DarkCyan; font-size: larger">Settings </span> above to access the settings menu, where you can either <strong>add</strong> an individual channel to follow or <strong>import</strong> followers from an existing Twitch user.
+	  <span> <span data-l10n-id="youArent_"></span>
+	  <br>
+	  <br>
+	  <span data-l10n-id="toAdd_"></span><span> </span><img style="vertical-align: text-top" src="settings.png"/><span style="font-weight: bold; color: DarkCyan; font-size: larger" data-l10n-id="settings_"></span><span> </span><span data-l10n-id="aboveTo_"></span><span> </span><strong><span data-l10n-id="add_"></strong></span><span> </span><span data-l10n-id="anIndividual_"></span><span> </span><strong><span data-l10n-id="import_"></span></strong><span> </span><span data-l10n-id="followersFrom_"></span>
     <br>
-    <br> You can also change many other options to best suit your Twitch experience.</span>
+    <br>
+	<span data-l10n-id="youCan_"></span>
+	</span>
     </span>
 
     <span id="!onlinespan" style="display: none">
 
-    <h1 id="online!!">Online Streamers</h1>
+    <h1 id="online!!"><span data-l10n-id="onlineStreamers_"></span><span id="!onlinep1"></span><span id="!onlinep2" style="display: none" data-l10n-id="totalShowing_"></span><span id="!onlinep3">:</span></h1>
     <ul id="!online">
 
     </ul>
 	
-	<hr>
 	</span>
+	
+	<span id="!onoffdiv" style="display: none"> <hr> </span>
 
     <span id="!offlinespan" style="display: none">
 	
-    <h1 id="offline!!">Offline Streamers</h1>
+    <h1 id="offline!!"><span data-l10n-id="offlineStreamers_"></span><span id="!offlinep1"></span><span id="!offlinep2" style="display: none" data-l10n-id="totalShowing_"></span><span id="!offlinep3">:</span></h1>
     <ul id="!offline">
 
     </ul>

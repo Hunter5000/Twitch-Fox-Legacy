@@ -38,7 +38,9 @@ followRefresh = document.getElementById("forcereload")
 followClear = document.getElementById("followdefault")
 followAdd = document.getElementById("followinput")
 followSubmit = document.getElementById("followsubmit")
-followP = document.getElementById("followedp")
+followP1 = document.getElementById("followedp1")
+followP2 = document.getElementById("followedp2")
+followP3 = document.getElementById("followedp3")
 followSearch = document.getElementById("followsearch")
 followList = document.getElementById("followlist")
 followRemove = document.getElementById("removeselected")
@@ -198,7 +200,7 @@ alarmDefault.onclick = function() {
     alarmLength = 10
     uniqueIds = true
     streamIds = []
-    deBounce = 60
+    deBounce = 40
     updateSettings()
 }
 
@@ -329,14 +331,22 @@ function updateFollowed() {
 
     if (followedStreamers.length > 0) {
         if ((followedStreamers[0] != "") && (searchNum == followedStreamers.length)) {
-            followP.textContent = "Followed streamers (" + followedStreamers.length + "):"
+            followP1.textContent = " (" + followedStreamers.length + ")"
+            followP2.style.display = "none"
+            followP3.textContent = ":"
         } else if ((followedStreamers[0] != "") && (searchNum != followedStreamers.length)) {
-            followP.textContent = "Followed streamers (" + followedStreamers.length + " total, showing " + searchNum + "):"
+            followP1.textContent = " (" + followedStreamers.length + " "
+            followP2.style.display = "inline"
+            followP3.textContent = " " + searchNum + "):"
         } else {
-            followP.textContent = "Followed streamers:"
+            followP1.textContent = ""
+            followP2.style.display = "none"
+            followP3.textContent = ":"
         }
     } else {
-        followP.textContent = "Followed streamers:"
+        followP1.textContent = ""
+        followP2.style.display = "none"
+        followP3.textContent = ":"
     }
 }
 
