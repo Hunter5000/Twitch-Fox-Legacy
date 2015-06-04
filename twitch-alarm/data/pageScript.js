@@ -171,7 +171,7 @@ function performSearch() {
         document.getElementById("!offlinep3").textContent = ""
         
     } else if (searchOff != offlineStreamers.length) {  
-        document.getElementById("!offlinep1").textContent = " (" + onlineStreamers.length + " "
+        document.getElementById("!offlinep1").textContent = " (" + offlineStreamers.length + " "
         document.getElementById("!offlinep2").style.display = "inline"
         document.getElementById("!offlinep3").textContent = " " + searchOff + ")"
     }
