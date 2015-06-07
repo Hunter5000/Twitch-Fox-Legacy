@@ -224,7 +224,7 @@ function generateCard(status, name) {
         var mainTable = document.createElement("table")
         if (status == 0) {
             mainLi.id = "!last"
-            mainTable.style.backgroundColor = "gold"
+            mainTable.style.backgroundColor = "GoldenRod"
         }
         if ((status == 1) && (namekey != onlineStreamers.length - 1)) {
             mainTable.style.borderBottom = "1px solid"
