@@ -123,8 +123,8 @@ var panel = panels.Panel({
 
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
-    width: 650,
-    height: 580,
+    width: 660,
+    height: 600,
     //onHide: handleHide
 });
 
@@ -659,6 +659,9 @@ exports.onUnload = function(reason) {
         ss.storage.tutorialOn = null
 
         console.log("Good bye!")
+    } else if (reason == "upgrade"){
+        //Let's re-enable tutorials so they know the new features
+        ss.storage.tutorialOn = true
     } else {
         console.log("Good night!")
     }
