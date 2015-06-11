@@ -211,17 +211,19 @@ function go(url, quality) {
     var file = Cc["@mozilla.org/file/local;1"]
         .createInstance(Ci.nsIFile);
     var platform = require("sdk/system").platform;
-    if (platform == "darwin") {
-        file.initWithPath("/usr/bin/open");
-    } else {
+    //console.log(platform)
+    if (platform.toLowerCase() == "winnt") {
+        //For Windows
         /*Initializing with full path to cmd.exe which should normally be in "ComSpec" environment variable*/
         file.initWithPath(
             Cc["@mozilla.org/process/environment;1"]
             .getService(Ci.nsIEnvironment)
             .get("COMSPEC")
         );
+    } else {
+        //For non-Windows? Hopefully this works
+        file.initWithPath("/usr/bin/open");
     }
-
     // create an nsIProcess
     var process = Cc["@mozilla.org/process/util;1"]
         .createInstance(Ci.nsIProcess);
@@ -291,7 +293,7 @@ function importFollowers(name, offset) {
             var item = follows[key];
             var channelName = item.channel.name;
             if (!containsValue(ss.storage.followedStreamers, channelName)) {
-                ss.storage.followedStreamers.unshift(channelName)
+                ss.storage.followedStreamers.push(channelName)
                 packageSettings()
             }
         }
@@ -602,7 +604,8 @@ function panelUpdate() {
         ss.storage.openLive,
         ss.storage.openPopout,
         ss.storage.previewWait,
-        ss.storage.tutorialOn
+        ss.storage.tutorialOn,
+        alarmCause
     ]);
 }
 

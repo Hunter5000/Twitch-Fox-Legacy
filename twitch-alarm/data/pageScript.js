@@ -15,6 +15,7 @@ openTab = null
 useLive = null
 openChat = null
 tutorial = null
+alarmCause = null
 
 //Unique variables
 
@@ -328,7 +329,6 @@ function generateCard(status, name) {
 function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
-    var most_recent = onlineStreamers[0]
     
     if (onlineStreamers.length > 0) {
         if (tutorial) {
@@ -391,7 +391,7 @@ function updateList() {
             var alarmhead = document.createElement("h1")
             var breakElement = document.createElement("hr")
             breakElement.id = "!break"
-            var lastElement = generateCard(0, most_recent)
+            var lastElement = generateCard(0, alarmCause)
             document.body.insertBefore(breakElement, document.body.childNodes[2])
             document.body.insertBefore(lastElement, document.body.childNodes[2])
                 //'<li> <h1> <a style="color:lime" href="#" tabindex="1" class="option" id="alarm">Click to end alarm</a></h1></li> '
@@ -481,5 +481,6 @@ addon.port.on("updatePage", function(payload) {
     openChat = payload[13]
     previewWait = payload[14]
     tutorial = payload[15]
+    alarmCause = payload[16]
     updateList()
 })
