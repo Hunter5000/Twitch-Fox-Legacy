@@ -1,12 +1,16 @@
+const {
+    Cc, Ci
+} = require("chrome")
 var {
     ToggleButton
-} = require("sdk/ui/button/toggle");
+} = require("sdk/ui/button/toggle")
 
-var _ = require("sdk/l10n").get;
+var _ = require("sdk/l10n").get
 var panels = require("sdk/panel")
-var self = require("sdk/self");
+var self = require("sdk/self")
+var system = require("sdk/system")
 var pgworkr = require("sdk/page-worker")
-var ss = require("sdk/simple-storage");
+var ss = require("sdk/simple-storage")
 var preferences = require("sdk/simple-prefs")
 
 //Default settings
@@ -42,6 +46,9 @@ if (ss.storage.debounce == null) {
 //Interface
 if (ss.storage.liveQuality == null) {
     ss.storage.liveQuality = "best"
+}
+if (ss.storage.livePath == null) {
+    ss.storage.livePath = ""
 }
 if (ss.storage.hideInfo == null) {
     ss.storage.hideInfo = false
@@ -91,6 +98,8 @@ var tabs = require("sdk/tabs")
 var alarmOn = false
 var alarmCause = ""
 var panelOn = false
+var liveerror = false
+var errorcause = ""
 var alarm_interval = null
 var update_interval = null
 var badge_timeout = null
@@ -124,7 +133,7 @@ var panel = panels.Panel({
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
     width: 660,
-    height: 600,
+    height: 620,
     //onHide: handleHide
 });
 
@@ -201,47 +210,92 @@ function containsValue(list, obj) {
     }
 }
 
-//Credit for the next function goes to Nekto of "Livestreamer launch on twitch.tv"
+//Credit for the next function goes to Armin of "Open with Livestreamer"
 
-function go(url, quality) {
-    var {
-        Cc, Ci
-    } = require("chrome");
-    // create an nsIFile for the executable
-    var file = Cc["@mozilla.org/file/local;1"]
-        .createInstance(Ci.nsIFile);
-    var platform = require("sdk/system").platform;
-    //console.log(platform)
-    if (platform.toLowerCase() == "winnt") {
-        //For Windows
-        /*Initializing with full path to cmd.exe which should normally be in "ComSpec" environment variable*/
-        file.initWithPath(
-            Cc["@mozilla.org/process/environment;1"]
-            .getService(Ci.nsIEnvironment)
-            .get("COMSPEC")
-        );
+function buildArgs(streamURL, streamResolution) {
+    var args,
+        currentURL,
+        currentResolution,
+        optArgs
+        // Get stream url
+    currentURL = streamURL
+        // Get stream resolution
+    if (streamResolution === undefined) {
+        if (ss.storage.liveQuality === undefined) {
+            currentResolution = "best"
+        } else {
+            currentResolution = ss.storage.liveQuality
+        }
     } else {
-        //For non-Windows? Hopefully this works
-        file.initWithPath("/usr/bin/open");
+        currentResolution = streamResolution
     }
-    // create an nsIProcess
-    var process = Cc["@mozilla.org/process/util;1"]
-        .createInstance(Ci.nsIProcess);
+    // Main
+    args = [currentURL, currentResolution]
+    return args
+}
 
-    process.init(file);
-    var args;
-    // Run the process.
-    // If first param is true, calling thread will be blocked until
-    // called process terminates.
-    // Second and third params are used to pass command-line arguments
-    // to the process.
-    if (platform == "darwin") {
-        args = ["-a", "/Library/Frameworks/Python.framework/Versions/2.7/bin/livestreamer", "--args", url, quality];
+// Run Livestreamer
+function runLivestreamer(args) {
+    var path,
+        file,
+        process
+        // Notify
+        //console.log("Starting livestreamer...")
+        // Get livestreamer path
+    path = getLivestreamerPath()
+    if (path != "!error!") {
+        // Build file
+        file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile)
+        file.initWithPath(path)
+            // New child process
+        process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess)
+        process.init(file)
+        process.run(false, args, args.length)
     } else {
-        args = ["/K", "livestreamer", url, quality];
+        liveerror = true
+        panelUpdate()
+        liveerror = false
     }
-    process.run(false, args, args.length);
-};
+
+}
+
+// Get Livestreams path
+// First check if a user has defined a path
+// Otherwise try our best guess for each system
+function getLivestreamerPath() {
+    var path,
+        file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile)
+        // User defined
+    if (ss.storage.livePath && ss.storage.livePath !== "") {
+        path = ss.storage.livePath
+            // Best guess
+    } else if (system.platform == "linux") {
+        path = "/usr/bin/livestreamer"
+    } else if (system.platform == "winnt") {
+        path = "C:\\Program Files (x86)\\Livestreamer\\livestreamer.exe"
+    } else if (system.platform == "mac") {
+        path = "/Applications/livestreamer.app"
+    }
+    // Test file
+    patherror = false
+    try {
+        file.initWithPath(path)
+    } catch (e) {
+        patherror = true
+        //console.log("There was an error")
+    } finally {
+        if (patherror) {
+            return "!error!"
+        } else {
+            if (file.exists()) {
+                return path
+            } else {
+                return "!error!"
+            }
+        }
+    }
+}
+
 
 //Credit for these next four functions goes to Ben Clive of "Twitch.tv Stream Browser"
 
@@ -533,7 +587,8 @@ panel.port.on("openTab", function(payload) {
 })
 
 panel.port.on("openLive", function(payload) {
-    go("http://www.twitch.tv/" + payload, ss.storage.liveQuality)
+    errorcause = payload
+    runLivestreamer(buildArgs("http://www.twitch.tv/" + payload, ss.storage.liveQuality))
 })
 
 panel.port.on("openSettings", function(payload) {
@@ -559,6 +614,8 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.openPopout = payload[14]
     ss.storage.previewWait = payload[15]
     ss.storage.tutorialOn = payload[16]
+    ss.storage.livePath = payload[17]
+
 })
 
 settingsPanel.port.on("importUser", function(payload) {
@@ -605,7 +662,9 @@ function panelUpdate() {
         ss.storage.openPopout,
         ss.storage.previewWait,
         ss.storage.tutorialOn,
-        alarmCause
+        alarmCause,
+        liveerror,
+        errorcause
     ]);
 }
 
@@ -629,6 +688,7 @@ function packageSettings() {
         ss.storage.openPopout,
         ss.storage.previewWait,
         ss.storage.tutorialOn,
+        ss.storage.livePath,
         self.version
     ])
 }
@@ -652,6 +712,7 @@ exports.onUnload = function(reason) {
 
         //Interface
         ss.storage.liveQuality = null
+        ss.storage.livePath = null
         ss.storage.hideInfo = null
         ss.storage.hideOffline = null
         ss.storage.sortMethod = null
@@ -662,7 +723,7 @@ exports.onUnload = function(reason) {
         ss.storage.tutorialOn = null
 
         console.log("Good bye!")
-    } else if (reason == "upgrade"){
+    } else if (reason == "upgrade") {
         //Let's re-enable tutorials so they know the new features
         ss.storage.tutorialOn = true
     } else {

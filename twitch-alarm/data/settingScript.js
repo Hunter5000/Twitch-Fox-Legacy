@@ -14,6 +14,7 @@ deBounce = null
 //Interface variables
 
 liveQuality = null
+livePath = null
 hideInfo = null
 hideOffline = null
 sortMethod = null
@@ -69,6 +70,7 @@ interLive = document.getElementById("livestreamer")
 interChat = document.getElementById("popout")
 interSpan = document.getElementById("livespan")
 interQual = document.getElementById("livequality")
+interPath = document.getElementById("livepath")
 
 versionSpan = document.getElementById("versionspan")
 
@@ -240,6 +242,7 @@ interDefault.onclick = function() {
     //Default interface settings
 
     liveQuality = "best"
+    livePath = ""
     hideInfo = false
     hideOffline = false
     sortMethod = "recent"
@@ -309,7 +312,10 @@ interQual.onchange = function() {
     updateSettings()
 }
 
-
+interPath.oninput = function() {
+    livePath = interPath.value
+    updateSettings()
+}
 
 //Rest of script
 
@@ -380,6 +386,7 @@ function updateSettings() {
     interHideinfo.checked = hideInfo
     interTab.checked = openTab
     interLive.checked = openLive
+    interPath.value = livePath
     interChat.checked = openPopout
     interPreview.value = previewWait
     
@@ -428,6 +435,7 @@ function exportSettings() {
         openPopout,
         previewWait,
         tutorialOn,
+        livePath
     ])
 }
 
@@ -450,7 +458,8 @@ addon.port.on("onSettings", function(payload) {
     openPopout = payload[14]
     previewWait = payload[15]
     tutorialOn = payload[16]
-    curVersion = payload[17]
+    livePath = payload[17]
+    curVersion = payload[18]
 
     updateSettings()
 })

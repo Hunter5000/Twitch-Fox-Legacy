@@ -16,6 +16,8 @@ useLive = null
 openChat = null
 tutorial = null
 alarmCause = null
+liveError = null
+errorCause = null
 
 //Unique variables
 
@@ -124,7 +126,7 @@ function performSearch() {
 
         }
     }
-    
+
     for (var key in onlineStreamers) {
         if (document.getElementById(onlineStreamers[key])) {
             if ((onlineStreamers[key].toLowerCase().search(searchTerm) != -1) || (onlineGames[key].toLowerCase().search(searchTerm) != -1) || (onlineTitles[key].toLowerCase().search(searchTerm) != -1)) {
@@ -137,7 +139,7 @@ function performSearch() {
             }
         }
     }
-    
+
     if (searchOff > 0) {
         document.getElementById("!offlinespan").style.display = "inline"
     } else {
@@ -149,18 +151,18 @@ function performSearch() {
     } else {
         document.getElementById("!onlinespan").style.display = "none"
     }
-    
-    if ((searchOn>0) && (searchOff>0)) {
-      document.getElementById("!onoffdiv").style.display = "inline"
+
+    if ((searchOn > 0) && (searchOff > 0)) {
+        document.getElementById("!onoffdiv").style.display = "inline"
     } else {
-      document.getElementById("!onoffdiv").style.display = "none"
+        document.getElementById("!onoffdiv").style.display = "none"
     }
 
     if (searchOn == onlineStreamers.length) {
         document.getElementById("!onlinep1").textContent = " (" + onlineStreamers.length + ")"
         document.getElementById("!onlinep2").style.display = "none"
         document.getElementById("!onlinep3").textContent = ""
-    } else if (searchOn != onlineStreamers.length) {     
+    } else if (searchOn != onlineStreamers.length) {
         document.getElementById("!onlinep1").textContent = " (" + onlineStreamers.length + " "
         document.getElementById("!onlinep2").style.display = "inline"
         document.getElementById("!onlinep3").textContent = " " + searchOn + ")"
@@ -170,8 +172,8 @@ function performSearch() {
         document.getElementById("!offlinep1").textContent = " (" + offlineStreamers.length + ")"
         document.getElementById("!offlinep2").style.display = "none"
         document.getElementById("!offlinep3").textContent = ""
-        
-    } else if (searchOff != offlineStreamers.length) {  
+
+    } else if (searchOff != offlineStreamers.length) {
         document.getElementById("!offlinep1").textContent = " (" + offlineStreamers.length + " "
         document.getElementById("!offlinep2").style.display = "inline"
         document.getElementById("!offlinep3").textContent = " " + searchOff + ")"
@@ -278,14 +280,21 @@ function generateCard(status, name) {
         img4.src = "channel.png"
         td2.appendChild(img4)
         var span2 = document.createElement("span")
-        if (title != "") {
-            span2.textContent = ' "' + title + '"'
+        if ((name == errorCause) && liveError) {
+            span2.textContent = " Livestreamer Error"
+            span2.style.color = "Red"
+            span2.style.fontWeight = "bold"
             td2.appendChild(span2)
         } else {
-            var ital1 = document.createElement("i")
-            span2.textContent = " None"
-            ital1.appendChild(span2)
-            td2.appendChild(ital1)
+            if (title != "") {
+                span2.textContent = ' "' + title + '"'
+                td2.appendChild(span2)
+            } else {
+                var ital1 = document.createElement("i")
+                span2.textContent = " None"
+                ital1.appendChild(span2)
+                td2.appendChild(ital1)
+            }
         }
         tr2.appendChild(td2)
         var tr3 = document.createElement("tr")
@@ -329,7 +338,7 @@ function generateCard(status, name) {
 function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
-    
+
     if (onlineStreamers.length > 0) {
         if (tutorial) {
             document.getElementById("!tutorial1").style.display = "inline"
@@ -397,9 +406,9 @@ function updateList() {
                 //'<li> <h1> <a style="color:lime" href="#" tabindex="1" class="option" id="alarm">Click to end alarm</a></h1></li> '
         }
         if (tutorial) {
-          document.getElementById("!tutorial3").style.display = "inline"
+            document.getElementById("!tutorial3").style.display = "inline"
         } else {
-          document.getElementById("!tutorial3").style.display = "none"
+            document.getElementById("!tutorial3").style.display = "none"
         }
     } else if ((!alarmOn) && document.getElementById("!last") && document.getElementById("!break")) {
         document.body.removeChild(document.getElementById("!last"))
@@ -437,7 +446,7 @@ function updateList() {
     } else {
         document.getElementById("!tutorial2").style.display = "none"
     }
-    
+
     if ((!(onlineStreamers.length > 0) || (onlineStreamers[0] == "")) && (!(offlineStreamers.length > 0) || (offlineStreamers[0] == ""))) {
         document.getElementById("!searchform").style.display = "none"
     } else {
@@ -450,7 +459,7 @@ function updateList() {
             addon.port.emit("endAlarm", "End the alarm!");
         };
         lastbtn.oncontextmenu = function() {
-          addon.port.emit("endAlarm", "End the alarm!");
+            addon.port.emit("endAlarm", "End the alarm!");
         }
     }
     for (var key in followedStreamers) {
@@ -482,5 +491,7 @@ addon.port.on("updatePage", function(payload) {
     previewWait = payload[14]
     tutorial = payload[15]
     alarmCause = payload[16]
+    liveError = payload[17]
+    errorCause = payload[18]
     updateList()
 })
