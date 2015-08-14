@@ -132,8 +132,8 @@ var panel = panels.Panel({
 
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
-    width: 660,
-    height: 620,
+    width: 665,
+    height: 650,
     //onHide: handleHide
 });
 
