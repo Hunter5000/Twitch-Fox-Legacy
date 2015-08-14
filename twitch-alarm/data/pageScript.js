@@ -281,7 +281,7 @@ function generateCard(status, name) {
         td2.appendChild(img4)
         var span2 = document.createElement("span")
         if ((name == errorCause) && liveError) {
-            span2.textContent = " Livestreamer Error"
+            span2.textContent = " Livestreamer Path Error!"
             span2.style.color = "Red"
             span2.style.fontWeight = "bold"
             td2.appendChild(span2)

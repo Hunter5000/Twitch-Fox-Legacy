@@ -493,9 +493,6 @@ function checkStrId(id_) {
 
 function addStrId(id_) {
     if (!containsValue(ss.storage.streamIds, id_)) {
-        if (ss.storage.streamIds.length > 999) {
-            ss.storage.splice(0, 1)
-        }
         ss.storage.streamIds.push(id_)
     }
 }
@@ -699,28 +696,28 @@ exports.onUnload = function(reason) {
         //Reset all of the storage values
 
         //Followers
-        ss.storage.followedStreamers = null
+        delete ss.storage.followedStreamers
 
         //Alarm
-        ss.storage.updateInterval = null
-        ss.storage.soundAlarm = null
-        ss.storage.alarmLimit = null
-        ss.storage.alarmLength = null
-        ss.storage.uniqueIds = null
-        ss.storage.streamIds = null
-        ss.storage.debounce = null
+        delete ss.storage.updateInterval
+        delete ss.storage.soundAlarm
+        delete ss.storage.alarmLimit
+        delete ss.storage.alarmLength
+        delete ss.storage.uniqueIds
+        delete ss.storage.streamIds
+        delete ss.storage.debounce
 
         //Interface
-        ss.storage.liveQuality = null
-        ss.storage.livePath = null
-        ss.storage.hideInfo = null
-        ss.storage.hideOffline = null
-        ss.storage.sortMethod = null
-        ss.storage.openTab = null
-        ss.storage.openLive = null
-        ss.storage.openPopout = null
-        ss.storage.previewWait = null
-        ss.storage.tutorialOn = null
+        delete ss.storage.liveQuality
+        delete ss.storage.livePath
+        delete ss.storage.hideInfo
+        delete ss.storage.hideOffline
+        delete ss.storage.sortMethod
+        delete ss.storage.openTab
+        delete ss.storage.openLive
+        delete ss.storage.openPopout
+        delete ss.storage.previewWait
+        delete ss.storage.tutorialOn
 
         console.log("Good bye!")
     } else if (reason == "upgrade") {
@@ -730,5 +727,12 @@ exports.onUnload = function(reason) {
         console.log("Good night!")
     }
 };
+
+function onOverQuota() {
+  console.log("Over quota! Let's delete the most spacetaking yet most useless pieces of data.");
+  delete ss.storage.streamIds
+  ss.storage.streamIds = []
+}
+ss.on("OverQuota", onOverQuota);
 
 updateChannels();
