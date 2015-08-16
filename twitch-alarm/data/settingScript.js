@@ -157,6 +157,22 @@ followClear.onclick = function() {
     updateSettings()
 }
 
+followAdd.onkeydown = function(e) {
+    if (e.keyCode == 13) {
+        if (followAdd.value != "") {
+            var curvalue = followAdd.value
+            curvalue = curvalue.replace(/ /g, "");
+            curvalue = curvalue.replace(/\W/g, '')
+            curvalue = curvalue.toLowerCase()
+            if (!containsValue(followedStreamers, curvalue)) {
+                followedStreamers.unshift(curvalue)
+                updateSettings()
+            }
+        }
+        followAdd.value = ""
+    }
+}
+
 followSubmit.onclick = function() {
     if (followAdd.value != "") {
         var curvalue = followAdd.value
@@ -181,6 +197,15 @@ followRemove.onclick = function() {
         var indexkey = followedStreamers.indexOf(followList.value)
         followedStreamers.splice(indexkey, 1)
         updateSettings()
+    }
+}
+
+followImporter.onkeydown = function(e) {
+    if (e.keyCode == 13) {
+        if (followImporter.value != "") {
+            addon.port.emit("importUser", followImporter.value)
+        }
+        followImporter.value = ""
     }
 }
 
@@ -389,7 +414,7 @@ function updateSettings() {
     interPath.value = livePath
     interChat.checked = openPopout
     interPreview.value = previewWait
-    
+
     if (interLive.checked) {
         interSpan.style.display = "inline"
     } else {
@@ -424,7 +449,7 @@ function exportSettings() {
         alarmLimit,
         alarmLength,
         uniqueIds,
-        streamIds ,
+        streamIds,
         deBounce,
         liveQuality,
         hideInfo,
