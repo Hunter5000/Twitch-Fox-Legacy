@@ -49,7 +49,7 @@ function onClick(obj) {
 function onRightClick(obj) {
     var objname = obj.id.substring(0, obj.id.length - 1)
     if (obj.parentNode.id == "!last") {
-        return;
+        return
     }
     obj.oncontextmenu = function() {
         if (!containsValue(hiddenStreamers, objname)) {
@@ -362,7 +362,7 @@ function updateList() {
         }
         var newViewers = onlineViewers.concat().sort(function(a, b) {
             return b - a
-        });
+        })
         var newViewers2 = newViewers
         var leng = newViewers.length
         for (i = 0; i < leng; i++) {
@@ -388,7 +388,7 @@ function updateList() {
     }
     for (var key in headers) {
         while (headers[key].firstChild) {
-            headers[key].removeChild(headers[key].firstChild);
+            headers[key].removeChild(headers[key].firstChild)
         }
     }
     for (var key in hiddenStreamers) {
@@ -457,10 +457,10 @@ function updateList() {
     var lastbtn = document.getElementById("!last")
     if (lastbtn) {
         lastbtn.onclick = function() {
-            addon.port.emit("endAlarm", "End the alarm!");
-        };
+            addon.port.emit("endAlarm", "End the alarm!")
+        }
         lastbtn.oncontextmenu = function() {
-            addon.port.emit("endAlarm", "End the alarm!");
+            addon.port.emit("endAlarm", "End the alarm!")
         }
     }
     for (var key in followedStreamers) {

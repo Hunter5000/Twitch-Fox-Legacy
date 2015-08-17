@@ -385,7 +385,7 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
             online_titles.unshift(title_)
             online_viewers.unshift(viewers_)
             online_avatars.unshift(avatar_)
-            if (game_==null) {
+            if (game_ == null) {
                 online_games.unshift("!null!")
             }
         }
@@ -444,12 +444,12 @@ function cleanOnlineStreamers() {
                         var namekey = online_streamers.indexOf(strname)
                         if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
                             //Something has changed... time to update
-                            if ((game!=null)) {
+                            if ((game != null)) {
                                 manageOnlineStreamers(2, strname, game, title, viewers, avatar)
-                            } else if (online_games[namekey]!="!null!") {
+                            } else if (online_games[namekey] != "!null!") {
                                 manageOnlineStreamers(2, strname, game, title, viewers, avatar)
                             }
-                            
+
                         }
                     } else {
                         //Stream has come back online
@@ -537,7 +537,7 @@ function updateChannels() {
                 var viewers = stream.viewers
                 var avatar = stream.channel.logo
                 var strid = stream._id
-                if ((containsValue(ss.storage.followedStreamers, strname))&&(!containsValue(online_streamers, strname))) {
+                if ((containsValue(ss.storage.followedStreamers, strname)) && (!containsValue(online_streamers, strname))) {
                     //New streamer has come online
                     manageOnlineStreamers(1, strname, game, title, viewers, avatar)
                     if ((!alarmOn) && checkStrId(strid)) {
@@ -603,7 +603,12 @@ panel.port.on("openSettings", function(payload) {
 
 settingsPanel.port.on("importSettings", function(payload) {
     //Retrieve setting updates
-    ss.storage.followedStreamers = payload[0]
+    if (payload[0].length!=ss.storage.followedStreamers.length) {
+        ss.storage.followedStreamers = payload[0]
+        updateChannels()
+    } else {
+        ss.storage.followedStreamers = payload[0]
+    }
     ss.storage.updateInterval = payload[1]
     ss.storage.soundAlarm = payload[2]
     ss.storage.alarmLimit = payload[3]

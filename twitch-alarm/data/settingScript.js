@@ -86,66 +86,59 @@ function containsValue(list, obj) {
 
 //Tabs
 
-var tabLinks = new Array();
-var contentDivs = new Array();
+var tabLinks = new Array()
+var contentDivs = new Array()
 
 function init() {
-
-    var tabListItems = document.getElementById('tabs').childNodes;
+    var tabListItems = document.getElementById('tabs').childNodes
     for (var i = 0; i < tabListItems.length; i++) {
         if (tabListItems[i].nodeName == "LI") {
-            var tabLink = getFirstChildWithTagName(tabListItems[i], 'A');
-            var id = getHash(tabLink.getAttribute('href'));
-            tabLinks[id] = tabLink;
-            contentDivs[id] = document.getElementById(id);
+            var tabLink = getFirstChildWithTagName(tabListItems[i], 'A')
+            var id = getHash(tabLink.getAttribute('href'))
+            tabLinks[id] = tabLink
+            contentDivs[id] = document.getElementById(id)
         }
     }
-
-    var i = 0;
-
+    var i = 0
     for (var id in tabLinks) {
-        tabLinks[id].onclick = showTab;
+        tabLinks[id].onclick = showTab
         tabLinks[id].onfocus = function() {
             this.blur()
-        };
-        if (i == 0) tabLinks[id].className = 'selected';
-        i++;
+        }
+        if (i == 0) tabLinks[id].className = 'selected'
+        i++
     }
-
-    var i = 0;
-
+    var i = 0
     for (var id in contentDivs) {
-        if (i != 0) contentDivs[id].className = 'tabContent hide';
-        i++;
+        if (i != 0) contentDivs[id].className = 'tabContent hide'
+        i++
     }
 }
 
 function showTab() {
-    var selectedId = getHash(this.getAttribute('href'));
-
+    var selectedId = getHash(this.getAttribute('href'))
     for (var id in contentDivs) {
         if (id == selectedId) {
-            tabLinks[id].className = 'selected';
-            contentDivs[id].className = 'tabContent';
+            tabLinks[id].className = 'selected'
+            contentDivs[id].className = 'tabContent'
         } else {
-            tabLinks[id].className = '';
-            contentDivs[id].className = 'tabContent hide';
+            tabLinks[id].className = ''
+            contentDivs[id].className = 'tabContent hide'
         }
     }
-
     // Stop the browser following the link
-    return false;
+    return false
 }
 
 function getFirstChildWithTagName(element, tagName) {
     for (var i = 0; i < element.childNodes.length; i++) {
-        if (element.childNodes[i].nodeName == tagName) return element.childNodes[i];
+        if (element.childNodes[i].nodeName == tagName) return element.childNodes[i]
     }
 }
 
 function getHash(url) {
-    var hashPos = url.lastIndexOf('#');
-    return url.substring(hashPos + 1);
+    var hashPos = url.lastIndexOf('#')
+    return url.substring(hashPos + 1)
 }
 
 //Follower settings
@@ -163,7 +156,7 @@ followAdd.onkeydown = function(e) {
     if (e.keyCode == 13) {
         if (followAdd.value != "") {
             var curvalue = followAdd.value
-            curvalue = curvalue.replace(/ /g, "");
+            curvalue = curvalue.replace(/ /g, "")
             curvalue = curvalue.replace(/\W/g, '')
             curvalue = curvalue.toLowerCase()
             if (!containsValue(followedStreamers, curvalue)) {
@@ -178,7 +171,7 @@ followAdd.onkeydown = function(e) {
 followSubmit.onclick = function() {
     if (followAdd.value != "") {
         var curvalue = followAdd.value
-        curvalue = curvalue.replace(/ /g, "");
+        curvalue = curvalue.replace(/ /g, "")
         curvalue = curvalue.replace(/\W/g, '')
         curvalue = curvalue.toLowerCase()
         if (!containsValue(followedStreamers, curvalue)) {
@@ -195,7 +188,7 @@ followSearch.oninput = function() {
 }
 
 document.onkeydown = function(e) {
-    if (e.keyCode==46) {
+    if (e.keyCode == 46) {
         if (followList.selectedIndex != "-1") {
             var indexkey = followedStreamers.indexOf(followList.value)
             followedStreamers.splice(indexkey, 1)
@@ -228,46 +221,42 @@ followImport.onclick = function() {
     followImporter.value = ""
 }
 
-followIfile.onchange = function(){
-
-  var file = this.files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(progressEvent){
-    
-    var lines = this.result.split('\n');
-    for(var key in lines) {
-        if (lines[key] != "") {
-            var curvalue = lines[key]
-            curvalue = curvalue.replace(/ /g, "");
-            curvalue = curvalue.replace(/\W/g, '')
-            curvalue = curvalue.toLowerCase()
-            if (!containsValue(followedStreamers, curvalue)) {
-                followedStreamers.push(curvalue)
-                updateSettings()
+followIfile.onchange = function() {
+    var file = this.files[0]
+    var reader = new FileReader()
+    reader.onload = function(progressEvent) {
+        var lines = this.result.split('\n')
+        for (var key in lines) {
+            if (lines[key] != "") {
+                var curvalue = lines[key]
+                curvalue = curvalue.replace(/ /g, "")
+                curvalue = curvalue.replace(/\W/g, '')
+                curvalue = curvalue.toLowerCase()
+                if (!containsValue(followedStreamers, curvalue)) {
+                    followedStreamers.push(curvalue)
+                    updateSettings()
+                }
             }
         }
+        updateSettings()
     }
-  };
-  reader.readAsText(file);
+    reader.readAsText(file)
 }
 
 followEfile.onclick = function() {
-	var textToWrite = createText()
-	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
-	var fileNameToSaveAs = "followed_channels_" + (new Date().toJSON().slice(0,10)) + ".txt"
-
-	var downloadLink = document.createElement("a")
-	downloadLink.download = fileNameToSaveAs
-	downloadLink.innerHTML = "Download File"
-	
+    var textToWrite = createText()
+    var textFileAsBlob = new Blob([textToWrite], {
+        type: 'text/plain'
+    })
+    var fileNameToSaveAs = "followed_channels_" + (new Date().toJSON().slice(0, 10)) + ".txt"
+    var downloadLink = document.createElement("a")
+    downloadLink.download = fileNameToSaveAs
+    downloadLink.textContent = "Download File"
     downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
-	downloadLink.onclick = destroyClickedElement
-	downloadLink.style.display = "none"
-	document.body.appendChild(downloadLink)
-
-	downloadLink.click()
-
+    downloadLink.onclick = destroyClickedElement
+    downloadLink.style.display = "none"
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
 }
 
 //Alarm settings
@@ -400,7 +389,7 @@ interPath.oninput = function() {
 
 function updateFollowed() {
     while (followList.firstChild) {
-        followList.removeChild(followList.firstChild);
+        followList.removeChild(followList.firstChild)
     }
     var searchcount = 0
     for (var key in followedStreamers) {
@@ -496,7 +485,7 @@ function updateSettings() {
 }
 
 function destroyClickedElement(event) {
-	document.body.removeChild(event.target)
+    document.body.removeChild(event.target)
 }
 
 function createText() {
