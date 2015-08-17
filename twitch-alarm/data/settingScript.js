@@ -47,6 +47,8 @@ followList = document.getElementById("followlist")
 followRemove = document.getElementById("removeselected")
 followImporter = document.getElementById("importinput")
 followImport = document.getElementById("importsubmit")
+followIfile = document.getElementById("importfile")
+followEfile = document.getElementById("exportfile")
 
 alarmDefault = document.getElementById("alarmdefault")
 alarmWait = document.getElementById("updatelen")
@@ -192,6 +194,16 @@ followSearch.oninput = function() {
     updateFollowed()
 }
 
+document.onkeydown = function(e) {
+    if (e.keyCode==46) {
+        if (followList.selectedIndex != "-1") {
+            var indexkey = followedStreamers.indexOf(followList.value)
+            followedStreamers.splice(indexkey, 1)
+            updateSettings()
+        }
+    }
+}
+
 followRemove.onclick = function() {
     if (followList.selectedIndex != "-1") {
         var indexkey = followedStreamers.indexOf(followList.value)
@@ -214,6 +226,48 @@ followImport.onclick = function() {
         addon.port.emit("importUser", followImporter.value)
     }
     followImporter.value = ""
+}
+
+followIfile.onchange = function(){
+
+  var file = this.files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(progressEvent){
+    
+    var lines = this.result.split('\n');
+    for(var key in lines) {
+        if (lines[key] != "") {
+            var curvalue = lines[key]
+            curvalue = curvalue.replace(/ /g, "");
+            curvalue = curvalue.replace(/\W/g, '')
+            curvalue = curvalue.toLowerCase()
+            if (!containsValue(followedStreamers, curvalue)) {
+                followedStreamers.push(curvalue)
+                updateSettings()
+            }
+        }
+    }
+  };
+  reader.readAsText(file);
+}
+
+followEfile.onclick = function() {
+	var textToWrite = createText()
+	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'})
+	var fileNameToSaveAs = "followed_channels_" + (new Date().toJSON().slice(0,10)) + ".txt"
+
+	var downloadLink = document.createElement("a")
+	downloadLink.download = fileNameToSaveAs
+	downloadLink.innerHTML = "Download File"
+	
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+	downloadLink.onclick = destroyClickedElement
+	downloadLink.style.display = "none"
+	document.body.appendChild(downloadLink)
+
+	downloadLink.click()
+
 }
 
 //Alarm settings
@@ -439,6 +493,18 @@ function updateSettings() {
     }
 
     exportSettings()
+}
+
+function destroyClickedElement(event) {
+	document.body.removeChild(event.target)
+}
+
+function createText() {
+    var tex = ""
+    for (var key in followedStreamers) {
+        tex = tex + followedStreamers[key] + "\n"
+    }
+    return tex
 }
 
 function exportSettings() {

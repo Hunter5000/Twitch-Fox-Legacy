@@ -239,6 +239,7 @@ function generateCard(status, name) {
         var mainTbody = document.createElement("tbody")
         var tr1 = document.createElement("tr")
         var td1a = document.createElement("td")
+        td1a.style.width = "90px"
         td1a.rowSpan = "4"
         var img1 = document.createElement("img")
         img1.alt = ""
@@ -304,7 +305,7 @@ function generateCard(status, name) {
         img5.src = "game.png"
         td3.appendChild(img5)
         var bold2 = document.createElement("strong")
-        if (game != null) {
+        if (game != "!null!") {
             bold2.textContent = " " + game
             td3.appendChild(bold2)
         } else {

@@ -75,14 +75,14 @@ if (ss.storage.tutorialOn == null) {
     ss.storage.tutorialOn = true
 }
 
-var online_streamers = [];
-var online_games = [];
-var online_titles = [];
-var online_viewers = [];
-var online_avatars = [];
-var offline_streamers = [];
-var counter_names = [];
-var counter_nums = [];
+var online_streamers = []
+var online_games = []
+var online_titles = []
+var online_viewers = []
+var online_avatars = []
+var offline_streamers = []
+var counter_names = []
+var counter_nums = []
 var counter_off = 0
 
 var waittime = ss.storage.updateInterval
@@ -93,7 +93,7 @@ var {
     setInterval, clearInterval, setTimeout, clearTimeout
 } = require("sdk/timers")
 
-var Request = require("sdk/request").Request;
+var Request = require("sdk/request").Request
 var tabs = require("sdk/tabs")
 var alarmOn = false
 var alarmCause = ""
@@ -108,7 +108,7 @@ var alarm_counter = 0
 var httpHeaders = {
     'Accept': "application/vnd.twitchtv.v2+json",
     'Client-ID': "t163mfex6sggtq6ogh0fo8qcy9ybpd6"
-};
+}
 
 var button = ToggleButton({
     id: "my-button",
@@ -121,27 +121,27 @@ var button = ToggleButton({
     badge: null,
     badgeColor: "#6441A5",
     onChange: handleChange
-});
+})
 
 var panel = panels.Panel({
     contentURL: self.data.url("streamerList.html"),
     width: 500,
     height: 500,
     onHide: handleHide
-});
+})
 
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
     width: 665,
-    height: 650,
+    height: 670,
     //onHide: handleHide
-});
+})
 
 function openSettings() {
     packageSettings()
     settingsPanel.show({
 
-    });
+    })
 }
 
 function handleChange(state) {
@@ -150,7 +150,7 @@ function handleChange(state) {
         panelOn = true
         panel.show({
             position: button
-        });
+        })
     }
 }
 
@@ -159,7 +159,7 @@ function handleHide() {
     panelOn = false
     button.state('window', {
         checked: false
-    });
+    })
 }
 
 function updateBadge() {
@@ -183,7 +183,7 @@ function playAlert() {
         pgworkr.Page({
             contentScript: "new Audio('alert2.ogg').play()",
             contentURL: blank
-        });
+        })
     }
     if (ss.storage.alarmLimit) {
         alarm_counter = alarm_counter + 1
@@ -282,7 +282,7 @@ function getLivestreamerPath() {
         file.initWithPath(path)
     } catch (e) {
         patherror = true
-        //console.log("There was an error")
+            //console.log("There was an error")
     } finally {
         if (patherror) {
             return "!error!"
@@ -305,22 +305,22 @@ function checkChannels(callbackFunc, favList) {
             url: "https://api.twitch.tv/kraken/streams/" + favList[key],
             onComplete: callbackFunc,
             headers: httpHeaders
-        });
-        request.get();
+        })
+        request.get()
     }
 }
 
 function checkChannel(callbackFunc, channel) {
     if (typeof(channel) != "string") {
-        return;
+        return
     }
     counter_off = counter_off + 1
     var request = Request({
         url: "https://api.twitch.tv/kraken/streams/" + channel + "?" + counter_off,
         onComplete: callbackFunc,
         headers: httpHeaders
-    });
-    request.get();
+    })
+    request.get()
 }
 
 function getFollowedChannels(callbackFunc, name, offset) {
@@ -328,39 +328,39 @@ function getFollowedChannels(callbackFunc, name, offset) {
         url: "https://api.twitch.tv/kraken/users/" + name + "/follows/channels?offset=" + offset + "&limit=25&sortby=created_at&direction=DESC",
         onComplete: callbackFunc,
         headers: httpHeaders
-    });
-    request.get();
+    })
+    request.get()
 }
 
 function importFollowers(name, offset) {
     //console.log("Importing followed channels from " + name + "...")
     getFollowedChannels(function(response) {
         if (response.json == null) {
-            return;
+            return
         }
         if (typeof response.json.status != 'undefined' && response.json.status != 200) {
-            //console.error("Error: [" + response.json.status + "] " + response.json.message);
-            return;
+            //console.error("Error: [" + response.json.status + "] " + response.json.message)
+            return
         }
-        var follows = response.json.follows;
+        var follows = response.json.follows
         for (var key in follows) {
-            var item = follows[key];
-            var channelName = item.channel.name;
+            var item = follows[key]
+            var channelName = item.channel.name
             if (!containsValue(ss.storage.followedStreamers, channelName)) {
                 ss.storage.followedStreamers.push(channelName)
                 packageSettings()
             }
         }
         // Get more if they exist
-        //console.log("About to check for more followers: " + offset + "/" + response.json._total);
+        //console.log("About to check for more followers: " + offset + "/" + response.json._total)
         if (response.json._total > (offset + 25)) {
-            //console.log("Checking name " + name + " with offset " + offset);
-            importFollowers(name, offset + 25);
+            //console.log("Checking name " + name + " with offset " + offset)
+            importFollowers(name, offset + 25)
         } else {
             //console.log("Import process complete")
             packageSettings()
         }
-    }, name, offset);
+    }, name, offset)
 }
 
 //Now for my work...
@@ -385,6 +385,9 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
             online_titles.unshift(title_)
             online_viewers.unshift(viewers_)
             online_avatars.unshift(avatar_)
+            if (game_==null) {
+                online_games.unshift("!null!")
+            }
         }
     }
     if (remadd == 2) {
@@ -412,8 +415,8 @@ function counterTest(_name, _on) {
             //Streamer is confirmed offline
             console.log(_name + " has been offline for enough consecutive time. Confirmed as offline.")
             manageOnlineStreamers(0, _name)
-            counter_names.splice(nameindex, 1);
-            counter_nums.splice(nameindex, 1);
+            counter_names.splice(nameindex, 1)
+            counter_nums.splice(nameindex, 1)
         }
     } else {
         console.log(_name + " may have gone offline. Starting counter test...")
@@ -441,7 +444,12 @@ function cleanOnlineStreamers() {
                         var namekey = online_streamers.indexOf(strname)
                         if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
                             //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                            if ((game!=null)) {
+                                manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                            } else if (online_games[namekey]!="!null!") {
+                                manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                            }
+                            
                         }
                     } else {
                         //Stream has come back online
@@ -529,29 +537,30 @@ function updateChannels() {
                 var viewers = stream.viewers
                 var avatar = stream.channel.logo
                 var strid = stream._id
+                if ((containsValue(ss.storage.followedStreamers, strname))&&(!containsValue(online_streamers, strname))) {
                     //New streamer has come online
-                manageOnlineStreamers(1, strname, game, title, viewers, avatar)
-                if ((!alarmOn) && checkStrId(strid)) {
-                    alarmOn = true
-                    alarmCause = strname
-                    playAlert()
-                    alarm_interval = setInterval(playAlert, 1000) //this is the alarm part
+                    manageOnlineStreamers(1, strname, game, title, viewers, avatar)
+                    if ((!alarmOn) && checkStrId(strid)) {
+                        alarmOn = true
+                        alarmCause = strname
+                        playAlert()
+                        alarm_interval = setInterval(playAlert, 1000) //this is the alarm part
+                    }
                     if (panelOn) {
                         panelUpdate()
                     }
+                    addStrId(strid)
+                } else {
+                    //Channel is not being followed
                 }
-                addStrId(strid)
             } else {
                 //Offline streamer is still offline
             }
         } else {
             //Response not found
         }
-    }, offline_streamers);
+    }, generateOfflineStreamers())
 }
-
-update_interval = setInterval(updateChannels, waittime * 1000);
-updateChannels()
 
 function generateOfflineStreamers() {
     var offstreamers = []
@@ -577,7 +586,7 @@ function forceRefresh() {
 panel.on("show", function() {
     //console.log("Shipping payload...")
     panelUpdate()
-});
+})
 
 panel.port.on("openTab", function(payload) {
     tabs.open("http://www.twitch.tv/" + payload)
@@ -637,11 +646,12 @@ panel.port.on("endAlarm", function() {
 
 preferences.on("settingsButton", function() {
     openSettings()
-});
+})
 
 function panelUpdate() {
     //Should update when something has changed or alarm turns off
     //Give the settings to the panel
+    offline_streamers = generateOfflineStreamers()
     panel.port.emit("updatePage", [
         online_streamers,
         online_games,
@@ -662,7 +672,7 @@ function panelUpdate() {
         alarmCause,
         liveerror,
         errorcause
-    ]);
+    ])
 }
 
 function packageSettings() {
@@ -691,7 +701,7 @@ function packageSettings() {
 }
 
 exports.onUnload = function(reason) {
-    console.log(reason)
+    //console.log(reason)
     if ((reason == "disable") || (reason == "uninstall")) {
         //Reset all of the storage values
 
@@ -719,20 +729,21 @@ exports.onUnload = function(reason) {
         delete ss.storage.previewWait
         delete ss.storage.tutorialOn
 
-        console.log("Good bye!")
+        //console.log("Good bye!")
     } else if (reason == "upgrade") {
         //Let's re-enable tutorials so they know the new features
         ss.storage.tutorialOn = true
     } else {
-        console.log("Good night!")
+        //console.log("Good night!")
     }
-};
+}
 
 function onOverQuota() {
-  console.log("Over quota! Let's delete the most spacetaking yet most useless pieces of data.");
-  delete ss.storage.streamIds
-  ss.storage.streamIds = []
+    console.log("Over quota! Let's delete the most spacetaking yet most useless pieces of data.")
+    delete ss.storage.streamIds
+    ss.storage.streamIds = []
 }
-ss.on("OverQuota", onOverQuota);
+ss.on("OverQuota", onOverQuota)
 
-updateChannels();
+update_interval = setInterval(updateChannels, waittime * 1000)
+updateChannels()
