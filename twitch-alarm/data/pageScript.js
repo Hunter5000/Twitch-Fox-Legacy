@@ -292,7 +292,7 @@ function generateCard(status, name) {
                 td2.appendChild(span2)
             } else {
                 var ital1 = document.createElement("i")
-                span2.textContent = " None"
+                span2.textContent = " Untitled Broadcast"
                 ital1.appendChild(span2)
                 td2.appendChild(ital1)
             }

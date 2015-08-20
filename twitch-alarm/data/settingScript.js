@@ -4,7 +4,13 @@ followedStreamers = null
 //Alarm variables
 
 updateInterval = null
+desktopNotifs = null
 soundAlarm = null
+soundInterval = null
+restrictAlarm = null
+restrictFrom = null
+restrictTo = null
+customAlarm = null
 alarmLimit = null
 alarmLength = null
 uniqueIds = null
@@ -52,7 +58,16 @@ followEfile = document.getElementById("exportfile")
 
 alarmDefault = document.getElementById("alarmdefault")
 alarmWait = document.getElementById("updatelen")
+alarmNotifs = document.getElementById("desktopnotifs")
 alarmSound = document.getElementById("soundalarm")
+alarmSspan = document.getElementById("soundspan")
+alarmInterval = document.getElementById("alarminterval")
+alarmRestrict = document.getElementById("restrictalarm")
+alarmRspan = document.getElementById("restrictspan")
+alarmFrom = document.getElementById("restrictfrom")
+alarmTo = document.getElementById("restrictto")
+alarmCustom = document.getElementById("customalarm")
+
 alarmMax = document.getElementById("maxalarm")
 alarmLim = document.getElementById("alarmlimit")
 alarmLen = document.getElementById("alarmlen")
@@ -265,7 +280,13 @@ alarmDefault.onclick = function() {
     //Default alarm settings
 
     updateInterval = 1
+    desktopNotifs = true
     soundAlarm = true
+    alarmInterval = 1
+    restrictAlarm = false
+    alarmFrom = "22:00:00"
+    alarmTo = "06:00:00"
+    customAlarm = ""
     alarmLimit = false
     alarmLength = 10
     uniqueIds = true
@@ -279,8 +300,60 @@ alarmWait.onchange = function() {
     updateSettings()
 }
 
+alarmNotifs.onchange = function (){
+    desktopNotifs = alarmNotifs.checked
+    updateSettings()
+}
+
 alarmSound.onchange = function() {
     soundAlarm = alarmSound.checked
+    updateSettings()
+}
+
+alarmInterval.onchange = function() {
+    soundInterval = alarmInterval.value
+    updateSettings()
+}
+
+alarmRestrict.onchange = function() {
+    restrictAlarm = alarmRestrict.checked
+    updateSettings()
+}
+
+alarmFrom.onchange = function() {
+    var dat = (alarmFrom.value).replace(/\D/g,'')
+    var dat2 = (alarmFrom.value).replace(/\d/g,'')
+    if ((dat == "")||(dat2!="::")||((alarmFrom.value).length<8)) {
+        alarmFrom.value = restrictFrom
+    } else {
+        dat = Number(dat)
+        if ((dat>235959)||(dat<0)) {
+            alarmFrom.value = restrictFrom
+        } else {
+            restrictFrom = alarmFrom.value
+            updateSettings()
+        }
+    }
+}
+
+alarmTo.onchange = function() {
+    var dat = (alarmTo.value).replace(/\D/g,'')
+    var dat2 = (alarmTo.value).replace(/\d/g,'')
+    if ((dat == "")||(dat2!="::")||((alarmTo.value).length<8)) {
+        alarmTo.value = restrictTo
+    } else {
+        dat = Number(dat)
+        if ((dat>235959)||(dat<0)) {
+            alarmTo.value = restrictTo
+        } else {
+            restrictTo = alarmTo.value
+            updateSettings()
+        }
+    }
+}
+
+alarmCustom.onchange = function() {
+    customAlarm = alarmCustom.value
     updateSettings()
 }
 
@@ -380,7 +453,7 @@ interQual.onchange = function() {
     updateSettings()
 }
 
-interPath.oninput = function() {
+interPath.onchange = function() {
     livePath = interPath.value
     updateSettings()
 }
@@ -429,12 +502,28 @@ function updateSettings() {
 
     alarmWait.value = updateInterval
     alarmSound.checked = soundAlarm
+    if (soundAlarm) {
+        alarmSspan.style.display = "inline"
+    } else {
+        alarmSspan.style.display = "none"
+    }
     alarmLim.checked = alarmLimit
     if (alarmLimit) {
         alarmMax.style.display = "inline"
     } else {
         alarmMax.style.display = "none"
     }
+    alarmInterval.value = soundInterval
+    alarmRestrict.checked = restrictAlarm
+    if (restrictAlarm) {
+        alarmRspan.style.display = "inline"
+    } else {
+        alarmRspan.style.display = "none"
+    }
+    alarmFrom.value = restrictFrom
+    alarmTo.value = restrictTo
+    alarmCustom.value = customAlarm
+    
     alarmLen.value = alarmLength
     alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
@@ -515,7 +604,13 @@ function exportSettings() {
         openPopout,
         previewWait,
         tutorialOn,
-        livePath
+        livePath,
+        soundInterval,
+        restrictAlarm,
+        restrictFrom,
+        restrictTo,
+        customAlarm,
+        desktopNotifs
     ])
 }
 
@@ -540,6 +635,12 @@ addon.port.on("onSettings", function(payload) {
     tutorialOn = payload[16]
     livePath = payload[17]
     curVersion = payload[18]
+    soundInterval = payload[19]
+    restrictAlarm = payload[20]
+    restrictFrom = payload[21]
+    restrictTo = payload[22]
+    customAlarm = payload[23]
+    desktopNotifs = payload[24]
 
     updateSettings()
 })

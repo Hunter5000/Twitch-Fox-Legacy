@@ -1,5 +1,5 @@
 const {
-    Cc, Ci
+    Cc, Ci, Cu
 } = require("chrome")
 var {
     ToggleButton
@@ -10,8 +10,20 @@ var panels = require("sdk/panel")
 var self = require("sdk/self")
 var system = require("sdk/system")
 var pgworkr = require("sdk/page-worker")
+var utils = require('sdk/window/utils')
 var ss = require("sdk/simple-storage")
 var preferences = require("sdk/simple-prefs")
+var notifications = require("sdk/notifications")
+
+Cu.import("resource://gre/modules/osfile.jsm")
+
+//When creating a new stored setting....
+
+//Change these default settings
+//Change default settings in SettingScript
+//Remove setting on add-on unloading
+//Add to SettingScript -> Main.js payload
+//Add to Main.js -> SettingScript payload
 
 //Default settings
 //Follower
@@ -24,9 +36,34 @@ if (ss.storage.updateInterval == null) {
     ss.storage.updateInterval = 1
 }
 
+if (ss.storage.desktopNotifs == null) {
+    ss.storage.desktopNotifs = true
+}
+
 if (ss.storage.soundAlarm == null) {
     ss.storage.soundAlarm = true
 }
+
+if (ss.storage.alarmInterval == null) {
+    ss.storage.alarmInterval = 1
+}
+
+if (ss.storage.restrictAlarm == null) {
+    ss.storage.restrictAlarm = false
+}
+
+if (ss.storage.restrictFrom == null) {
+    ss.storage.restrictFrom = "22:00:00"
+}
+
+if (ss.storage.restrictTo == null) {
+    ss.storage.restrictTo = "06:00:00"
+}
+
+if (ss.storage.customAlarm == null) {
+    ss.storage.customAlarm = ""
+}
+
 if (ss.storage.alarmLimit == null) {
     ss.storage.alarmLimit = false
 }
@@ -160,6 +197,9 @@ function handleHide() {
     button.state('window', {
         checked: false
     })
+    if (alarmOn) {
+        endAlarm()
+    }
 }
 
 function updateBadge() {
@@ -176,30 +216,96 @@ function resetBadgeColor() {
     clearTimeout(badge_timeout)
 }
 
+function seeIfRestricted() {
+    var restrictFrom = Number(ss.storage.restrictFrom.replace(/\D/g, ''))
+    var restrictTo = Number(ss.storage.restrictTo.replace(/\D/g, ''))
+    var newDate = new Date()
+    var newHours = String(newDate.getHours())
+    var newMins = String(newDate.getMinutes())
+    var newSecs = String(newDate.getSeconds())
+    if (Number(newHours) < 10) {
+        newHours = "0" + newHours
+    }
+    if (Number(newMins) < 10) {
+        newMins = "0" + newMins
+    }
+    if (Number(newSecs) < 10) {
+        newSecs = "0" + newSecs
+    }
+    var curTime = Number(newHours + newMins + newSecs)
+    if (restrictTo <= restrictFrom) {
+        if ((curTime >= restrictFrom) || (curTime <= restrictTo)) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        if ((curTime >= restrictFrom) && (curTime <= restrictTo)) {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
 function playAlert() {
     button.badgeColor = "#FF0000"
     badge_timeout = setTimeout(resetBadgeColor, 250)
-    if (ss.storage.soundAlarm) {
-        pgworkr.Page({
-            contentScript: "new Audio('alert2.ogg').play()",
-            contentURL: blank
-        })
+
+    var restricted = false
+    if (ss.storage.restrictAlarm) {
+        restricted = seeIfRestricted()
+    }
+    if ((ss.storage.soundAlarm) && (!restricted)) {
+        if (ss.storage.customAlarm != "") {
+            if ((ss.storage.customAlarm.search("http://") != -1) || (ss.storage.customAlarm.search("https://") != -1)) {
+                pgworkr.Page({
+                    contentScript: "new Audio('" + ss.storage.customAlarm + "').play()",
+                    contentURL: blank
+                })
+            } else {
+                var alarmpath1 = ss.storage.customAlarm.replace("\\", "\\\\")
+                var alarmpath2 = OS.Path.toFileURI(alarmpath1)
+                pgworkr.Page({
+                    contentScript: "new Audio('" + alarmpath2 + "').play()",
+                    contentURL: blank
+                })
+            }
+        } else {
+            pgworkr.Page({
+                contentScript: "new Audio('alert2.ogg').play()",
+                contentURL: blank
+            })
+        }
     }
     if (ss.storage.alarmLimit) {
         alarm_counter = alarm_counter + 1
-        if (alarm_counter >= Math.ceil(ss.storage.alarmLength)) {
+        if (alarm_counter >= Math.ceil(ss.storage.alarmLength/ss.storage.alarmInterval)) {
             alarm_counter = 0
-            clearInterval(alarm_interval)
-            alarmOn = false
-            alarmCause = ""
-                //console.log("Alarm automatically stopped")
-            if (panelOn) {
-                panelUpdate()
-            }
+            endAlarm()
         }
     } else {
         alarm_counter = 0
     }
+}
+
+function genNotif(strname, game, title, avatar) {
+    notifications.notify({
+        title: strname + " " + _("hasCome_") + " " + game,
+        text: ('"' + title + '"' + "\n\n" + _("clickHere_")),
+        iconURL: avatar,
+        onClick: function() {
+            if (!panelOn) {
+                var active = utils.getMostRecentBrowserWindow();
+                active.focus()
+                panelOn = true
+                panel.show({
+                    position: button
+                })
+            }
+
+        }
+    })
 }
 
 function containsValue(list, obj) {
@@ -268,7 +374,7 @@ function getLivestreamerPath() {
         // User defined
     if (ss.storage.livePath && ss.storage.livePath !== "") {
         path = ss.storage.livePath
-            // Best guess
+        path = path.replace("\\", "\\\\")
     } else if (system.platform == "linux") {
         path = "/usr/bin/livestreamer"
     } else if (system.platform == "winnt") {
@@ -449,7 +555,6 @@ function cleanOnlineStreamers() {
                             } else if (online_games[namekey] != "!null!") {
                                 manageOnlineStreamers(2, strname, game, title, viewers, avatar)
                             }
-
                         }
                     } else {
                         //Stream has come back online
@@ -543,8 +648,11 @@ function updateChannels() {
                     if ((!alarmOn) && checkStrId(strid)) {
                         alarmOn = true
                         alarmCause = strname
+                        if (ss.storage.desktopNotifs) {
+                            genNotif(strname, game, title, avatar)
+                        }
                         playAlert()
-                        alarm_interval = setInterval(playAlert, 1000) //this is the alarm part
+                        alarm_interval = setInterval(playAlert, ss.storage.alarmInterval * 1000) //this is the alarm part
                     }
                     if (panelOn) {
                         panelUpdate()
@@ -603,7 +711,7 @@ panel.port.on("openSettings", function(payload) {
 
 settingsPanel.port.on("importSettings", function(payload) {
     //Retrieve setting updates
-    if (payload[0].length!=ss.storage.followedStreamers.length) {
+    if (payload[0].length != ss.storage.followedStreamers.length) {
         ss.storage.followedStreamers = payload[0]
         updateChannels()
     } else {
@@ -626,7 +734,12 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.previewWait = payload[15]
     ss.storage.tutorialOn = payload[16]
     ss.storage.livePath = payload[17]
-
+    ss.storage.alarmInterval = payload[18]
+    ss.storage.restrictAlarm = payload[19]
+    ss.storage.restrictFrom = payload[20]
+    ss.storage.restrictTo = payload[21]
+    ss.storage.customAlarm = payload[22]
+    ss.storage.desktopNotifs = payload[23]
 })
 
 settingsPanel.port.on("importUser", function(payload) {
@@ -637,7 +750,8 @@ settingsPanel.port.on("forceRefresh", function() {
     forceRefresh()
 })
 
-panel.port.on("endAlarm", function() {
+function endAlarm() {
+    resetBadgeColor()
     if (alarm_interval != null) {
         clearInterval(alarm_interval)
         alarmOn = false
@@ -647,6 +761,10 @@ panel.port.on("endAlarm", function() {
     if (panelOn) {
         panelUpdate()
     }
+}
+
+panel.port.on("endAlarm", function() {
+    endAlarm()
 })
 
 preferences.on("settingsButton", function() {
@@ -701,7 +819,13 @@ function packageSettings() {
         ss.storage.previewWait,
         ss.storage.tutorialOn,
         ss.storage.livePath,
-        self.version
+        self.version,
+        ss.storage.alarmInterval,
+        ss.storage.restrictAlarm,
+        ss.storage.restrictFrom,
+        ss.storage.restrictTo,
+        ss.storage.customAlarm,
+        ss.storage.desktopNotifs
     ])
 }
 
@@ -715,7 +839,13 @@ exports.onUnload = function(reason) {
 
         //Alarm
         delete ss.storage.updateInterval
+        delete ss.storage.desktopNotifs
         delete ss.storage.soundAlarm
+        delete ss.storage.alarmInterval
+        delete ss.storage.restrictAlarm
+        delete ss.storage.restrictFrom
+        delete ss.storage.restrictTo
+        delete ss.storage.customAlarm
         delete ss.storage.alarmLimit
         delete ss.storage.alarmLength
         delete ss.storage.uniqueIds

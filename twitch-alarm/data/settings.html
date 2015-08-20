@@ -57,7 +57,7 @@
             <br>
             <br>
             <span>
-                <span style="font-weight: bold" data-l10n-id="importFile_"></span><strong>: </strong><input type="file" id="importfile" name="file" accept=".txt">
+                <span style="font-weight: bold" data-l10n-id="importFile_"></span><span> </span><input type="file" id="importfile" name="file" accept=".txt">
             </span>
             <br>
             <br>
@@ -80,9 +80,35 @@
             </form>
             <br>
             <form style="font-weight: bold">
+                <span data-l10n-id="enableNotifs_"></span>
+                <input type="checkbox" id="desktopnotifs" checked>
+            </form>
+            <br>
+            <form style="font-weight: bold">
                 <span data-l10n-id="enableSound_"></span>
                 <input type="checkbox" id="soundalarm" checked>
             </form>
+            <span id="soundspan" style="display: none">
+            <br>
+            <form style="font-weight: bold">
+                <span data-l10n-id="alarmInterval_"></span>
+                <input type="number" id="alarminterval" min="1" value="1">
+            </form>
+            <br>
+            <form style="font-weight: bold">
+                <span data-l10n-id="disable_"></span>
+                <input type="checkbox" id="restrictalarm">
+            </form>
+            <span id="restrictspan">
+            <span data-l10n-id="between_"></span><span> </span><input type="text" id="restrictfrom" style="width: 8%" maxlength="8"><span> </span><span data-l10n-id="and_"></span> <span></span><input type="text" id="restrictto" style="width: 8%" maxlength="8">
+            <br>
+            </span>
+            <br>   
+            <span style="font-weight: bold"><span data-l10n-id="custom_"></span></span>
+            <input type="text" id="customalarm" style="width: 50%">
+            <br><span data-l10n-id="custom2_"></span>
+            <br>
+            </span>
             <br>
             <form style="font-weight: bold">
                 <span data-l10n-id="setMaximum_"></span>
