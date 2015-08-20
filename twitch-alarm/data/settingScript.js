@@ -501,6 +501,7 @@ function updateSettings() {
     updateFollowed()
 
     alarmWait.value = updateInterval
+    alarmNotifs.checked = desktopNotifs
     alarmSound.checked = soundAlarm
     if (soundAlarm) {
         alarmSspan.style.display = "inline"
