@@ -44,6 +44,10 @@ if (ss.storage.soundAlarm == null) {
     ss.storage.soundAlarm = true
 }
 
+if (ss.storage.alarmVolume == null) {
+    ss.storage.alarmVolume = 100
+}
+
 if (ss.storage.alarmInterval == null) {
     ss.storage.alarmInterval = 1
 }
@@ -260,27 +264,27 @@ function playAlert() {
         if (ss.storage.customAlarm != "") {
             if ((ss.storage.customAlarm.search("http://") != -1) || (ss.storage.customAlarm.search("https://") != -1)) {
                 pgworkr.Page({
-                    contentScript: "new Audio('" + ss.storage.customAlarm + "').play()",
+                    contentScript: "a=new Audio('" + ss.storage.customAlarm + "');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
                     contentURL: blank
                 })
             } else {
                 var alarmpath1 = ss.storage.customAlarm.replace("\\", "\\\\")
                 var alarmpath2 = OS.Path.toFileURI(alarmpath1)
                 pgworkr.Page({
-                    contentScript: "new Audio('" + alarmpath2 + "').play()",
+                    contentScript: "a=new Audio('" + alarmpath2 + "');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
                     contentURL: blank
                 })
             }
         } else {
             pgworkr.Page({
-                contentScript: "new Audio('alert2.ogg').play()",
+                contentScript: "a=new Audio('alert2.ogg');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
                 contentURL: blank
             })
         }
     }
     if (ss.storage.alarmLimit) {
         alarm_counter = alarm_counter + 1
-        if (alarm_counter >= Math.ceil(ss.storage.alarmLength/ss.storage.alarmInterval)) {
+        if (alarm_counter >= Math.ceil(ss.storage.alarmLength / ss.storage.alarmInterval)) {
             alarm_counter = 0
             endAlarm()
         }
@@ -740,6 +744,7 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.restrictTo = payload[21]
     ss.storage.customAlarm = payload[22]
     ss.storage.desktopNotifs = payload[23]
+    ss.storage.alarmVolume = payload[24]
 })
 
 settingsPanel.port.on("importUser", function(payload) {
@@ -825,7 +830,8 @@ function packageSettings() {
         ss.storage.restrictFrom,
         ss.storage.restrictTo,
         ss.storage.customAlarm,
-        ss.storage.desktopNotifs
+        ss.storage.desktopNotifs,
+        ss.storage.alarmVolume
     ])
 }
 
@@ -841,6 +847,7 @@ exports.onUnload = function(reason) {
         delete ss.storage.updateInterval
         delete ss.storage.desktopNotifs
         delete ss.storage.soundAlarm
+        delete ss.storage.alarmVolume
         delete ss.storage.alarmInterval
         delete ss.storage.restrictAlarm
         delete ss.storage.restrictFrom

@@ -6,6 +6,7 @@ followedStreamers = null
 updateInterval = null
 desktopNotifs = null
 soundAlarm = null
+alarmVolume = null
 soundInterval = null
 restrictAlarm = null
 restrictFrom = null
@@ -60,6 +61,7 @@ alarmDefault = document.getElementById("alarmdefault")
 alarmWait = document.getElementById("updatelen")
 alarmNotifs = document.getElementById("desktopnotifs")
 alarmSound = document.getElementById("soundalarm")
+alarmVol = document.getElementById("alarmvolume")
 alarmSspan = document.getElementById("soundspan")
 alarmInterval = document.getElementById("alarminterval")
 alarmRestrict = document.getElementById("restrictalarm")
@@ -282,6 +284,7 @@ alarmDefault.onclick = function() {
     updateInterval = 1
     desktopNotifs = true
     soundAlarm = true
+    alarmVolume = 100
     alarmInterval = 1
     restrictAlarm = false
     alarmFrom = "22:00:00"
@@ -300,13 +303,18 @@ alarmWait.onchange = function() {
     updateSettings()
 }
 
-alarmNotifs.onchange = function (){
+alarmNotifs.onchange = function() {
     desktopNotifs = alarmNotifs.checked
     updateSettings()
 }
 
 alarmSound.onchange = function() {
     soundAlarm = alarmSound.checked
+    updateSettings()
+}
+
+alarmVol.oninput = function() {
+    alarmVolume = alarmVol.value
     updateSettings()
 }
 
@@ -321,13 +329,13 @@ alarmRestrict.onchange = function() {
 }
 
 alarmFrom.onchange = function() {
-    var dat = (alarmFrom.value).replace(/\D/g,'')
-    var dat2 = (alarmFrom.value).replace(/\d/g,'')
-    if ((dat == "")||(dat2!="::")||((alarmFrom.value).length<8)) {
+    var dat = (alarmFrom.value).replace(/\D/g, '')
+    var dat2 = (alarmFrom.value).replace(/\d/g, '')
+    if ((dat == "") || (dat2 != "::") || ((alarmFrom.value).length < 8)) {
         alarmFrom.value = restrictFrom
     } else {
         dat = Number(dat)
-        if ((dat>235959)||(dat<0)) {
+        if ((dat > 235959) || (dat < 0)) {
             alarmFrom.value = restrictFrom
         } else {
             restrictFrom = alarmFrom.value
@@ -337,13 +345,13 @@ alarmFrom.onchange = function() {
 }
 
 alarmTo.onchange = function() {
-    var dat = (alarmTo.value).replace(/\D/g,'')
-    var dat2 = (alarmTo.value).replace(/\d/g,'')
-    if ((dat == "")||(dat2!="::")||((alarmTo.value).length<8)) {
+    var dat = (alarmTo.value).replace(/\D/g, '')
+    var dat2 = (alarmTo.value).replace(/\d/g, '')
+    if ((dat == "") || (dat2 != "::") || ((alarmTo.value).length < 8)) {
         alarmTo.value = restrictTo
     } else {
         dat = Number(dat)
-        if ((dat>235959)||(dat<0)) {
+        if ((dat > 235959) || (dat < 0)) {
             alarmTo.value = restrictTo
         } else {
             restrictTo = alarmTo.value
@@ -503,6 +511,7 @@ function updateSettings() {
     alarmWait.value = updateInterval
     alarmNotifs.checked = desktopNotifs
     alarmSound.checked = soundAlarm
+    alarmVol.value = alarmVolume
     if (soundAlarm) {
         alarmSspan.style.display = "inline"
     } else {
@@ -524,7 +533,7 @@ function updateSettings() {
     alarmFrom.value = restrictFrom
     alarmTo.value = restrictTo
     alarmCustom.value = customAlarm
-    
+
     alarmLen.value = alarmLength
     alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
@@ -611,7 +620,8 @@ function exportSettings() {
         restrictFrom,
         restrictTo,
         customAlarm,
-        desktopNotifs
+        desktopNotifs,
+        alarmVolume
     ])
 }
 
@@ -642,6 +652,7 @@ addon.port.on("onSettings", function(payload) {
     restrictTo = payload[22]
     customAlarm = payload[23]
     desktopNotifs = payload[24]
+    alarmVolume = payload[25]
 
     updateSettings()
 })
