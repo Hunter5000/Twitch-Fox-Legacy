@@ -97,6 +97,9 @@ if (ss.storage.hideInfo == null) {
 if (ss.storage.hideOffline == null) {
     ss.storage.hideOffline = false
 }
+if (ss.storage.hideShowHide == null) {
+    ss.storage.hideShowHide = false
+}
 if (ss.storage.sortMethod == null) {
     ss.storage.sortMethod = "recent"
 }
@@ -121,7 +124,7 @@ var online_games = []
 var online_titles = []
 var online_viewers = []
 var online_avatars = []
-var offline_streamers = []
+var online_times = []
 var counter_names = []
 var counter_nums = []
 var counter_off = 0
@@ -173,9 +176,9 @@ var panel = panels.Panel({
 
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
-    width: 665,
-    height: 670,
-    //onHide: handleHide
+    width: 675,
+    height: 685
+        //onHide: handleHide
 })
 
 function openSettings() {
@@ -291,6 +294,24 @@ function playAlert() {
     } else {
         alarm_counter = 0
     }
+}
+
+function genTime(time) {
+    var timeYr = time.slice(0, 4)
+    var timeMo = Number(time.slice(5, 7)) - 1
+    var timeDy = time.slice(8, 10)
+    var timeHr = time.slice(11, 13)
+    var timeMn = time.slice(14, 16)
+    var timeSc = time.slice(17, 19)
+    return Date.UTC(timeYr, timeMo, timeDy, timeHr, timeMn, timeSc)
+}
+
+function genTimes() {
+    var newtimes = []
+    for (var key in online_times) {
+        newtimes.push(genTime(online_times[key]))
+    }
+    return newtimes
 }
 
 function genNotif(strname, game, title, avatar) {
@@ -475,7 +496,7 @@ function importFollowers(name, offset) {
 
 //Now for my work...
 
-function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) {
+function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_, time_) {
     //0 to remove, 1 to add, 2 to update
     if (remadd == 0) {
         var namekey = online_streamers.indexOf(name_)
@@ -485,28 +506,36 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_) 
             online_titles.splice(namekey, 1)
             online_viewers.splice(namekey, 1)
             online_avatars.splice(namekey, 1)
+            online_times.splice(namekey, 1)
         }
     }
     if (remadd == 1) {
         var namekey = online_streamers.indexOf(name_)
         if (namekey < 0) {
             online_streamers.unshift(name_)
-            online_games.unshift(game_)
+            if (game_ != null) {
+                online_games.unshift(game_)
+            } else {
+                online_games.unshift("!null!")
+            }
             online_titles.unshift(title_)
             online_viewers.unshift(viewers_)
             online_avatars.unshift(avatar_)
-            if (game_ == null) {
-                online_games.unshift("!null!")
-            }
+            online_times.unshift(time_)
         }
     }
     if (remadd == 2) {
         var namekey = online_streamers.indexOf(name_)
         if (namekey > -1) {
-            online_games[namekey] = game_
+            if (game_ != null) {
+                online_games[namekey] = game_
+            } else {
+                online_games[namekey] = "!null!"
+            }
             online_titles[namekey] = title_
             online_viewers[namekey] = viewers_
             online_avatars[namekey] = avatar_
+            online_times[namekey] = time_
         }
     }
     if (panelOn) {
@@ -551,14 +580,11 @@ function cleanOnlineStreamers() {
                         var title = stream.channel.status
                         var viewers = stream.viewers
                         var avatar = stream.channel.logo
+                        var time = stream.created_at
                         var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
+                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
                             //Something has changed... time to update
-                            if ((game != null)) {
-                                manageOnlineStreamers(2, strname, game, title, viewers, avatar)
-                            } else if (online_games[namekey] != "!null!") {
-                                manageOnlineStreamers(2, strname, game, title, viewers, avatar)
-                            }
+                            manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
                         }
                     } else {
                         //Stream has come back online
@@ -576,10 +602,11 @@ function cleanOnlineStreamers() {
                         var title = stream.channel.status
                         var viewers = stream.viewers
                         var avatar = stream.channel.logo
+                        var time = stream.created_at
                         var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey])) {
+                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
                             //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar)
+                            manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
                         }
                     }
                 } else {
@@ -635,7 +662,6 @@ function updateChannels() {
         }
     }
     cleanOnlineStreamers()
-    offline_streamers = generateOfflineStreamers()
     checkChannels(function(response) {
         if (response.json != null) {
             var stream = response.json.stream
@@ -645,10 +671,11 @@ function updateChannels() {
                 var title = stream.channel.status
                 var viewers = stream.viewers
                 var avatar = stream.channel.logo
+                var time = stream.created_at
                 var strid = stream._id
                 if ((containsValue(ss.storage.followedStreamers, strname)) && (!containsValue(online_streamers, strname))) {
                     //New streamer has come online
-                    manageOnlineStreamers(1, strname, game, title, viewers, avatar)
+                    manageOnlineStreamers(1, strname, game, title, viewers, avatar, time)
                     if ((!alarmOn) && checkStrId(strid)) {
                         alarmOn = true
                         alarmCause = strname
@@ -690,9 +717,10 @@ function forceRefresh() {
     online_titles = []
     online_viewers = []
     online_avatars = []
-    offline_streamers = []
+    online_times = []
     counter_names = []
     counter_nums = []
+    panelUpdate()
 }
 
 panel.on("show", function() {
@@ -745,10 +773,15 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.customAlarm = payload[22]
     ss.storage.desktopNotifs = payload[23]
     ss.storage.alarmVolume = payload[24]
+    ss.storage.hideShowHide = payload[25]
 })
 
 settingsPanel.port.on("importUser", function(payload) {
     importFollowers(payload, 0)
+})
+
+panel.port.on("forceRefresh", function() {
+    forceRefresh()
 })
 
 settingsPanel.port.on("forceRefresh", function() {
@@ -776,17 +809,25 @@ preferences.on("settingsButton", function() {
     openSettings()
 })
 
+function genLocal1() {
+    if (_("streamingFor2_") != "streamingFor2_") {
+        return [_("streamingFor_"), _("streamingFor2_")]
+    } else {
+        return [_("streamingFor_"), ""]
+    }
+}
+
 function panelUpdate() {
     //Should update when something has changed or alarm turns off
     //Give the settings to the panel
-    offline_streamers = generateOfflineStreamers()
     panel.port.emit("updatePage", [
         online_streamers,
         online_games,
         online_titles,
         online_viewers,
         online_avatars,
-        offline_streamers,
+        genTimes(),
+        generateOfflineStreamers(),
         alarmOn,
         ss.storage.followedStreamers,
         ss.storage.hideInfo,
@@ -799,7 +840,10 @@ function panelUpdate() {
         ss.storage.tutorialOn,
         alarmCause,
         liveerror,
-        errorcause
+        errorcause,
+        ss.storage.hideShowHide,
+        genLocal1(),
+        _("separator_")
     ])
 }
 
@@ -831,7 +875,8 @@ function packageSettings() {
         ss.storage.restrictTo,
         ss.storage.customAlarm,
         ss.storage.desktopNotifs,
-        ss.storage.alarmVolume
+        ss.storage.alarmVolume,
+        ss.storage.hideShowHide
     ])
 }
 
@@ -864,6 +909,7 @@ exports.onUnload = function(reason) {
         delete ss.storage.livePath
         delete ss.storage.hideInfo
         delete ss.storage.hideOffline
+        delete ss.storage.hideShowHide
         delete ss.storage.sortMethod
         delete ss.storage.openTab
         delete ss.storage.openLive

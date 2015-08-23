@@ -5,7 +5,7 @@
   "description": "Never miss a Twitch stream by receiving sound and visual alerts when your favorite channels go live",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "1.10.2",
+  "version": "1.11.2",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{

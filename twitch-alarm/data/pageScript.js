@@ -4,6 +4,7 @@ onlineGames = null
 onlineTitles = null
 onlineViewers = null
 onlineAvatars = null
+onlineTimes = null
 offlineStreamers = null
 alarmOn = null
 defaultHidden = null
@@ -18,6 +19,9 @@ tutorial = null
 alarmCause = null
 liveError = null
 errorCause = null
+hideShowHide = null
+local1 = null
+local2 = null
 
 //Unique variables
 
@@ -181,10 +185,51 @@ function performSearch() {
 
 }
 
-
 document.getElementById("!followsearch").oninput = function() {
     searchTerm = document.getElementById("!followsearch").value.toLowerCase()
     performSearch()
+}
+
+document.getElementById("!forcerefresh").onmouseover = function() {
+    document.getElementById("!forcerefresh").style.opacity = 1
+}
+
+document.getElementById("!forcerefresh").onclick = function() {
+    addon.port.emit("forceRefresh")
+}
+
+document.getElementById("!forcerefresh").onmouseout = function() {
+    document.getElementById("!forcerefresh").style.opacity = 0.6
+}
+
+function genTime(time) {
+    var curUTC = Date.now()
+    timeDif = curUTC - time
+    var difHrs = Math.floor(timeDif / 3600000)
+    timeDif = timeDif - (difHrs * 3600000)
+    var difMns = Math.floor(timeDif / 60000)
+    timeDif = timeDif - (difMns * 60000)
+    var difScs = Math.floor(timeDif / 1000)
+    if (difHrs == 0) {
+        difHrs = ""
+    } else {
+        difHrs = difHrs + ":"
+    }
+    if ((difMns < 10) && (difHrs != 0)) {
+        difMns = "0" + difMns + ":"
+    } else {
+        difMns = difMns + ":"
+    }
+    if (difScs < 10) {
+        difScs = "0" + difScs
+    } else {
+        difScs = difScs
+    }
+    return difHrs + difMns + difScs
+}
+
+function insSeparators(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, local2);
 }
 
 function generateCard(status, name) {
@@ -205,6 +250,7 @@ function generateCard(status, name) {
         var title = onlineTitles[namekey]
         var viewers = onlineViewers[namekey]
         var avatar = onlineAvatars[namekey]
+        var time = onlineTimes[namekey]
         if (avatar == null) {
             avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
         }
@@ -237,10 +283,11 @@ function generateCard(status, name) {
         mainTable.cellpadding = "4"
         mainTable.cellspacing = "0"
         var mainTbody = document.createElement("tbody")
+            //Row 1
         var tr1 = document.createElement("tr")
         var td1a = document.createElement("td")
         td1a.style.width = "90px"
-        td1a.rowSpan = "4"
+        td1a.rowSpan = "5"
         var img1 = document.createElement("img")
         img1.alt = ""
         img1.height = "90"
@@ -253,6 +300,7 @@ function generateCard(status, name) {
         var img2 = document.createElement("img")
         img2.alt = ""
         img2.src = "streamer.png"
+        img2.style.verticalAlign = "bottom"
         var span1 = document.createElement("span")
         span1.style.color = "DodgerBlue"
         var bold1 = document.createElement("strong")
@@ -262,7 +310,7 @@ function generateCard(status, name) {
         td1b.appendChild(span1)
         tr1.appendChild(td1b)
         var td1c = document.createElement("td")
-        td1c.rowSpan = "4"
+        td1c.rowSpan = "5"
         var img3 = document.createElement("img")
         img3.alt = ""
         img3.height = "90"
@@ -274,11 +322,13 @@ function generateCard(status, name) {
         img3.align = "right"
         td1c.appendChild(img3)
         tr1.appendChild(td1c)
+            //Row 2
         var tr2 = document.createElement("tr")
         var td2 = document.createElement("td")
         var img4 = document.createElement("img")
         img4.alt = ""
         img4.src = "channel.png"
+        img4.style.verticalAlign = "bottom"
         td2.appendChild(img4)
         var span2 = document.createElement("span")
         if ((name == errorCause) && liveError) {
@@ -298,11 +348,13 @@ function generateCard(status, name) {
             }
         }
         tr2.appendChild(td2)
+            //Row 3
         var tr3 = document.createElement("tr")
         var td3 = document.createElement("td")
         var img5 = document.createElement("img")
         img5.alt = ""
         img5.src = "game.png"
+        img5.style.verticalAlign = "bottom"
         td3.appendChild(img5)
         var bold2 = document.createElement("strong")
         if (game != "!null!") {
@@ -315,19 +367,35 @@ function generateCard(status, name) {
             td3.appendChild(ital2)
         }
         tr3.appendChild(td3)
+            //Row 4
         var tr4 = document.createElement("tr")
         var td4 = document.createElement("td")
         var img6 = document.createElement("img")
         img6.alt = ""
         img6.src = "viewers.png"
+        img6.style.verticalAlign = "bottom"
         td4.appendChild(img6)
         var span3 = document.createElement("span")
-        span3.textContent = " " + viewers.toString()
+        span3.textContent = " " + insSeparators(viewers)
         td4.appendChild(span3)
         tr4.appendChild(td4)
+            //Row 5
+        var tr5 = document.createElement("tr")
+        var td5 = document.createElement("td")
+        var img7 = document.createElement("img")
+        img7.alt = ""
+        img7.src = "time.png"
+        img7.style.verticalAlign = "bottom"
+        td5.appendChild(img7)
+        var span4 = document.createElement("span")
+        span4.textContent = " " + local1[0] + " " + genTime(time) + " " + local1[1]
+        td5.appendChild(span4)
+        tr5.appendChild(td5)
+            //End
         mainTbody.appendChild(tr2)
         mainTbody.appendChild(tr3)
         mainTbody.appendChild(tr4)
+        mainTbody.appendChild(tr5)
         mainTbody.insertBefore(tr1, mainTbody.childNodes[0])
         mainTable.appendChild(mainTbody)
         mainA.appendChild(mainTable)
@@ -339,7 +407,6 @@ function generateCard(status, name) {
 function updateList() {
     var alarmbtn = null
     var headers = [document.getElementById("!online"), document.getElementById("!offline")]
-
     if (onlineStreamers.length > 0) {
         if (tutorial) {
             document.getElementById("!tutorial1").style.display = "inline"
@@ -352,11 +419,16 @@ function updateList() {
         document.getElementById("!tutorial1").style.display = "none"
     }
 
+    if (hideShowHide) {
+        document.getElementById("showhide!!").style.display = "none"
+    }
+
     if (sortingMethod == "viewers") {
         var newNames = []
         var newGames = []
         var newTitles = []
         var newAvatars = []
+        var newTimes = []
         for (var key in newViewers) {
             newViewers[key] = Number(newViewers[key])
         }
@@ -371,14 +443,46 @@ function updateList() {
             newGames.push(onlineGames[namekey])
             newTitles.push(onlineTitles[namekey])
             newAvatars.push(onlineAvatars[namekey])
+            newTimes.push(onlineTimes[namekey])
             onlineViewers[namekey] = "none"
         }
         onlineStreamers = newNames
         onlineGames = newGames
         onlineAvatars = newAvatars
         onlineTitles = newTitles
+        onlineTimes = newTimes
         onlineViewers = newViewers2
+    } else {
+        var newNames = []
+        var newGames = []
+        var newTitles = []
+        var newAvatars = []
+        var newViewers = []
+        for (var key in newTimes) {
+            newTimes[key] = Number(newTimes[key])
+        }
+        var newTimes = onlineTimes.concat().sort(function(a, b) {
+            return b - a
+        })
+        var newTimes2 = newTimes
+        var leng = newTimes.length
+        for (i = 0; i < leng; i++) {
+            var namekey = onlineTimes.indexOf(newTimes[i])
+            newNames.push(onlineStreamers[namekey])
+            newGames.push(onlineGames[namekey])
+            newTitles.push(onlineTitles[namekey])
+            newAvatars.push(onlineAvatars[namekey])
+            newViewers.push(onlineViewers[namekey])
+            onlineTimes[namekey] = "none"
+        }
+        onlineStreamers = newNames
+        onlineGames = newGames
+        onlineAvatars = newAvatars
+        onlineTitles = newTitles
+        onlineViewers = newViewers
+        onlineTimes = newTimes2
     }
+
     if (offlineHide) {
         document.getElementById("!onlinespan").style.display = "none"
         document.getElementById("!offlinespan").style.display = "none"
@@ -480,19 +584,23 @@ addon.port.on("updatePage", function(payload) {
     onlineTitles = payload[2]
     onlineViewers = payload[3]
     onlineAvatars = payload[4]
-    offlineStreamers = payload[5]
-    alarmOn = payload[6]
-    followedStreamers = payload[7]
-    defaultHidden = payload[8]
-    offlineHide = payload[9]
-    sortingMethod = payload[10]
-    openTab = payload[11]
-    useLive = payload[12]
-    openChat = payload[13]
-    previewWait = payload[14]
-    tutorial = payload[15]
-    alarmCause = payload[16]
-    liveError = payload[17]
-    errorCause = payload[18]
+    onlineTimes = payload[5]
+    offlineStreamers = payload[6]
+    alarmOn = payload[7]
+    followedStreamers = payload[8]
+    defaultHidden = payload[9]
+    offlineHide = payload[10]
+    sortingMethod = payload[11]
+    openTab = payload[12]
+    useLive = payload[13]
+    openChat = payload[14]
+    previewWait = payload[15]
+    tutorial = payload[16]
+    alarmCause = payload[17]
+    liveError = payload[18]
+    errorCause = payload[19]
+    hideShowHide = payload[20]
+    local1 = payload[21]
+    local2 = payload[22]
     updateList()
 })

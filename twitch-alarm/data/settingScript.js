@@ -30,6 +30,7 @@ openLive = null
 openPopout = null
 previewWait = null
 tutorialOn = null
+hideShowHide = null
 
 //Other variables
 
@@ -42,7 +43,6 @@ searchNum = 0
 
 //HTML elements
 
-followRefresh = document.getElementById("forcereload")
 followClear = document.getElementById("followdefault")
 followAdd = document.getElementById("followinput")
 followSubmit = document.getElementById("followsubmit")
@@ -78,6 +78,7 @@ alarmId = document.getElementById("uniqueids")
 
 interDefault = document.getElementById("interfacedefault")
 interTutorial = document.getElementById("tutorial")
+interShowHide = document.getElementById("hideshowhide")
 interRadio = document.getElementById("sortradio")
 interRecent = document.getElementById("sortrecent")
 interViewers = document.getElementById("sortviewers")
@@ -159,10 +160,6 @@ function getHash(url) {
 }
 
 //Follower settings
-
-followRefresh.onclick = function() {
-    addon.port.emit("forceRefresh")
-}
 
 followClear.onclick = function() {
     followedStreamers = []
@@ -394,6 +391,7 @@ interDefault.onclick = function() {
     livePath = ""
     hideInfo = false
     hideOffline = false
+    hideShowHide = false
     sortMethod = "recent"
     openTab = true
     openLive = false
@@ -405,6 +403,11 @@ interDefault.onclick = function() {
 
 interTutorial.onchange = function() {
     tutorialOn = interTutorial.checked
+    updateSettings()
+}
+
+interShowHide.onchange = function() {
+    hideShowHide = interShowHide.checked
     updateSettings()
 }
 
@@ -549,6 +552,7 @@ function updateSettings() {
     }
 
     interTutorial.checked = tutorialOn
+    interShowHide.checked = hideShowHide
     interHideoff.checked = hideOffline
     interHideinfo.checked = hideInfo
     interTab.checked = openTab
@@ -621,7 +625,8 @@ function exportSettings() {
         restrictTo,
         customAlarm,
         desktopNotifs,
-        alarmVolume
+        alarmVolume,
+        hideShowHide
     ])
 }
 
@@ -653,6 +658,7 @@ addon.port.on("onSettings", function(payload) {
     customAlarm = payload[23]
     desktopNotifs = payload[24]
     alarmVolume = payload[25]
+    hideShowHide = payload[26]
 
     updateSettings()
 })
