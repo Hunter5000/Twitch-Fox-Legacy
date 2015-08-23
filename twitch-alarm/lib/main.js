@@ -315,6 +315,12 @@ function genTimes() {
 }
 
 function genNotif(strname, game, title, avatar) {
+    if (avatar == "!null!") {
+        avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
+    }
+    if (game == "!null!") {
+        game = ""
+    }
     notifications.notify({
         title: strname + " " + _("hasCome_") + " " + game,
         text: ('"' + title + '"' + "\n\n" + _("clickHere_")),
@@ -513,11 +519,7 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_, 
         var namekey = online_streamers.indexOf(name_)
         if (namekey < 0) {
             online_streamers.unshift(name_)
-            if (game_ != null) {
-                online_games.unshift(game_)
-            } else {
-                online_games.unshift("!null!")
-            }
+            online_games.unshift(game_)
             online_titles.unshift(title_)
             online_viewers.unshift(viewers_)
             online_avatars.unshift(avatar_)
@@ -527,11 +529,7 @@ function manageOnlineStreamers(remadd, name_, game_, title_, viewers_, avatar_, 
     if (remadd == 2) {
         var namekey = online_streamers.indexOf(name_)
         if (namekey > -1) {
-            if (game_ != null) {
-                online_games[namekey] = game_
-            } else {
-                online_games[namekey] = "!null!"
-            }
+            online_games[namekey] = game_
             online_titles[namekey] = title_
             online_viewers[namekey] = viewers_
             online_avatars[namekey] = avatar_
@@ -577,9 +575,15 @@ function cleanOnlineStreamers() {
                         //Update
                         var strname = stream.channel.name
                         var game = stream.channel.game
+                        if (game == null) {
+                            game = "!null!"
+                        }
                         var title = stream.channel.status
                         var viewers = stream.viewers
                         var avatar = stream.channel.logo
+                        if (avatar == null) {
+                            avatar = "!null!"
+                        }
                         var time = stream.created_at
                         var namekey = online_streamers.indexOf(strname)
                         if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
@@ -599,9 +603,15 @@ function cleanOnlineStreamers() {
                         //Update
                         var strname = stream.channel.name
                         var game = stream.channel.game
+                        if (game == null) {
+                            game = "!null!"
+                        }
                         var title = stream.channel.status
                         var viewers = stream.viewers
                         var avatar = stream.channel.logo
+                        if (avatar == null) {
+                            avatar = "!null!"
+                        }
                         var time = stream.created_at
                         var namekey = online_streamers.indexOf(strname)
                         if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
@@ -668,9 +678,15 @@ function updateChannels() {
             if (stream != null) {
                 var strname = stream.channel.name
                 var game = stream.channel.game
+                if (game == null) {
+                    game = "!null!"
+                }
                 var title = stream.channel.status
                 var viewers = stream.viewers
                 var avatar = stream.channel.logo
+                if (avatar == null) {
+                    avatar = "!null!"
+                }
                 var time = stream.created_at
                 var strid = stream._id
                 if ((containsValue(ss.storage.followedStreamers, strname)) && (!containsValue(online_streamers, strname))) {

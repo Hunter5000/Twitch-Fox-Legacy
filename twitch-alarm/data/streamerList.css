@@ -36,6 +36,15 @@ a:hover, a:focus {
     color: black;
     cursor: pointer;
 }
+.refresh {
+    opacity: 0.6
+}
+.refresh:hover, .refresh:focus {
+    opacity: 0.8
+}
+.refresh:active {
+    opacity: 1
+}
 ul {
     padding-left: 0;
     margin-top: 0;

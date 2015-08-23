@@ -190,16 +190,8 @@ document.getElementById("!followsearch").oninput = function() {
     performSearch()
 }
 
-document.getElementById("!forcerefresh").onmouseover = function() {
-    document.getElementById("!forcerefresh").style.opacity = 1
-}
-
 document.getElementById("!forcerefresh").onclick = function() {
     addon.port.emit("forceRefresh")
-}
-
-document.getElementById("!forcerefresh").onmouseout = function() {
-    document.getElementById("!forcerefresh").style.opacity = 0.6
 }
 
 function genTime(time) {
@@ -251,7 +243,7 @@ function generateCard(status, name) {
         var viewers = onlineViewers[namekey]
         var avatar = onlineAvatars[namekey]
         var time = onlineTimes[namekey]
-        if (avatar == null) {
+        if (avatar == "!null!") {
             avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
         }
         if (((containsValue(hiddenStreamers, name) && !defaultHidden) || (!containsValue(hiddenStreamers, name) && defaultHidden)) && (status == 1)) {
@@ -388,8 +380,14 @@ function generateCard(status, name) {
         img7.style.verticalAlign = "bottom"
         td5.appendChild(img7)
         var span4 = document.createElement("span")
-        span4.textContent = " " + local1[0] + " " + genTime(time) + " " + local1[1]
+        var bold3 = document.createElement("strong")
+        var span5 = document.createElement("span")
+        span4.textContent = " " + local1[0] + " "
+        bold3.textContent = genTime(time)
+        span5.textContent = " " + local1[1]
         td5.appendChild(span4)
+        td5.appendChild(bold3)
+        td5.appendChild(span5)
         tr5.appendChild(td5)
             //End
         mainTbody.appendChild(tr2)
