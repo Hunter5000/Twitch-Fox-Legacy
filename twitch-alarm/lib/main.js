@@ -20,7 +20,7 @@ Cu.import("resource://gre/modules/osfile.jsm")
 //When creating a new stored setting....
 
 //Change these default settings
-//Change default settings in SettingScript
+//Change default settings in SettingScript... multiple locations
 //Remove setting on add-on unloading
 //Add to SettingScript -> Main.js payload
 //Add to Main.js -> SettingScript payload
@@ -91,14 +91,14 @@ if (ss.storage.liveQuality == null) {
 if (ss.storage.livePath == null) {
     ss.storage.livePath = ""
 }
-if (ss.storage.hideInfo == null) {
-    ss.storage.hideInfo = false
+if (ss.storage.hideAvatar == null) {
+    ss.storage.hideAvatar = false
 }
 if (ss.storage.hideOffline == null) {
     ss.storage.hideOffline = false
 }
-if (ss.storage.hideShowHide == null) {
-    ss.storage.hideShowHide = false
+if (ss.storage.hidePreview == null) {
+    ss.storage.hidePreview = false
 }
 if (ss.storage.sortMethod == null) {
     ss.storage.sortMethod = "recent"
@@ -117,6 +117,9 @@ if (ss.storage.previewWait == null) {
 }
 if (ss.storage.tutorialOn == null) {
     ss.storage.tutorialOn = true
+}
+if (ss.storage.darkMode == null) {
+    ss.storage.darkMode = false
 }
 
 var online_streamers = []
@@ -144,10 +147,16 @@ var alarmCause = ""
 var panelOn = false
 var liveerror = false
 var errorcause = ""
-var alarm_interval = null
 var update_interval = null
 var badge_timeout = null
+var badge_interval = null
 var alarm_counter = 0
+var searchedChannel = null
+
+var alarm_script = pgworkr.Page({
+    contentScriptFile: self.data.url("alarm.js"),
+    contentURL: blank
+})
 
 var httpHeaders = {
     'Accept': "application/vnd.twitchtv.v2+json",
@@ -170,14 +179,14 @@ var button = ToggleButton({
 var panel = panels.Panel({
     contentURL: self.data.url("streamerList.html"),
     width: 500,
-    height: 500,
+    height: 530,
     onHide: handleHide
 })
 
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
-    width: 675,
-    height: 685
+    width: 720,
+    height: 720
         //onHide: handleHide
 })
 
@@ -204,9 +213,6 @@ function handleHide() {
     button.state('window', {
         checked: false
     })
-    if (alarmOn) {
-        endAlarm()
-    }
 }
 
 function updateBadge() {
@@ -216,6 +222,15 @@ function updateBadge() {
         button.badge = null
     }
 
+}
+
+function flashBadge() {
+    button.badgeColor = "#FF0000"
+    badge_timeout = setTimeout(resetBadgeColor, 250)
+}
+
+function countAlarm() {
+    alarm_counter = alarm_counter + 1
 }
 
 function resetBadgeColor() {
@@ -255,44 +270,67 @@ function seeIfRestricted() {
     }
 }
 
-function playAlert() {
-    button.badgeColor = "#FF0000"
-    badge_timeout = setTimeout(resetBadgeColor, 250)
-
-    var restricted = false
-    if (ss.storage.restrictAlarm) {
-        restricted = seeIfRestricted()
-    }
-    if ((ss.storage.soundAlarm) && (!restricted)) {
-        if (ss.storage.customAlarm != "") {
-            if ((ss.storage.customAlarm.search("http://") != -1) || (ss.storage.customAlarm.search("https://") != -1)) {
-                pgworkr.Page({
-                    contentScript: "a=new Audio('" + ss.storage.customAlarm + "');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
-                    contentURL: blank
-                })
+function manageAlert(bool) {
+    if (bool) {
+        badge_interval = setInterval(flashBadge, ss.storage.alarmInterval * 1000)
+        var restricted = false
+        if (ss.storage.restrictAlarm) {
+            restricted = seeIfRestricted()
+        }
+        if ((ss.storage.soundAlarm) && (!restricted)) {
+            if (ss.storage.customAlarm != "") {
+                if ((ss.storage.customAlarm.search("http://") != -1) || (ss.storage.customAlarm.search("https://") != -1)) {
+                    alarm_script.port.emit("startAlarm", [
+                        ss.storage.alarmInterval,
+                        0,
+                        ss.storage.alarmVolume,
+                        ss.storage.customAlarm,
+                        null
+                    ])
+                    alarmOn = true
+                } else {
+                    var alarmpath1 = ss.storage.customAlarm.replace("\\", "\\\\")
+                    var alarmpath2 = OS.Path.toFileURI(alarmpath1)
+                    alarm_script.port.emit("startAlarm", [
+                        ss.storage.alarmInterval,
+                        1,
+                        ss.storage.alarmVolume,
+                        null,
+                        alarmpath2
+                    ])
+                    alarmOn = true
+                }
             } else {
-                var alarmpath1 = ss.storage.customAlarm.replace("\\", "\\\\")
-                var alarmpath2 = OS.Path.toFileURI(alarmpath1)
-                pgworkr.Page({
-                    contentScript: "a=new Audio('" + alarmpath2 + "');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
-                    contentURL: blank
-                })
+                alarm_script.port.emit("startAlarm", [
+                    ss.storage.alarmInterval,
+                    2,
+                    ss.storage.alarmVolume,
+                    null,
+                    null
+                ])
+                alarmOn = true
+            }
+        }
+        if (ss.storage.alarmLimit) {
+            setInterval(countAlarm, 1000)
+            if (alarm_counter >= ss.storage.alarmLength) {
+                manageAlert(false)
             }
         } else {
-            pgworkr.Page({
-                contentScript: "a=new Audio('alert2.ogg');a.volume=" + (ss.storage.alarmVolume / 100) + ";a.play()",
-                contentURL: blank
-            })
-        }
-    }
-    if (ss.storage.alarmLimit) {
-        alarm_counter = alarm_counter + 1
-        if (alarm_counter >= Math.ceil(ss.storage.alarmLength / ss.storage.alarmInterval)) {
             alarm_counter = 0
-            endAlarm()
         }
     } else {
+        alarm_script.port.emit("stopAlarm")
+        clearInterval(countAlarm)
         alarm_counter = 0
+        clearInterval(badge_interval)
+        alarmOn = false
+        alarmCause = ""
+            //console.log("Alarm stopped")
+        if (panelOn) {
+            panelUpdate()
+        }
+
     }
 }
 
@@ -438,8 +476,9 @@ function getLivestreamerPath() {
 
 function checkChannels(callbackFunc, favList) {
     for (var key in favList) {
+        counter_off = counter_off + 1
         var request = Request({
-            url: "https://api.twitch.tv/kraken/streams/" + favList[key],
+            url: "https://api.twitch.tv/kraken/streams/" + favList[key] + "?" + counter_off,
             onComplete: callbackFunc,
             headers: httpHeaders
         })
@@ -454,6 +493,19 @@ function checkChannel(callbackFunc, channel) {
     counter_off = counter_off + 1
     var request = Request({
         url: "https://api.twitch.tv/kraken/streams/" + channel + "?" + counter_off,
+        onComplete: callbackFunc,
+        headers: httpHeaders
+    })
+    request.get()
+}
+
+function checkChann(callbackFunc, channel) {
+    if (typeof(channel) != "string") {
+        return
+    }
+    counter_off = counter_off + 1
+    var request = Request({
+        url: "https://api.twitch.tv/kraken/channels/" + channel + "?" + counter_off,
         onComplete: callbackFunc,
         headers: httpHeaders
     })
@@ -486,6 +538,9 @@ function importFollowers(name, offset) {
             if (!containsValue(ss.storage.followedStreamers, channelName)) {
                 ss.storage.followedStreamers.push(channelName)
                 packageSettings()
+                if (panelOn) {
+                    panelUpdate()
+                }
             }
         }
         // Get more if they exist
@@ -496,6 +551,7 @@ function importFollowers(name, offset) {
         } else {
             //console.log("Import process complete")
             packageSettings()
+            panel.port.emit("importComplete")
         }
     }, name, offset)
 }
@@ -547,8 +603,8 @@ function counterTest(_name, _on) {
         var magicnum = Math.ceil(ss.storage.debounce / waittime)
         var nameindex = counter_names.indexOf(_name)
         counter_nums[nameindex] = (counter_nums[nameindex] + 1)
-        console.log(_name, counter_nums[nameindex])
-        if (counter_nums[nameindex] >= magicnum) {
+            //console.log(_name, counter_nums[nameindex])
+        if ((counter_nums[nameindex] >= magicnum)||(!containsValue(ss.storage.followedStreamers, _name))) {
             //Streamer is confirmed offline
             console.log(_name + " has been offline for enough consecutive time. Confirmed as offline.")
             manageOnlineStreamers(0, _name)
@@ -562,81 +618,6 @@ function counterTest(_name, _on) {
     }
 }
 
-function cleanOnlineStreamers() {
-    for (var key in online_streamers) {
-        checkChannel(function(response) {
-            if (response.json != null) {
-                var stream = response.json.stream
-                var chann = response.json._links.self.split("/streams/")[1]
-                var counterOn = containsValue(counter_names, chann)
-                if (stream != null) {
-                    if (!counterOn) {
-                        //Streamer is online as normal
-                        //Update
-                        var strname = stream.channel.name
-                        var game = stream.channel.game
-                        if (game == null) {
-                            game = "!null!"
-                        }
-                        var title = stream.channel.status
-                        var viewers = stream.viewers
-                        var avatar = stream.channel.logo
-                        if (avatar == null) {
-                            avatar = "!null!"
-                        }
-                        var time = stream.created_at
-                        var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
-                            //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
-                        }
-                    } else {
-                        //Stream has come back online
-                        //Remove from counter system
-                        console.log(chann + " has come back online. Confirmed as online.")
-
-                        var countIndex = counter_names.indexOf(chann)
-                        counter_names.splice(countIndex, 1)
-                        counter_nums.splice(countIndex, 1)
-                        addStrId(response.json.stream._id)
-
-                        //Update
-                        var strname = stream.channel.name
-                        var game = stream.channel.game
-                        if (game == null) {
-                            game = "!null!"
-                        }
-                        var title = stream.channel.status
-                        var viewers = stream.viewers
-                        var avatar = stream.channel.logo
-                        if (avatar == null) {
-                            avatar = "!null!"
-                        }
-                        var time = stream.created_at
-                        var namekey = online_streamers.indexOf(strname)
-                        if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
-                            //Something has changed... time to update
-                            manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
-                        }
-                    }
-                } else {
-                    //Stream cannot be found
-                    counterTest(chann, counterOn)
-                }
-            } else {
-                //Response cannot be found
-                //This means that a streamer who was online got deleted... perhaps due to an admin shutdown?
-                //We cannot be truly sure of who we're responding too... so run for the hills!
-                forceRefresh()
-            }
-        }, online_streamers[key])
-        if (!(containsValue(ss.storage.followedStreamers, online_streamers[key]))) {
-            //Streamer has been unfollowed
-            manageOnlineStreamers(0, online_streamers[key])
-        }
-    }
-}
-
 function checkStrId(id_) {
     if (!containsValue(ss.storage.streamIds, id_) || !ss.storage.uniqueIds) {
         return true
@@ -646,75 +627,112 @@ function checkStrId(id_) {
 }
 
 function addStrId(id_) {
-    if (!containsValue(ss.storage.streamIds, id_)) {
-        ss.storage.streamIds.push(id_)
+    if (ss.storage.uniqueIds) {
+        if (!containsValue(ss.storage.streamIds, id_)) {
+            if (ss.storage.streamIds.length > 99) {
+                ss.storage.streamIds.splice(0, 1)
+            }
+            ss.storage.streamIds.push(id_)
+        }
+    } else {
+        delete ss.storage.streamIds
     }
+
 }
 
 function updateChannels() {
     updateBadge()
     if (!(containsValue(ss.storage.followedStreamers, alarmCause)) && (alarmCause != "")) {
         //console.log("Alarm cause is no longer being followed")
-        clearInterval(alarm_interval)
-        alarmOn = false
-        alarmCause = ""
-        if (panelOn) {
-            panelUpdate()
-        }
+        manageAlert(false)
     }
     if (!(containsValue(online_streamers, alarmCause)) && (alarmCause != "")) {
         //console.log("Alarm cause is no longer online")
-        clearInterval(alarm_interval)
-        alarmOn = false
-        alarmCause = ""
-        if (panelOn) {
-            panelUpdate()
+        manageAlert(false)
+    }
+    for (var key in online_streamers) {
+        if (!(containsValue(ss.storage.followedStreamers, online_streamers[key]))) {
+            //Online channel has been unfollowed
+            manageOnlineStreamers(0, online_streamers[key])
         }
     }
-    cleanOnlineStreamers()
     checkChannels(function(response) {
         if (response.json != null) {
-            var stream = response.json.stream
-            if (stream != null) {
-                var strname = stream.channel.name
-                var game = stream.channel.game
-                if (game == null) {
-                    game = "!null!"
-                }
-                var title = stream.channel.status
-                var viewers = stream.viewers
-                var avatar = stream.channel.logo
-                if (avatar == null) {
-                    avatar = "!null!"
-                }
-                var time = stream.created_at
-                var strid = stream._id
-                if ((containsValue(ss.storage.followedStreamers, strname)) && (!containsValue(online_streamers, strname))) {
-                    //New streamer has come online
-                    manageOnlineStreamers(1, strname, game, title, viewers, avatar, time)
-                    if ((!alarmOn) && checkStrId(strid)) {
-                        alarmOn = true
-                        alarmCause = strname
-                        if (ss.storage.desktopNotifs) {
-                            genNotif(strname, game, title, avatar)
-                        }
-                        playAlert()
-                        alarm_interval = setInterval(playAlert, ss.storage.alarmInterval * 1000) //this is the alarm part
-                    }
-                    if (panelOn) {
-                        panelUpdate()
-                    }
-                    addStrId(strid)
-                } else {
-                    //Channel is not being followed
-                }
+            if (response.json.error != null) {
+                var msg = response.json.message
+                var strname = msg.split("'")[1]
+                var namekey = ss.storage.followedStreamers.indexOf(strname)
+                ss.storage.followedStreamers.splice(strname, 1)
             } else {
-                //Offline streamer is still offline
+                var stream = response.json.stream
+                var strname = response.json._links.self.split("/streams/")[1]
+                var counterOn = containsValue(counter_names, strname)
+                if (stream != null) {
+                    //Now online
+                    var game = stream.channel.game
+                    if (game == null) {
+                        game = "!null!"
+                    }
+                    var title = stream.channel.status
+                    var viewers = stream.viewers
+                    var avatar = stream.channel.logo
+                    if (avatar == null) {
+                        avatar = "!null!"
+                    }
+                    var time = stream.created_at
+                    var strid = stream._id
+                    if (!containsValue(online_streamers, strname)) {
+                        //Was offline, now online
+                        manageOnlineStreamers(1, strname, game, title, viewers, avatar, time)
+                        if ((!alarmOn) && checkStrId(strid)) {
+                            if (ss.storage.desktopNotifs) {
+                                genNotif(strname, game, title, avatar)
+                            }
+                            alarmCause = strname
+                            manageAlert(true)
+                        }
+                        if (panelOn) {
+                            panelUpdate()
+                        }
+                        addStrId(strid)
+                    } else {
+                        //Was online, still online
+                        var namekey = online_streamers.indexOf(strname)
+                        if (!counterOn) {
+                            //Streamer is online as normal
+                            //Update
+                            if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
+                                //Something has changed... time to update
+                                manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
+                            }
+                        } else {
+                            //Stream has come back online
+                            //Remove from counter system
+                            console.log(strname + " has come back online. Confirmed as online.")
+                            var countIndex = counter_names.indexOf(strname)
+                            counter_names.splice(countIndex, 1)
+                            counter_nums.splice(countIndex, 1)
+                                //Update
+                            if ((game != online_games[namekey]) || (title != online_titles[namekey]) || (avatar != online_avatars[namekey]) || (viewers != online_viewers[namekey]) || (time != online_times[namekey])) {
+                                //Something has changed... time to update
+                                manageOnlineStreamers(2, strname, game, title, viewers, avatar, time)
+                            }
+                        }
+                    }
+                } else {
+                    //Now offline
+                    if (containsValue(online_streamers, strname)) {
+                        //Was online, now offline
+                        counterTest(strname, counterOn)
+                    } else {
+                        //Was offline, still offline
+                    }
+                }
             }
         } else {
             //Response not found
         }
-    }, generateOfflineStreamers())
+    }, ss.storage.followedStreamers)
 }
 
 function generateOfflineStreamers() {
@@ -748,6 +766,23 @@ panel.port.on("openTab", function(payload) {
     tabs.open("http://www.twitch.tv/" + payload)
 })
 
+panel.port.on("unfollow", function(payload) {
+    var newname = payload
+    if (containsValue(ss.storage.followedStreamers, newname)) {
+        var namekey = ss.storage.followedStreamers.indexOf(newname)
+        ss.storage.followedStreamers.splice(namekey, 1)
+    }
+    panelUpdate()
+})
+
+panel.port.on("follow", function(payload) {
+    var newname = payload
+    if (!(containsValue(ss.storage.followedStreamers, newname))) {
+        ss.storage.followedStreamers.unshift(newname)
+    }
+    panelUpdate()
+})
+
 panel.port.on("openLive", function(payload) {
     errorcause = payload
     runLivestreamer(buildArgs("http://www.twitch.tv/" + payload, ss.storage.liveQuality))
@@ -773,7 +808,7 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.streamIds = payload[6]
     ss.storage.debounce = payload[7]
     ss.storage.liveQuality = payload[8]
-    ss.storage.hideInfo = payload[9]
+    ss.storage.hideAvatar = payload[9]
     ss.storage.hideOffline = payload[10]
     ss.storage.sortMethod = payload[11]
     ss.storage.openTab = payload[12]
@@ -788,11 +823,19 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.restrictTo = payload[21]
     ss.storage.customAlarm = payload[22]
     ss.storage.desktopNotifs = payload[23]
+    if (ss.storage.alarmVolume != payload[24]) {
+        alarm_script.port.emit("volumeChange", payload[24])
+    }
     ss.storage.alarmVolume = payload[24]
-    ss.storage.hideShowHide = payload[25]
+    ss.storage.hidePreview = payload[25]
+    ss.storage.darkMode = payload[26]
 })
 
 settingsPanel.port.on("importUser", function(payload) {
+    importFollowers(payload, 0)
+})
+
+panel.port.on("importUser", function(payload) {
     importFollowers(payload, 0)
 })
 
@@ -804,21 +847,80 @@ settingsPanel.port.on("forceRefresh", function() {
     forceRefresh()
 })
 
-function endAlarm() {
-    resetBadgeColor()
-    if (alarm_interval != null) {
-        clearInterval(alarm_interval)
-        alarmOn = false
-        alarmCause = ""
-            //console.log("Alarm stopped")
-    }
-    if (panelOn) {
-        panelUpdate()
-    }
-}
-
 panel.port.on("endAlarm", function() {
-    endAlarm()
+    manageAlert(false)
+})
+
+panel.port.on("searchTwitch", function(searchTerm) {
+    if (searchedChannel != null) {
+        //console.log("Wait for the current search to end")
+    } else {
+        searchedChannel = []
+        var output1 = []
+        var output2 = []
+            //console.log("Now searching " + searchTerm)
+        checkChannel(function(response) {
+            if (response.json != null) {
+                //console.log("Stream found")
+                var stream = response.json.stream
+                if (stream != null) {
+                    var game = stream.channel.game
+                    if (game == null) {
+                        game = "!null!"
+                    }
+                    var strname = stream.channel.name
+                    var avatar = stream.channel.logo
+                    var status = stream.channel.status
+                    var viewers = stream.viewers
+                    var time = stream.created_at
+                    output1 = [viewers, genTime(time)]
+                    output2 = [strname, avatar, status, game]
+                    searchedChannel = [output1, output2]
+                    panel.port.emit("searchedChannel", searchedChannel)
+                        //console.log("Transmitting back to panel")
+                    searchedChannel = null
+                } else {
+                    checkChann(function(response) {
+                        if (response.json != null) {
+                            //console.log("Channel found")
+                            if (response.json.error != null) {
+                                searchedChannel = null
+                                panel.port.emit("searchedChannel", searchedChannel)
+                                    //console.log("Response was null")
+                            } else {
+                                var strname = response.json.name
+                                var avatar = response.json.logo
+                                var game = response.json.game
+                                if (game == null) {
+                                    game = "!null!"
+                                }
+                                if (avatar == null) {
+                                    avatar = "!null!"
+                                }
+                                var status = response.json.status
+                                if (status == null) {
+                                    status = ""
+                                }
+                                output2 = [strname, avatar, status, game]
+                                searchedChannel = [output1, output2]
+                                panel.port.emit("searchedChannel", searchedChannel)
+                                    //console.log("Transmitting back to panel")
+                                searchedChannel = null
+                            }
+                        } else {
+                            searchedChannel = null
+                            panel.port.emit("searchedChannel", searchedChannel)
+                                //console.log("Response was null")
+                        }
+                    }, searchTerm)
+                }
+            } else {
+                searchedChannel = null
+                panel.port.emit("searchedChannel", searchedChannel)
+                    //console.log("Response was null")
+            }
+        }, searchTerm)
+    }
 })
 
 preferences.on("settingsButton", function() {
@@ -846,7 +948,7 @@ function panelUpdate() {
         generateOfflineStreamers(),
         alarmOn,
         ss.storage.followedStreamers,
-        ss.storage.hideInfo,
+        ss.storage.hideAvatar,
         ss.storage.hideOffline,
         ss.storage.sortMethod,
         ss.storage.openTab,
@@ -857,9 +959,10 @@ function panelUpdate() {
         alarmCause,
         liveerror,
         errorcause,
-        ss.storage.hideShowHide,
+        ss.storage.hidePreview,
         genLocal1(),
-        _("separator_")
+        _("separator_"), _("searchStreamers_"),
+        ss.storage.darkMode
     ])
 }
 
@@ -875,7 +978,7 @@ function packageSettings() {
         ss.storage.streamIds,
         ss.storage.debounce,
         ss.storage.liveQuality,
-        ss.storage.hideInfo,
+        ss.storage.hideAvatar,
         ss.storage.hideOffline,
         ss.storage.sortMethod,
         ss.storage.openTab,
@@ -892,7 +995,8 @@ function packageSettings() {
         ss.storage.customAlarm,
         ss.storage.desktopNotifs,
         ss.storage.alarmVolume,
-        ss.storage.hideShowHide
+        ss.storage.hidePreview,
+        ss.storage.darkMode
     ])
 }
 
@@ -923,15 +1027,16 @@ exports.onUnload = function(reason) {
         //Interface
         delete ss.storage.liveQuality
         delete ss.storage.livePath
-        delete ss.storage.hideInfo
+        delete ss.storage.hideAvatar
         delete ss.storage.hideOffline
-        delete ss.storage.hideShowHide
+        delete ss.storage.hidePreview
         delete ss.storage.sortMethod
         delete ss.storage.openTab
         delete ss.storage.openLive
         delete ss.storage.openPopout
         delete ss.storage.previewWait
         delete ss.storage.tutorialOn
+        delete ss.storage.darkMode
 
         //console.log("Good bye!")
     } else if (reason == "upgrade") {
@@ -943,7 +1048,6 @@ exports.onUnload = function(reason) {
 }
 
 function onOverQuota() {
-    console.log("Over quota! Let's delete the most spacetaking yet most useless pieces of data.")
     delete ss.storage.streamIds
     ss.storage.streamIds = []
 }

@@ -22,7 +22,7 @@ deBounce = null
 
 liveQuality = null
 livePath = null
-hideInfo = null
+hideAvatar = null
 hideOffline = null
 sortMethod = null
 openTab = null
@@ -30,7 +30,7 @@ openLive = null
 openPopout = null
 previewWait = null
 tutorialOn = null
-hideShowHide = null
+hidePreview = null
 
 //Other variables
 
@@ -78,19 +78,20 @@ alarmId = document.getElementById("uniqueids")
 
 interDefault = document.getElementById("interfacedefault")
 interTutorial = document.getElementById("tutorial")
-interShowHide = document.getElementById("hideshowhide")
+interHidepreview = document.getElementById("hidepreview")
 interRadio = document.getElementById("sortradio")
 interRecent = document.getElementById("sortrecent")
 interViewers = document.getElementById("sortviewers")
 interPreview = document.getElementById("previewwait")
 interHideoff = document.getElementById("hideoff")
-interHideinfo = document.getElementById("hideinfo")
+interHideavatar = document.getElementById("hideavatar")
 interTab = document.getElementById("opentab")
 interLive = document.getElementById("livestreamer")
 interChat = document.getElementById("popout")
 interSpan = document.getElementById("livespan")
 interQual = document.getElementById("livequality")
 interPath = document.getElementById("livepath")
+interDark = document.getElementById("darkmode")
 
 versionSpan = document.getElementById("versionspan")
 
@@ -389,9 +390,10 @@ interDefault.onclick = function() {
 
     liveQuality = "best"
     livePath = ""
-    hideInfo = false
+    hideAvatar = false
     hideOffline = false
-    hideShowHide = false
+    hidePreview = false
+    darkMode = false
     sortMethod = "recent"
     openTab = true
     openLive = false
@@ -406,8 +408,8 @@ interTutorial.onchange = function() {
     updateSettings()
 }
 
-interShowHide.onchange = function() {
-    hideShowHide = interShowHide.checked
+interHidepreview.onchange = function() {
+    hidePreview = interHidepreview.checked
     updateSettings()
 }
 
@@ -439,8 +441,8 @@ interHideoff.onchange = function() {
     updateSettings()
 }
 
-interHideinfo.onchange = function() {
-    hideInfo = interHideinfo.checked
+interHideavatar.onchange = function() {
+    hideAvatar = interHideavatar.checked
     updateSettings()
 }
 
@@ -466,6 +468,11 @@ interQual.onchange = function() {
 
 interPath.onchange = function() {
     livePath = interPath.value
+    updateSettings()
+}
+
+interDark.onchange = function() {
+    darkMode = interDark.checked
     updateSettings()
 }
 
@@ -552,14 +559,15 @@ function updateSettings() {
     }
 
     interTutorial.checked = tutorialOn
-    interShowHide.checked = hideShowHide
+    interHidepreview.checked = hidePreview
     interHideoff.checked = hideOffline
-    interHideinfo.checked = hideInfo
+    interHideavatar.checked = hideAvatar
     interTab.checked = openTab
     interLive.checked = openLive
     interPath.value = livePath
     interChat.checked = openPopout
     interPreview.value = previewWait
+    interDark.checked = darkMode
 
     if (interLive.checked) {
         interSpan.style.display = "inline"
@@ -610,7 +618,7 @@ function exportSettings() {
         streamIds,
         deBounce,
         liveQuality,
-        hideInfo,
+        hideAvatar,
         hideOffline,
         sortMethod,
         openTab,
@@ -626,7 +634,8 @@ function exportSettings() {
         customAlarm,
         desktopNotifs,
         alarmVolume,
-        hideShowHide
+        hidePreview,
+        darkMode
     ])
 }
 
@@ -641,7 +650,7 @@ addon.port.on("onSettings", function(payload) {
     streamIds = payload[6]
     deBounce = payload[7]
     liveQuality = payload[8]
-    hideInfo = payload[9]
+    hideAvatar = payload[9]
     hideOffline = payload[10]
     sortMethod = payload[11]
     openTab = payload[12]
@@ -658,7 +667,8 @@ addon.port.on("onSettings", function(payload) {
     customAlarm = payload[23]
     desktopNotifs = payload[24]
     alarmVolume = payload[25]
-    hideShowHide = payload[26]
+    hidePreview = payload[26]
+    darkMode = payload[27]
 
     updateSettings()
 })

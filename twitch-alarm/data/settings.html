@@ -10,7 +10,7 @@
 </head>
 
 <body onload="init()">
-    <h1 style="text-align:center"><img src="settings.png"><span> </span><span data-l10n-id="settings_"></span></h1>
+    <h1 style="text-align:center"><img src="settings.png" style="position: relative; top:5px"><span> </span><span data-l10n-id="settings_"></span></h1>
     <ul id="tabs">
         <li>
             <a href="#followed"> <img src="streamer.png"><span> </span><span data-l10n-id="manageFollowed_"></span></a>
@@ -120,7 +120,6 @@
                 <span data-l10n-id="maximumAlarm_"></span>
                 <input type="number" id="alarmlen" min="1" value="10">
                 <br>
-                <br>
             <br> </span>
             <span>
                 <span style="font-weight: bold" data-l10n-id="secondsBefore_"></span>
@@ -147,8 +146,8 @@
             <br> </span>
             <br>
             <span style="font-weight: bold">
-                <span data-l10n-id="hideShowHide_"></span>
-                <input type="checkbox" id="hideshowhide">
+                <span data-l10n-id="darkMode_"></span>
+                <input type="checkbox" id="darkmode">
             <br> </span>
             <br>
             <span>
@@ -159,13 +158,11 @@
                 <input type="radio" name="sortradio" id="sortviewers"><span data-l10n-id="mostViewers_"></span>
             <br> </span>
             <br>
-
             <span>
                 <span style="font-weight: bold"><span data-l10n-id="minimumWait_"></span></span>
                 <input type="number" id="previewwait" min="1" value="30">
                 <br> <span data-l10n-id="smallValues_"></span>
             <br> </span>
-
             <br>
             <span style="font-weight: bold">
                 <span data-l10n-id="hideOffline_"></span>
@@ -173,8 +170,13 @@
             <br> </span>
             <br>
             <span style="font-weight: bold">
-                 <span data-l10n-id="hideOnline_"></span>
-                <input type="checkbox" id="hideinfo">
+                 <span data-l10n-id="hideAvatar_"></span>
+                <input type="checkbox" id="hideavatar">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="hidePreview_"></span>
+                <input type="checkbox" id="hidepreview">
             <br> </span>
             <br>
             <span>

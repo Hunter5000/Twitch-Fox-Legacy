@@ -1,0 +1,140 @@
+body {
+    background-color: white;
+}
+
+.checkbox {
+    text-align: center;
+    font-size: 90%;
+}
+.option {
+    font-size: 90%;
+    border-radius: 5px;
+    color: #1E1E1E;
+    background-color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: left;
+    font-family: Helvetica;
+    z-index: 0;
+}
+
+.option:hover {
+    background-color: #F2F2F2;
+    color: #141414;
+    z-index: 3;
+    cursor: pointer;
+}
+
+.online {
+    color: #6441A5
+}
+
+.offline {
+    color: #D44949
+}
+
+.follow {
+    width: 30px; height: 78px;
+    background: url('follow.png') no-repeat center center;
+    background-position: 0px 0px
+}
+
+.follow:hover {
+   cursor: pointer;
+   background-position: -30px 0px
+}
+
+.unfollow {
+    width: 30px; height: 78px;
+    background: url('unfollow.png') no-repeat center center;
+    background-position: 0px 0px
+}
+
+.unfollow:hover {
+   cursor: pointer;
+   background-position: -30px 0px
+}
+
+.import {
+    width: 30px; height: 78px;
+    background: url('import.png') no-repeat center center;
+    background-position: 0px 0px
+}
+
+.import:hover {
+   cursor: pointer;
+   background-position: -30px 0px
+}
+
+li {
+    list-style-type: none;
+}
+a {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: black;
+}
+a:hover, a:focus {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+
+.header {
+    position: fixed;
+    z-index: 99;
+    width: 100%;
+}
+
+table {
+    cursor: default;
+}
+
+table.headd {
+    background-color: #f2f2f2;
+}
+
+.outer {
+    background-color: #fff;
+    position: relative;
+    height: 100px;
+    top: 35px;
+}
+
+.settings {
+    width: 32px; height: 32px;
+    background: url('settings2.png') no-repeat center center;
+    background-position: -32px 0px
+}
+
+.settings2 {
+    border-right: 1px solid #BFBFBF
+}
+
+.refresh2 {
+    border-left: 1px solid #BFBFBF
+}
+
+.settings:hover {
+   cursor: pointer;
+   background-position: 0px 0px
+}
+
+.refresh {
+    width: 32px; height: 32px;
+    background: url('refresh.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.refresh:hover{
+    cursor: pointer;
+    background-position: 0px 0px
+}
+
+ul {
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0px;
+    margin: 0px;
+}
