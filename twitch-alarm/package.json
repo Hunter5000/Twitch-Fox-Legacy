@@ -5,12 +5,12 @@
   "description": "Never miss a Twitch stream by receiving sound and visual alerts when your favorite channels go live",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "1.12.0",
+  "version": "1.12.13",
   "icon" : "data/ico48.png",
   "icon64": "data/ico64.png",
   "preferences": [{
     "type": "control",
-    "label": "Open settings page",
+    "label": "Settings",
     "name": "settingsButton",
     "title": "Click to access the settings page"
   }]

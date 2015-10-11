@@ -28,9 +28,6 @@
     <div class="tabContent" id="followed">
         <div>
             <br>
-            <button type="button" id="followdefault"><span data-l10n-id="clearAll_"></span></button>
-            <br>
-            <br>
             <span>
                 <input type="text" id="followinput">
                 <button type="button" id="followsubmit"><span data-l10n-id="addInput_"></span></button>
@@ -42,7 +39,7 @@
             </span>
             <br>
             <br>
-            <select style="width: 100%" id="followlist" size="10">
+            <select style="width: 100%" id="followlist" size="14">
 
                 <!-- <option value=" (your value here) "> (displayed text) </option> -->
 
@@ -62,17 +59,18 @@
             <br>
             <br>
             <button type="button" id="exportfile"><span data-l10n-id="exportFile_"></span></button>
+            <br>
+            <br>
+            <button type="button" id="followdefault"><span data-l10n-id="clearAll_"></span></button>
+            <br>
         </div>
     </div>
     <div class="tabContent" id="alarm">
         <div>
             <br>
-            <button type="button" id="alarmdefault"><span data-l10n-id="resetTo_"></span></button>
-            <br>
-            <br>
             <span style="font-weight: bold">
                 <span data-l10n-id="secondsTo_"></span>
-                <input type="number" id="updatelen" min="1" value="1">
+                <input type="number" id="updatelen" min="60" value="60">
             <br> </span>
             <br>
             <span style="font-weight: bold">
@@ -121,24 +119,17 @@
                 <input type="number" id="alarmlen" min="1" value="10">
                 <br>
             <br> </span>
-            <span>
-                <span style="font-weight: bold" data-l10n-id="secondsBefore_"></span>
-                <input type="number" id="debounce" min="0" value="60">
-                <br> <span data-l10n-id="preventsMultiple_"></span>
-            <br> </span>
-            <br>
             <span style="font-weight: bold">
                 <span data-l10n-id="doNot_"></span>
                 <input type="checkbox" id="uniqueids">
             <br> </span>
-
+            <br>
+            <button type="button" id="alarmdefault"><span data-l10n-id="resetTo_"></span></button>
+            <br>
         </div>
     </div>
     <div class="tabContent" id="interface">
         <div>
-            <br>
-            <button type="button" id="interfacedefault"><span data-l10n-id="resetTo_"></span></button>
-            <br>
             <br>
             <span style="font-weight: bold">
                 <span data-l10n-id="showTutorial_"></span>
@@ -207,7 +198,11 @@
             <span style="font-weight: bold"><span data-l10n-id="livestreamerPath_"></span></span>
             <input type="text" id="livepath" style="width: 50%">
             <br><span data-l10n-id="leaveBlank_"></span>
+            <br>
             </span>
+            <br>
+            <button type="button" id="interfacedefault"><span data-l10n-id="resetTo_"></span></button>
+            <br>
         </div>
     </div>
     <div class="tabContent" id="about">

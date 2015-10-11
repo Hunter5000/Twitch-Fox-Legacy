@@ -73,7 +73,6 @@ alarmCustom = document.getElementById("customalarm")
 alarmMax = document.getElementById("maxalarm")
 alarmLim = document.getElementById("alarmlimit")
 alarmLen = document.getElementById("alarmlen")
-alarmDeb = document.getElementById("debounce")
 alarmId = document.getElementById("uniqueids")
 
 interDefault = document.getElementById("interfacedefault")
@@ -279,7 +278,7 @@ followEfile.onclick = function() {
 alarmDefault.onclick = function() {
     //Default alarm settings
 
-    updateInterval = 1
+    updateInterval = 60
     desktopNotifs = true
     soundAlarm = true
     alarmVolume = 100
@@ -292,7 +291,6 @@ alarmDefault.onclick = function() {
     alarmLength = 10
     uniqueIds = true
     streamIds = []
-    deBounce = 40
     updateSettings()
 }
 
@@ -370,11 +368,6 @@ alarmLim.onchange = function() {
 
 alarmLen.onchange = function() {
     alarmLength = alarmLen.value
-    updateSettings()
-}
-
-alarmDeb.onchange = function() {
-    deBounce = alarmDeb.value
     updateSettings()
 }
 
@@ -545,7 +538,6 @@ function updateSettings() {
     alarmCustom.value = customAlarm
 
     alarmLen.value = alarmLength
-    alarmDeb.value = deBounce
     alarmId.checked = uniqueIds
 
     versionSpan.textContent = curVersion
@@ -616,7 +608,7 @@ function exportSettings() {
         alarmLength,
         uniqueIds,
         streamIds,
-        deBounce,
+        null,
         liveQuality,
         hideAvatar,
         hideOffline,
@@ -648,7 +640,7 @@ addon.port.on("onSettings", function(payload) {
     alarmLength = payload[4]
     uniqueIds = payload[5]
     streamIds = payload[6]
-    deBounce = payload[7]
+    //deBounce = payload[7]
     liveQuality = payload[8]
     hideAvatar = payload[9]
     hideOffline = payload[10]

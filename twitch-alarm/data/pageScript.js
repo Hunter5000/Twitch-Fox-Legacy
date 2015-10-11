@@ -26,6 +26,7 @@ local3 = null
 darkMode = null
 
 searchedChannel = null
+searchTarget = ""
 
 //Unique variables
 
@@ -39,10 +40,21 @@ import_interval = null
 searchingTwitch = false
 extraInfo = []
 
+function cleanse(str) {
+    var curvalue = str
+    if (typeof(curvalue) == "string") {
+        curvalue = curvalue.replace(/ /g, "")
+        curvalue = curvalue.toLowerCase()
+    }
+
+    return curvalue
+}
+
 function onClick(obj) {
     obj.onclick = function() {
         var actname = (obj.id.substring(0, obj.id.length - 1))
-        if (containsValue(onlineStreamers, actname)) {
+        var lowerOnline = cleanse(onlineStreamers.join(",")).split(",")
+        if (containsValue(lowerOnline, actname)) {
             if (openTab) {
                 addon.port.emit("openTab", actname)
             }
@@ -62,7 +74,7 @@ function onClick(obj) {
 function onClick2(obj) {
     obj.onclick = function() {
         if (searchedChannel != null) {
-            var actname = (obj.id)
+            var actname = (obj.id.substring(0, obj.id.length - 1))
             if (searchedChannel[0].length > 0) {
                 if (openTab) {
                     addon.port.emit("openTab", actname)
@@ -77,46 +89,117 @@ function onClick2(obj) {
             } else {
                 addon.port.emit("openTab", actname)
             }
+        } else if (searchingTwitch && (searchTarget != "")) {
+            var actname = (obj.id.substring(0, obj.id.length - 1))
+            addon.port.emit("openTab", actname)
         }
     }
 }
 
-function follow(obj) {
+function openTab_(obj) {
     obj.onclick = function() {
-        if (searchedChannel) {
-            var strname = obj.parentNode.parentNode.parentNode.parentNode.id
-            addon.port.emit("follow", strname)
-            document.getElementById("!followsearch").value = ""
-            searchTerm = ""
-            performSearch()
-            searchedChannel = null
+        var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        addon.port.emit("openTab", strname)
+        if (containsValue(extraInfo, strname)) {
+            var namekey = extraInfo.indexOf(strname)
+            extraInfo.splice(namekey, 1)
             updateList()
         }
     }
 }
 
-function unfollow(obj) {
+function openLive_(obj) {
     obj.onclick = function() {
-        var strname = obj.parentNode.parentNode.parentNode.parentNode.id
+        var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        addon.port.emit("openLive", strname)
+        if (containsValue(extraInfo, strname)) {
+            var namekey = extraInfo.indexOf(strname)
+            extraInfo.splice(namekey, 1)
+            updateList()
+        }
+    }
+}
+
+function openChat_(obj) {
+    obj.onclick = function() {
+        var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        var baseurl = "http://www.twitch.tv/" + strname + "/chat?popout="
+        window.open(baseurl, '_blank', 'right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no')
+        if (containsValue(extraInfo, strname)) {
+            var namekey = extraInfo.indexOf(strname)
+            extraInfo.splice(namekey, 1)
+            updateList()
+        }
+    }
+}
+
+function follow(obj, typ) {
+    obj.onclick = function() {
+        if (typ != 1) {
+            var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        } else {
+            var strname = obj.parentNode.parentNode.parentNode.id
+        }
+        addon.port.emit("follow", strname)
+        if (searchedChannel != null) {
+            searchTarget = ""
+            document.getElementById("!followsearch").value = ""
+            searchTerm = ""
+            performSearch()
+            searchedChannel = null
+            updateList()
+        } else if (searchingTwitch) {
+            searchTarget = ""
+            document.getElementById("!followsearch").value = ""
+            searchTerm = ""
+            performSearch()
+            searchedChannel = null
+            updateList()
+            searchTwitch(null)
+        }
+    }
+}
+
+function unfollow(obj, typ) {
+    obj.onclick = function() {
+        if (typ != 1) {
+            var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        } else {
+            var strname = obj.parentNode.parentNode.parentNode.id
+        }
         addon.port.emit("unfollow", strname)
         if (containsValue(extraInfo, strname)) {
             var namekey = extraInfo.indexOf(strname)
             extraInfo.splice(namekey, 1)
             updateList()
         }
-        if (searchedChannel) {
+        if (searchedChannel != null) {
+            searchTarget = ""
             document.getElementById("!followsearch").value = ""
             searchTerm = ""
             performSearch()
             searchedChannel = null
             updateList()
+        } else if (searchingTwitch) {
+            searchTarget = ""
+            searchTarget = ""
+            document.getElementById("!followsearch").value = ""
+            searchTerm = ""
+            performSearch()
+            searchedChannel = null
+            updateList()
+            searchTwitch(null)
         }
     }
 }
 
-function importt(obj) {
+function importt(obj, typ) {
     obj.onclick = function() {
-        var strname = obj.parentNode.parentNode.parentNode.parentNode.id
+        if (typ != 1) {
+            var strname = obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id
+        } else {
+            var strname = obj.parentNode.parentNode.parentNode.id
+        }
         addon.port.emit("importUser", strname)
         import_interval = setInterval(rotateRefresh, 30)
         if (containsValue(extraInfo, strname)) {
@@ -124,12 +207,21 @@ function importt(obj) {
             extraInfo.splice(namekey, 1)
             updateList()
         }
-        if (searchedChannel) {
+        if (searchedChannel != null) {
+            searchTarget = ""
             document.getElementById("!followsearch").value = ""
             searchTerm = ""
             performSearch()
             searchedChannel = null
             updateList()
+        } else if (searchingTwitch) {
+            searchTarget = ""
+            document.getElementById("!followsearch").value = ""
+            searchTerm = ""
+            performSearch()
+            searchedChannel = null
+            updateList()
+            searchTwitch(null)
         }
     }
 }
@@ -158,10 +250,14 @@ function onRightClick(obj) {
 
 function onRightClick2(obj) {
     obj.oncontextmenu = function() {
+        searchTarget = ""
         document.getElementById("!followsearch").value = ""
         searchTerm = ""
         performSearch()
         searchedChannel = null
+        if (searchingTwitch) {
+            searchTwitch(null)
+        }
         updateList()
     }
 }
@@ -179,12 +275,12 @@ document.getElementById("!settings").onclick = function() {
 }
 
 document.getElementById("!searchtwitch").onclick = function() {
-    searchTwitch()
+    searchTwitch(searchTerm)
 }
 
 document.getElementById("!followsearch").onkeydown = function(e) {
     if (e.keyCode == 13) {
-        searchTwitch()
+        searchTwitch(searchTerm)
     }
 }
 
@@ -198,7 +294,7 @@ function performSearch() {
     }
     for (var key in offlineStreamers) {
         if (document.getElementById(offlineStreamers[key])) {
-            if (offlineStreamers[key].toLowerCase().search(searchTerm) != -1) {
+            if (offlineStreamers[key].search(searchTerm) != -1) {
                 var elem = document.getElementById(offlineStreamers[key])
                 elem.style.display = "inline"
                 searchOff += 1
@@ -209,20 +305,18 @@ function performSearch() {
 
         }
     }
-
     for (var key in onlineStreamers) {
-        if (document.getElementById(onlineStreamers[key])) {
-            if ((onlineStreamers[key].toLowerCase().search(searchTerm) != -1) || (onlineGames[key].toLowerCase().search(searchTerm) != -1) || (onlineTitles[key].toLowerCase().search(searchTerm) != -1)) {
-                var elem = document.getElementById(onlineStreamers[key])
+        if (document.getElementById(cleanse(onlineStreamers[key]))) {
+            if (((onlineStreamers[key].toLowerCase()).search(searchTerm) != -1) || (onlineGames[key].toLowerCase().search(searchTerm) != -1) || (onlineTitles[key].toLowerCase().search(searchTerm) != -1)) {
+                var elem = document.getElementById(cleanse(onlineStreamers[key]))
                 elem.style.display = "inline"
                 searchOn += 1
             } else {
-                var elem = document.getElementById(onlineStreamers[key])
+                var elem = document.getElementById(cleanse(onlineStreamers[key]))
                 elem.style.display = "none"
             }
         }
     }
-
     if (searchOff > 0) {
         document.getElementById("!offlinespan").style.display = "inline"
     } else {
@@ -266,7 +360,12 @@ function performSearch() {
 }
 
 document.getElementById("!followsearch").oninput = function() {
+    if (searchingTwitch) {
+        searchTwitch(null)
+        updateList()
+    }
     if (searchedChannel) {
+        searchTarget = ""
         searchedChannel = null
         updateList()
     }
@@ -308,23 +407,30 @@ function insSeparators(num) {
     if (num != null) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, local2);
     } else {
-        console.log(onlineStreamers)
-        console.log(onlineGames)
-        console.log(onlineTitles)
-        console.log(onlineAvatars)
-        console.log(onlineTimes)
-        console.log(onlineViewers)
+        /*
+          console.log(onlineStreamers)
+          console.log(onlineGames)
+          console.log(onlineTitles)
+          console.log(onlineAvatars)
+          console.log(onlineTimes)
+          console.log(onlineViewers)
+          */
     }
 }
 
 function generateCard(status, name) {
-    //0 = last streamer, 1 = normal online streamer, 2 = offline streamer
+    //Status: 0 = searched channel, 1 = normal online channel, 2 = offline channel, 3 = target of search (search hasn't completed yet)
     if (searchedChannel && (status != 0)) {
-        if (searchedChannel[1][0] == name) {
+        if (cleanse(searchedChannel[1][0]) == name) {
             return null
         }
     }
-    if (status == 2) {
+    if (searchingTwitch && (status != 3)) {
+        if (searchTarget == cleanse(name)) {
+            return null
+        }
+    }
+    if ((status == 2) || (status == 3)) {
         var mainLi = document.createElement("li")
         mainLi.id = name
         var mainTable = document.createElement("table")
@@ -332,32 +438,31 @@ function generateCard(status, name) {
         mainTable.style.width = "100%"
         var tdof1 = document.createElement("td")
         trof.appendChild(tdof1)
-        if (containsValue(extraInfo, name)) {
+        if ((containsValue(extraInfo, name)) || (status == 3)) {
             var tdof2 = document.createElement("td")
             var tdof3 = document.createElement("td")
 
-            tdof2.style.width = "30px"
-            var img0 = document.createElement("img")
-            img0.height = "78"
-            img0.width = "30"
-            img0.className = "unfollow"
-            unfollow(img0)
-            img0.align = "left"
-            tdof2.appendChild(img0)
+            tdof2.style.width = "24px"
+            tdof2.style.rowSpan = "10"
+            tdof2.style.height = "100%"
 
-            tdof3.style.width = "30px"
-            var img01 = document.createElement("img")
-            img01.height = "78"
-            img01.width = "30"
-            img01.className = "import"
-            importt(img01)
-            img01.align = "left"
-            tdof3.appendChild(img01)
+            if (!containsValue(followedStreamers, name)) {
+                tdof2.className = "follow"
+                follow(tdof2, 1)
+            } else {
+                tdof2.className = "unfollow"
+                unfollow(tdof2, 1)
+            }
+
+            tdof3.style.width = "24px"
+            tdof3.style.rowSpan = "10"
+            tdof3.style.height = "100%"
+            tdof3.className = "import"
+            importt(tdof3, 1)
 
             trof.appendChild(tdof2)
             trof.appendChild(tdof3)
         }
-
         var mainA = document.createElement("a")
         mainA.id = name + "!"
         mainA.className = "option"
@@ -394,60 +499,106 @@ function generateCard(status, name) {
             avatar = searchedChannel[1][1]
             title = searchedChannel[1][2]
             game = searchedChannel[1][3]
+            views = searchedChannel[1][4]
+            followers = searchedChannel[1][5]
         }
         if (avatar == "!null!") {
             avatar = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png"
         }
         var mainLi = document.createElement("li")
         mainLi.style.margin = "0px"
-        mainLi.id = name
+        mainLi.id = cleanse(name)
         var mainTable = document.createElement("table")
         mainTable.style.width = "100%"
         mainTable.border = "0"
         mainTable.cellpadding = "4"
         mainTable.cellspacing = "0"
+
         var tr0 = document.createElement("tr")
         var td05 = document.createElement("td")
         tr0.appendChild(td05)
-        if ((status == 0) || (containsValue(extraInfo, name))) {
-            if (!containsValue(followedStreamers, name)) {
-                var td0 = document.createElement("td")
-                td0.style.width = "30px"
-                var img0 = document.createElement("img")
-                img0.height = "78"
-                img0.width = "30"
-                img0.className = "follow"
-                follow(img0)
-                img0.align = "left"
-                td0.appendChild(img0)
-                tr0.appendChild(td0)
+
+        var btns_ = false
+        if ((status == 0) || (containsValue(extraInfo, cleanse(name)))) {
+            if (status == 0) {
+                if (searchedChannel[0].length > 0) {
+                    btns_ = true
+                }
             } else {
-                var td0 = document.createElement("td")
-                td0.style.width = "30px"
-                var img0 = document.createElement("img")
-                img0.height = "78"
-                img0.width = "30"
-                img0.className = "unfollow"
-                unfollow(img0)
-                img0.align = "left"
-                td0.appendChild(img0)
-                tr0.appendChild(td0)
+                btns_ = true
             }
+        }
+        if (btns_) {
+            var btntbl = document.createElement("table")
+            btntbl.style.width = "30px"
+            btntbl.style.height = "100%"
+            var btntd = document.createElement("td")
+            btntd.appendChild(btntbl)
+            btntd.style.height = "100%"
+            btntd.style.width = "30px"
+            var btnr0 = document.createElement("tr")
+            btnr0.style.height = "33%"
+            var btnd0 = document.createElement("td")
+            btnd0.style.width = "30px"
+            btnd0.className = "twitch"
+            openTab_(btnd0)
+            btnr0.appendChild(btnd0)
+            btntbl.appendChild(btnr0)
+            var btnr1 = document.createElement("tr")
+            btnr1.style.height = "33%"
+            var btnd1 = document.createElement("td")
+            btnd1.style.width = "30px"
+            btnd1.className = "live"
+            openLive_(btnd1)
+            btnr1.appendChild(btnd1)
+            btntbl.appendChild(btnr1)
+            var btnr2 = document.createElement("tr")
+            btnr2.style.height = "33%"
+            var btnd2 = document.createElement("td")
+            btnd2.style.width = "30px"
+            btnd2.className = "chat"
+            openChat_(btnd2)
+            btnr2.appendChild(btnd2)
+            btntbl.appendChild(btnr2)
+            tr0.appendChild(btntd)
+        }
+        if ((status == 0) || (containsValue(extraInfo, cleanse(name)))) {
+            var extbl = document.createElement("table")
+            extbl.style.width = "100%"
+            extbl.style.height = "100%"
+            var extd = document.createElement("td")
+            extd.style.height = "100%"
+            extd.style.width = "30px"
+            extd.appendChild(extbl)
+            var extr0 = document.createElement("tr")
+            extr0.style.height = "50%"
+            extr0.style.width = "100%"
+            extbl.appendChild(extr0)
+            var extr1 = document.createElement("tr")
+            extr1.style.height = "50%"
+            extr1.style.width = "100%"
+            extbl.appendChild(extr1)
+            var td0 = document.createElement("td")
+            td0.style.width = "100%"
+            if (!containsValue(followedStreamers, cleanse(name))) {
+                td0.className = "follow"
+                follow(td0)
+            } else {
+                td0.className = "unfollow"
+                unfollow(td0)
+            }
+            extr0.appendChild(td0)
             var td01 = document.createElement("td")
-            td01.style.width = "30px"
-            var img01 = document.createElement("img")
-            img01.height = "78"
-            img01.width = "30"
-            img01.className = "import"
-            importt(img01)
-            img01.align = "left"
-            td01.appendChild(img01)
-            tr0.appendChild(td01)
+            td01.style.width = "100%"
+            td01.className = "import"
+            importt(td01)
+            extr1.appendChild(td01)
+            tr0.appendChild(extd)
         }
         var tr1 = document.createElement("tr")
         var mainTbody = document.createElement("table")
         mainTbody.className = "option"
-        mainTbody.id = name + "!"
+        mainTbody.id = cleanse(name) + "!"
         mainTbody.style.width = "100%"
         mainTbody.border = "0"
         mainTbody.style.borderSpacing = "0px"
@@ -455,7 +606,7 @@ function generateCard(status, name) {
         if (!hideAvatar) {
             var td1a = document.createElement("td")
             td1a.style.width = "78px"
-            td1a.rowSpan = "8"
+            td1a.rowSpan = "10"
             var img1 = document.createElement("img")
             img1.height = "78"
             img1.src = avatar
@@ -484,7 +635,15 @@ function generateCard(status, name) {
         span1.appendChild(bold1)
         td1b.appendChild(img2)
         td1b.appendChild(span1)
+        viewers_ = false
         if (status == 1) {
+            viewers_ = true
+        } else {
+            if (searchedChannel[0].length > 0) {
+                viewers_ = true
+            }
+        }
+        if (viewers_) {
             var img6 = document.createElement("img")
             img6.src = "viewers.png"
             img6.style.verticalAlign = "bottom"
@@ -492,48 +651,31 @@ function generateCard(status, name) {
             span3.textContent = insSeparators(viewers)
             td1b.appendChild(img6)
             td1b.appendChild(span3)
-        } else {
-            if (searchedChannel[0].length > 0) {
-                var img6 = document.createElement("img")
-                img6.src = "viewers.png"
-                img6.style.verticalAlign = "bottom"
-                var span3 = document.createElement("span")
-                span3.textContent = insSeparators(viewers)
-                td1b.appendChild(img6)
-                td1b.appendChild(span3)
-            }
         }
         tr1.appendChild(td1b)
+        var preview_ = false
         if (!hidePreview) {
             if (status == 0) {
                 if (searchedChannel[0].length > 0) {
-                    var td1c = document.createElement("td")
-                    td1c.rowSpan = "8"
-                    var img3 = document.createElement("img")
-                    img3.height = "78"
-                    var unix = new Date().getTime()
-                    unix = Math.ceil(unix / 1000)
-                    unix = Math.ceil(unix / previewWait)
-                    img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-139x78.jpg?" + String(unix)
-                    img3.width = "139"
-                    img3.align = "right"
-                    td1c.appendChild(img3)
-                    tr1.appendChild(td1c)
+                    preview_ = true
                 }
             } else {
-                var td1c = document.createElement("td")
-                td1c.rowSpan = "8"
-                var img3 = document.createElement("img")
-                img3.height = "78"
-                var unix = new Date().getTime()
-                unix = Math.ceil(unix / 1000)
-                unix = Math.ceil(unix / previewWait)
-                img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + name + "-139x78.jpg?" + String(unix)
-                img3.width = "139"
-                img3.align = "right"
-                td1c.appendChild(img3)
-                tr1.appendChild(td1c)
+                preview_ = true
             }
+        }
+        if (preview_) {
+            var td1c = document.createElement("td")
+            td1c.rowSpan = "10"
+            var img3 = document.createElement("img")
+            img3.height = "78"
+            var unix = new Date().getTime()
+            unix = Math.ceil(unix / 1000)
+            unix = Math.ceil(unix / previewWait)
+            img3.src = "http://static-cdn.jtvnw.net/previews-ttv/live_user_" + cleanse(name) + "-139x78.jpg?" + String(unix)
+            img3.width = "139"
+            img3.align = "right"
+            td1c.appendChild(img3)
+            tr1.appendChild(td1c)
         }
         //Row 2
         var tr2 = document.createElement("tr")
@@ -543,7 +685,7 @@ function generateCard(status, name) {
         img4.style.verticalAlign = "bottom"
         td2.appendChild(img4)
         var span2 = document.createElement("span")
-        if ((name == errorCause) && liveError) {
+        if ((cleanse(name) == errorCause) && liveError) {
             span2.textContent = " Livestreamer Path Error!"
             span2.style.color = "Red"
             span2.style.fontWeight = "bold"
@@ -562,49 +704,64 @@ function generateCard(status, name) {
         tr2.appendChild(td2)
         mainTbody.appendChild(tr2)
             //Row 3
-        if (status == 0) {
-            var tr41 = document.createElement("tr")
-            var td41 = document.createElement("td")
-            var img41 = document.createElement("img")
-            img41.src = "game.png"
-            img41.style.verticalAlign = "bottom"
-            td41.appendChild(img41)
-            var bold2 = document.createElement("strong")
-            if ((game == "!null!") || (game == "")) {
-                var ital2 = document.createElement("i")
-                bold2.textContent = " None"
-                ital2.appendChild(bold2)
-                td41.appendChild(ital2)
-            } else {
-                bold2.textContent = " " + game
-                td41.appendChild(bold2)
-            }
-            tr41.appendChild(td41)
-            mainTbody.appendChild(tr41)
+        var tr3 = document.createElement("tr")
+        var td3 = document.createElement("td")
+        var img5 = document.createElement("img")
+        img5.src = "game.png"
+        img5.style.verticalAlign = "bottom"
+        td3.appendChild(img5)
+        var bold2 = document.createElement("strong")
+        if ((game == "!null!") || (game == "")) {
+            var ital2 = document.createElement("i")
+            bold2.textContent = " None"
+            ital2.appendChild(bold2)
+            td3.appendChild(ital2)
         } else {
-            var tr3 = document.createElement("tr")
-            var td3 = document.createElement("td")
-            var img5 = document.createElement("img")
-            img5.src = "game.png"
-            img5.style.verticalAlign = "bottom"
-            td3.appendChild(img5)
-            var bold2 = document.createElement("strong")
-            if ((game == "!null!") || (game == "")) {
-                var ital2 = document.createElement("i")
-                bold2.textContent = " None"
-                ital2.appendChild(bold2)
-                td3.appendChild(ital2)
-            } else {
-                bold2.textContent = " " + game
-                td3.appendChild(bold2)
-            }
-            tr3.appendChild(td3)
-            mainTbody.appendChild(tr3)
+            bold2.textContent = " " + game
+            td3.appendChild(bold2)
         }
-        //Row 4
-
+        tr3.appendChild(td3)
+        mainTbody.appendChild(tr3)
+            //Row 4
+        if (status == 0) {
+            if (views != null) {
+                var tr4 = document.createElement("tr")
+                var td4 = document.createElement("td")
+                var img45 = document.createElement("img")
+                img45.src = "views.png"
+                img45.style.verticalAlign = "bottom"
+                td4.appendChild(img45)
+                var span45 = document.createElement("span")
+                span45.textContent = " " + insSeparators(views)
+                td4.appendChild(span45)
+                tr4.appendChild(td4)
+                mainTbody.appendChild(tr4)
+            }
+            //Row 4.5
+            if (followers != null) {
+                var tr45 = document.createElement("tr")
+                var td45 = document.createElement("td")
+                var img475 = document.createElement("img")
+                img475.src = "followers.png"
+                img475.style.verticalAlign = "bottom"
+                td45.appendChild(img475)
+                var span475 = document.createElement("span")
+                span475.textContent = " " + insSeparators(followers)
+                td45.appendChild(span475)
+                tr45.appendChild(td45)
+                mainTbody.appendChild(tr45)
+            }
+        }
         //Row 5
+        var time_ = false
         if (status == 1) {
+            time_ = true
+        } else {
+            if (searchedChannel[0].length > 0) {
+                time_ = true
+            }
+        }
+        if (time_) {
             var tr5 = document.createElement("tr")
             var td5 = document.createElement("td")
             var img7 = document.createElement("img")
@@ -622,31 +779,11 @@ function generateCard(status, name) {
             td5.appendChild(span5)
             tr5.appendChild(td5)
             mainTbody.appendChild(tr5)
-        } else {
-            if (searchedChannel[0].length > 0) {
-                var tr56 = document.createElement("tr")
-                var td56 = document.createElement("td")
-                var img76 = document.createElement("img")
-                img76.src = "time.png"
-                img76.style.verticalAlign = "bottom"
-                td56.appendChild(img76)
-                var span46 = document.createElement("span")
-                var bold36 = document.createElement("strong")
-                var span56 = document.createElement("span")
-                span46.textContent = " " + local1[0] + " "
-                bold36.textContent = genTime(time)
-                span56.textContent = " " + local1[1]
-                td56.appendChild(span46)
-                td56.appendChild(bold36)
-                td56.appendChild(span56)
-                tr56.appendChild(td56)
-                mainTbody.appendChild(tr56)
-            }
         }
-        //End
         mainTbody.insertBefore(tr1, mainTbody.childNodes[0])
         td05.appendChild(mainTbody)
         mainTable.appendChild(tr0)
+            //End
         mainLi.appendChild(mainTable)
         return mainLi
     }
@@ -654,6 +791,11 @@ function generateCard(status, name) {
 
 function updateList() {
     if (alarmOn) {
+        searchTarget = ""
+        document.getElementById("!followsearch").value = ""
+        searchTerm = ""
+        performSearch()
+        searchedChannel = null
         addon.port.emit("endAlarm", "End the alarm!")
     }
     document.getElementById("!followsearch").placeholder = local3
@@ -736,17 +878,32 @@ function updateList() {
             headers[key].removeChild(headers[key].firstChild)
         }
     }
-    if (searchedChannel != null) {
+    if ((searchedChannel != null) && (!searchingTwitch)) {
         document.getElementById("!searchedspan").style.display = "inline"
         var searchedElement = generateCard(0, searchedChannel[1][0])
         document.getElementById("!searched").appendChild(searchedElement)
-        onClick2(searchedElement)
-        onRightClick2(searchedElement)
+        onClick2(document.getElementById(searchedElement.id + "!"))
+        onRightClick2(document.getElementById(searchedElement.id + "!"))
     } else {
-        document.getElementById("!searchedspan").style.display = "none"
+        if (!searchingTwitch) {
+            document.getElementById("!searchedspan").style.display = "none"
+        }
+    }
+    if (searchingTwitch && (searchTarget != "")) {
+        document.getElementById("!searchedspan").style.display = "inline"
+        var searchedElement = generateCard(3, searchTarget)
+        if (searchedElement != null) {
+            document.getElementById("!searched").appendChild(searchedElement)
+            onClick2(document.getElementById(searchedElement.id + "!"))
+            onRightClick2(document.getElementById(searchedElement.id + "!"))
+        }
+    } else {
+        if (searchedChannel == null) {
+            document.getElementById("!searchedspan").style.display = "none"
+        }
     }
     for (var key in onlineStreamers) {
-        if (containsValue(followedStreamers, onlineStreamers[key])) {
+        if (containsValue(followedStreamers, cleanse(onlineStreamers[key]))) {
             var onlineElement = generateCard(1, onlineStreamers[key])
             if (onlineElement != null) {
                 document.getElementById("!online").appendChild(onlineElement)
@@ -781,16 +938,21 @@ function updateList() {
     }
 }
 
-function searchTwitch() {
-    var search2 = searchTerm
-    search2 = search2.replace(/ /g, "")
-    search2 = search2.replace(/\W/g, '')
-    search2 = search2.toLowerCase()
-    if ((search2 != "") && (!searchingTwitch)) {
-        searchingTwitch = true
-        addon.port.emit("searchTwitch", search2)
+function searchTwitch(term) {
+    var search2 = term
+    searchTarget = ""
+    searchedChannel = null
+    if (search2 != null) {
+        search2 = cleanse(search2)
+        search2 = search2.replace(/\W/g, '')
+        searchTarget = search2
+    }
+    if (!searchingTwitch) {
         searching_interval = setInterval(rotateRefresh, 30)
     }
+    searchingTwitch = true
+    updateList()
+    addon.port.emit("searchTwitch", search2)
 }
 
 addon.port.on("importComplete", function() {
@@ -801,18 +963,26 @@ addon.port.on("importComplete", function() {
 
 addon.port.on("searchedChannel", function(payload) {
     searchingTwitch = false
+    searchTarget = ""
     clearInterval(searching_interval)
     rotatedegs = 0
     document.getElementById("!forcerefresh").style.transform = "rotate(0deg)"
     var search2 = searchTerm
-    search2 = search2.replace(/ /g, "")
+    search2 = cleanse(search2)
     search2 = search2.replace(/\W/g, '')
-    search2 = search2.toLowerCase()
     if (payload != null) {
-        if (search2 == payload[1][0]) {
+        if (search2 == cleanse(payload[1][0])) {
             searchedChannel = payload
             updateList()
+        } else {
+            searchTarget = ""
+            searchedChannel = null
+            updateList()
         }
+    } else {
+        searchTarget = ""
+        searchedChannel = null
+        updateList()
     }
 
 })

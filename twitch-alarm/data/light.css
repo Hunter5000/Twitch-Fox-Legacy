@@ -1,7 +1,6 @@
 body {
     background-color: white;
 }
-
 .checkbox {
     text-align: center;
     font-size: 90%;
@@ -17,55 +16,87 @@ body {
     font-family: Helvetica;
     z-index: 0;
 }
-
 .option:hover {
     background-color: #F2F2F2;
     color: #141414;
     z-index: 3;
     cursor: pointer;
 }
-
 .online {
     color: #6441A5
 }
-
 .offline {
     color: #D44949
 }
-
 .follow {
-    width: 30px; height: 78px;
+    width: 30px;
+    height: 14px;
     background: url('follow.png') no-repeat center center;
-    background-position: 0px 0px
+    background-position: -2px, 50%;
+    background-color: #6441A5
 }
-
 .follow:hover {
-   cursor: pointer;
-   background-position: -30px 0px
+    background-color: #7550BA;
+    cursor: pointer;
+    background-position: -32px, 50%;
 }
-
 .unfollow {
-    width: 30px; height: 78px;
+    width: 30px;
+    height: 12px;
     background: url('unfollow.png') no-repeat center center;
-    background-position: 0px 0px
+    background-position: -2px, 50%;
+    background-color: #00B132
 }
-
 .unfollow:hover {
-   cursor: pointer;
-   background-position: -30px 0px
+    cursor: pointer;
+    background-position: -32px 50%;
+    background-color: #D44949
 }
-
 .import {
-    width: 30px; height: 78px;
+    width: 30px;
+    height: 14px;
     background: url('import.png') no-repeat center center;
-    background-position: 0px 0px
+    background-position: -2px 50%;
+    background-color: #0079C8
 }
-
 .import:hover {
-   cursor: pointer;
-   background-position: -30px 0px
+    cursor: pointer;
+    background-position: -32px 50%;
+    background-color: #004796
 }
-
+.twitch {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -2px 50%;
+    background-color: #FF0000
+}
+.twitch:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
+.live {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -32px 50%;
+    background-color: #FF0000
+}
+.live:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
+.chat {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -62px 50%;
+    background-color: #FF0000
+}
+.chat:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
 li {
     list-style-type: none;
 }
@@ -75,62 +106,55 @@ a {
     cursor: pointer;
     color: black;
 }
-a:hover, a:focus {
+a:hover,
+a:focus {
     background-color: white;
     color: black;
     cursor: pointer;
 }
-
 .header {
     position: fixed;
     z-index: 99;
     width: 100%;
 }
-
 table {
     cursor: default;
 }
-
 table.headd {
     background-color: #f2f2f2;
 }
-
 .outer {
     background-color: #fff;
     position: relative;
     height: 100px;
     top: 35px;
 }
-
 .settings {
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     background: url('settings2.png') no-repeat center center;
     background-position: -32px 0px
 }
-
 .settings2 {
     border-right: 1px solid #BFBFBF
 }
-
 .refresh2 {
     border-left: 1px solid #BFBFBF
 }
-
 .settings:hover {
-   cursor: pointer;
-   background-position: 0px 0px
-}
-
-.refresh {
-    width: 32px; height: 32px;
-    background: url('refresh.png') no-repeat center center;
-    background-position: -32px 0px
-}
-.refresh:hover{
     cursor: pointer;
     background-position: 0px 0px
 }
-
+.refresh {
+    width: 32px;
+    height: 32px;
+    background: url('refresh.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.refresh:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
 ul {
     padding-left: 0;
     margin-top: 0;
