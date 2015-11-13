@@ -1,0 +1,18 @@
+{
+  "name": "twitchfox",
+  "title": "TwitchFox",
+  "id": "jid1-PmBVeuWLfYr73g",
+  "description": "Quickly browse Twitch. Receive notifications for channels and games. Many customizable features.",
+  "author": "hunter",
+  "license": "MPL 2.0",
+  "version": "2.0.0",
+  "icon" : "data/ico48.png",
+  "icon64": "data/ico64.png",
+  "preferences": [{
+    "type": "control",
+    "label": "Settings",
+    "name": "settingsButton",
+    "title": "Click to access the settings panel"
+  }]
+}
+

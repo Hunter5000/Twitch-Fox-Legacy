@@ -1,0 +1,402 @@
+body {
+    background-color: #141414;
+    color: #999999;
+}
+.checkbox {
+    text-align: center;
+    font-size: 90%;
+}
+.option {
+    font-size: 90%;
+    border-radius: 5px;
+    color: #999999;
+    background-color: #141414;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: left;
+    font-family: Helvetica;
+    z-index: 0;
+}
+.option:hover {
+    background-color: #1E1E1E;
+    color: #D3D3D3;
+    z-index: 3;
+    cursor: pointer;
+}
+.online {
+    color: #FFFFFF
+}
+.offline {
+    color: #D44949
+}
+.authed {
+    color: inherit
+}
+.authed:hover {
+    cursor: pointer;
+    color: #FFFFFF
+}
+.follow {
+    width: 30px;
+    height: 14px;
+    background: url('follow.png') no-repeat center center;
+    background-position: -2px, 50%;
+    background-color: #6441A5
+}
+.follow:hover {
+    background-color: #7550BA;
+    cursor: pointer;
+    background-position: -32px, 50%;
+}
+.unfollow {
+    width: 30px;
+    height: 12px;
+    background: url('unfollow.png') no-repeat center center;
+    background-position: -2px, 50%;
+    background-color: #00B132
+}
+.unfollow:hover {
+    cursor: pointer;
+    background-position: -32px 50%;
+    background-color: #D44949
+}
+.mute {
+    width: 30px;
+    height: 14px;
+    background: url('mute.png') no-repeat center center;
+    background-position: -2px 50%;
+    background-color: #7550BA
+}
+.mute:hover {
+    cursor: pointer;
+    background-position: -32px 50%;
+    background-color: #6441A5
+}
+.unmute {
+    width: 30px;
+    height: 14px;
+    background: url('mute.png') no-repeat center center;
+    background-position: -32px, 50%;
+    background-color: #D44949
+}
+.unmute:hover {
+    cursor: pointer;
+    background-position: -2px 50%;
+    background-color: #00B132
+}
+.exit {
+    width: 32px;
+    height: 32px;
+    background: url('search.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.exit:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
+.switch {
+    width: 32px;
+    height: 32px;
+    background: url('twitch.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.switch:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
+.gamefollows {
+    width: 32px;
+    height: 32px;
+    background: url('gamefollows.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.gamefollows:hover {
+    cursor: pointer;
+}
+.gamefollows2 {
+    width: 32px;
+    height: 32px;
+    background: url('gamefollows.png') no-repeat center center;
+    background-position: 0px 0px
+}
+.gamefollows2:hover {
+    cursor: pointer;
+}
+.logout {
+    width: 32px;
+    height: 32px;
+    background: url('logout.png') no-repeat center center;
+    background-position: -32px 0px
+}
+.logout:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
+.connect {
+    width: 170px;
+    height: 32px;
+    background: url('connect.png') no-repeat center center;
+    background-position: 0px -32px
+}
+.connect:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
+.twitch {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -2px 50%;
+    background-color: #FF0000
+}
+.twitch:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
+.live {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -32px 50%;
+    background-color: #FF0000
+}
+.live:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
+.chat {
+    width: 30px;
+    height: 20px;
+    background: url('options.png') no-repeat center center;
+    background-position: -62px 50%;
+    background-color: #FF0000
+}
+.chat:hover {
+    cursor: pointer;
+    background-color: #FF7F00
+}
+li {
+    list-style-type: none;
+}
+a {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: black;
+}
+a:hover,
+a:focus {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+.header {
+    position: fixed;
+    z-index: 99;
+    width: 100%;
+}
+table {
+    cursor: default;
+}
+table.headd {
+    background-color: #1E1E1E;
+}
+.outer {
+    background-color: #141414;
+    position: relative;
+    height: 100px;
+    top: 35px;
+}
+.settings {
+    width: 32px;
+    height: 32px;
+    background: url('settings2.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.settings:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.settings2 {
+    width: 24px;
+    height: 24px;
+    background: url('settings2.png') no-repeat center center;
+    background-size: 96px 24px;
+    background-position: -48px 0px;
+}
+.settings2:hover {
+    cursor: pointer;
+    background-position: -72px 0px
+}
+.refresh {
+    width: 32px;
+    height: 32px;
+    background: url('refresh.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.refresh:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.followed {
+    width: 32px;
+    height: 32px;
+    background: url('followed.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.followed:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.games {
+    width: 32px;
+    height: 32px;
+    background: url('games.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.games:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.menu2 {
+    background-color: #1E1E1E;
+    border-top: 1px solid #333333;
+}
+.menu3 {
+    border-top: 1px solid #333333;
+    background-color: #1E1E1E;
+}
+.channels {
+    width: 32px;
+    height: 32px;
+    background: url('channels.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.channels:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.back {
+    width: 32px;
+    height: 32px;
+    background: url('back.png') no-repeat center center;
+    background-position: -64px 0px
+}
+.back:hover {
+    cursor: pointer;
+    background-position: -96px 0px
+}
+.border {
+    border-right: 1px solid #333333
+}
+.refresh2 {
+    /*border-right: 1px solid #333333*/
+}
+.search2 {
+    width: 24px;
+    height: 24px;
+    background: url('search.png') no-repeat center center;
+    background-size: 72px 24px;
+    background-position: -24px 0px
+}
+.search2:hover {
+    cursor: pointer;
+    background-position: 0px 0px
+}
+.search3 {
+    width: 24px;
+    height: 24px;
+    background: url('search.png') no-repeat center center;
+    background-position: -24px 0px
+}
+ul {
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0px;
+    margin: 0px;
+}
+.search {
+    background-color: #323232;
+    color: #D3D3D3;
+    border: 1px solid #333333
+}
+.preview {
+    width: 139px;
+    height: 78px;
+}
+.preview:hover {
+    cursor:move
+}
+.bigpreview {
+    width: 458px;
+    height: 258px
+}
+.bigpreview:hover {
+    cursor:move
+}
+.logo {
+    width: 78px;
+    height: 78px;
+    background-size: 78px 78px
+}
+.streamer {
+    width: 16px;
+    height: 16px;
+    background: url('streamer.png') no-repeat center center;
+    display: inline-block;
+}
+.viewers {
+    width: 16px;
+    height: 16px;
+    background: url('viewers.png') no-repeat center center;
+    display: inline-block;
+}
+.channel {
+    width: 16px;
+    height: 16px;
+    background: url('channel.png') no-repeat center center;
+    display: inline-block;
+}
+.game {
+    width: 16px;
+    height: 16px;
+    background: url('game.png') no-repeat center center;
+    display: inline-block;
+}
+.time {
+    width: 16px;
+    height: 16px;
+    background: url('time.png') no-repeat center center;
+    display: inline-block;
+}
+.views {
+    width: 16px;
+    height: 16px;
+    background: url('views.png') no-repeat center center;
+    display: inline-block;
+}
+.followers {
+    width: 16px;
+    height: 16px;
+    background: url('followers.png') no-repeat center center;
+    display: inline-block;
+}
+.box {
+    width: 56px;
+    height: 78px;
+}
+.rotate {
+    transform: rotate(90deg);
+    letter-spacing: -3px;
+    font-stretch: expanded
+}
+button {
+	background-color: #323232;
+	color: #D3D3D3;
+	border: 1px solid #333333
+}
+button:hover {
+    cursor:pointer;
+	background-color: #484848
+}

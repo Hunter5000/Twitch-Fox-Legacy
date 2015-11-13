@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title><span data-l10n-id="settings_"></span></title>
+
+    <meta charset="utf-8" />
+    <link id="!csslink" rel="stylesheet" type="text/css" href="settings.css" />
+
+</head>
+
+<body onload="init()">
+    <h1 style="text-align:center"><div class="settings" style="vertical-align: text-top; height: 32px; width:32px; display:inline-block"></div><span> </span><span data-l10n-id="settings_"></span></h1>
+    <ul id="tabs">
+        <li>
+            <a href="#followed"> <img src="streamer.png"><span> </span><span data-l10n-id="manageFollowed_"></span></a>
+        </li>
+        <li>
+            <a href="#alarm"> <img src="alarm.png"><span> </span><span data-l10n-id="alarmSettings_"></span></a>
+        </li>
+        <li>
+            <a href="#interface"> <img src="interface.png"><span> </span><span data-l10n-id="interfaceSettings_"></span></a>
+        </li>
+        <li>
+            <a href="#about"> <img src="ico16.png"><span> </span><span data-l10n-id="about_"></span></a>
+        </li>
+    </ul>
+    <div class="tabContent" id="followed">
+        <div>
+            <br>
+            <span>
+                <input type="text" id="followinput">
+                <button type="button" id="followsubmit"><span data-l10n-id="addInput_"></span></button>
+            </span>
+            <p style="font-weight: bold"><span data-l10n-id="followedStreamers_"></span><span id="followedp1"></span><span id="followedp2" style="display: none" data-l10n-id="totalShowing_"></span><span id="followedp3">:</span></p>
+            <span>
+                <span data-l10n-id="searchFollowed_"></span>
+            <input type="text" id="followsearch">
+            </span>
+            <br>
+            <br>
+            <i id="mutetut" data-l10n-id="muteChan_"></i>
+            <select style="width: 100%" id="followlist" size="15" multiple>
+
+                <!-- <option value=" (your value here) "> (displayed text) </option> -->
+
+            </select>
+            <br>
+            <button type="button" id="removeselected"><span data-l10n-id="removeSelected_"></span></button><span style="width: 40px"> </span>
+            <button type="button" id="muteall"><span data-l10n-id="muteAll_"></span></button><span style="width: 40px"> </span>
+            <button type="button" id="unmuteall"><span data-l10n-id="unmuteAll_"></span></button>
+            <span id="beforeimport"></span>
+            <span id="importspan">
+                <p style="font-weight: bold"><span data-l10n-id="userTo_"></span></p>
+            <input type="text" id="importinput">
+            <button type="button" id="importsubmit"><span data-l10n-id="importFollowed_"></span></button>
+            </span>
+            <br>
+            <span>
+                <span style="font-weight: bold" data-l10n-id="importFile_"></span><span> </span>
+            <input type="file" id="importfile" name="file" accept=".txt">
+            </span>
+            <br>
+            <br>
+            <button type="button" id="exportfile"><span data-l10n-id="exportFile_"></span></button>
+            <br>
+            <span id="clearspan">
+            <br>
+            <button type="button" id="followdefault"><span data-l10n-id="clearAll_"></span></button>
+            <br>
+            </span>
+        </div>
+    </div>
+    <div class="tabContent" id="alarm">
+        <div>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="secondsTo_"></span>
+            <input type="number" id="updatelen" min="60" value="60">
+            <br> </span>
+            <br>
+            <span>
+                <span data-l10n-id="receiveAlert_" style="font-weight: bold"></span>
+            <br>
+            <input type="checkbox" id="alerton" checked><span data-l10n-id="comesOnline_"></span>
+            <br>
+            <input type="checkbox" id="alertchange"><span data-l10n-id="changesStatus_"></span>
+            <br>
+            <input type="checkbox" id="alertoff"><span data-l10n-id="goesOffline_"></span>
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="alertGame_"></span>
+            <input type="checkbox" id="gamealert">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="enableNotifs_"></span>
+            <input type="checkbox" id="desktopnotifs" checked>
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="enableSound_"></span>
+            <input type="checkbox" id="soundalarm" checked>
+            <br> </span>
+            <span id="soundspan" style="display: none">
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="alarmVolume_"></span>
+            <input type="number" id="alarmvolume" min="0" max="100" value="100">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="alarmInterval_"></span>
+            <input type="number" id="alarminterval" min="1" value="1">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="disable_"></span>
+            <input type="checkbox" id="restrictalarm">
+            <br> </span>
+            <span id="restrictspan">
+            <span data-l10n-id="between_"></span><span> </span>
+            <input type="text" id="restrictfrom" style="width: 8%" maxlength="8"><span> </span><span data-l10n-id="and_"></span> <span></span>
+            <input type="text" id="restrictto" style="width: 8%" maxlength="8">
+            <br>
+            </span>
+            <br>
+            <span style="font-weight: bold"><span data-l10n-id="custom_"></span></span>
+            <input type="text" id="customalarm" style="width: 50%">
+            <br><span data-l10n-id="custom2_"></span>
+            <br>
+            </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="setMaximum_"></span>
+            <input type="checkbox" id="alarmlimit">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold; display: none" id="maxalarm">
+                <span data-l10n-id="maximumAlarm_"></span>
+            <input type="number" id="alarmlen" min="1" value="10">
+            <br>
+            <br> </span>
+            <span style="font-weight: bold">
+                <span data-l10n-id="doNot_"></span>
+            <input type="checkbox" id="uniqueids">
+            <br> </span>
+            <br>
+            <button type="button" id="alarmdefault"><span data-l10n-id="resetTo_"></span></button>
+            <br>
+        </div>
+    </div>
+    <div class="tabContent" id="interface">
+        <div>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="showTutorial_"></span>
+            <input type="checkbox" id="tutorial">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="darkMode_"></span>
+            <input type="checkbox" id="darkmode">
+            <br> </span>
+            <br>
+            <span>
+                <span style="font-weight: bold"><span data-l10n-id="methodTo_"></span></span>
+            <br>
+            <input type="radio" name="sortradio" id="sortrecent" checked><span data-l10n-id="mostRecent_"></span>
+            <br>
+            <input type="radio" name="sortradio" id="sortviewers"><span data-l10n-id="mostViewers_"></span>
+            <br>
+            <input type="radio" name="sortradio" id="sortalpha"><span data-l10n-id="alpha_"></span>
+            <br> </span>
+            <br>
+            <span>
+                <span style="font-weight: bold"><span data-l10n-id="minimumWait_"></span></span>
+            <input type="number" id="previewwait" min="1" value="30">
+            <br> <span data-l10n-id="smallValues_"></span>
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="hideOffline_"></span>
+            <input type="checkbox" id="hideoff">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                 <span data-l10n-id="hideAvatar_"></span>
+            <input type="checkbox" id="hideavatar">
+            <br> </span>
+            <br>
+            <span style="font-weight: bold">
+                <span data-l10n-id="hidePreview_"></span>
+            <input type="checkbox" id="hidepreview">
+            <br> </span>
+            <br>
+            <span>
+                <span style="font-weight: bold"><span data-l10n-id="whenAn_"></span></span>
+            <br>
+            <input type="checkbox" id="opentab" checked><span data-l10n-id="openTwitch_"></span>
+            <br>
+            <input type="checkbox" id="livestreamer"><span data-l10n-id="openLive_"></span><span> </span><a href="http://livestreamer.io/" target="_blank">Livestreamer</a><span> </span><span data-l10n-id="openLive2_"></span>
+            <br>
+            <input type="checkbox" id="popout"><span data-l10n-id="openChat_"></span>
+            <br> </span>
+            <br>
+            <span style="font-weight: bold"><span data-l10n-id="livestreamerQuality_"></span></span>
+            <br><span data-l10n-id="bestWill_"></span>
+            <br>
+            <select id="livequality">
+                <option value="best" data-l10n-id="best_"></option>
+                <option value="source" data-l10n-id="source_"></option>
+                <option value="high" data-l10n-id="high_"></option>
+                <option value="medium" data-l10n-id="medium_"></option>
+                <option value="low" data-l10n-id="low_"></option>
+                <option value="mobile" data-l10n-id="mobile_"></option>
+                <option value="worst" data-l10n-id="worst_"></option>
+                <option value="audio" data-l10n-id="audio_"></option>
+            </select>
+            <br>
+            <br>
+            <span style="font-weight: bold"><span data-l10n-id="livestreamerPath_"></span></span>
+            <input type="text" id="livepath" style="width: 50%">
+            <br><span data-l10n-id="leaveBlank_"></span>
+            <br>
+            <br>
+            <button type="button" id="interfacedefault"><span data-l10n-id="resetTo_"></span></button>
+            <br>
+        </div>
+    </div>
+    <div class="tabContent" id="about">
+        <div>
+            <p style="font-weight: bold">TwitchFox, <span data-l10n-id="version_"></span><span> </span><span id="versionspan" style="font-size: larger"></span><span> </span><span data-l10n-id="version2_"></span></p>
+            <p><span data-l10n-id="thankYou_"></span></p>
+            <p><span data-l10n-id="iveMade_"></span><span> </span><a href="https://addons.mozilla.org/en-US/firefox/addon/twitchfox/" target="_blank"><span data-l10n-id="addonPage_"></span></a><span> </span><span data-l10n-id="addonPage2_"></span></p>
+            <p><span data-l10n-id="ifYoure_"></span><span> </span><a href="https://github.com/Hunter5000/TwitchFox/" target="_blank"><span data-l10n-id="gitHub_"></span></a><span> </span><span data-l10n-id="gitHub2_"></span></p>
+            <p><span data-l10n-id="perhapsEven_"></span></p>
+            <p><span data-l10n-id="ifYou_"></span><span> </span><a href="mailto:hunter8750@gmail.com"><span data-l10n-id="emailMe_"></span></a><span> </span><span data-l10n-id="orAdd_"></span><span> </span><a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a><span> </span><span data-l10n-id="steam2_"></span></p>
+            <p style="font-weight: bold; font-size: larger">-Hunter</p>
+        </div>
+    </div>
+    <script src="settingScript.js"></script>
+</body>
+
+</html>

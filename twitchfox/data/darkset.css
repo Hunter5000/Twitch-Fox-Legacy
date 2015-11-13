@@ -1,0 +1,88 @@
+body {
+    font-family: "Lucida Grande",Verdana,Arial,sans-serif;
+    font-size: 80%;
+    background-color: #141414;
+    color: #999999;
+}
+a:link {
+    color: #CCC;
+}
+
+a:visited {
+    color: #BBB;
+}
+
+
+a:hover {
+    color: #FFF;
+}
+
+
+a:active {
+    color: #6441A5;
+}
+
+ul#tabs {
+    list-style-type: none;
+    margin: 30px 0 0;
+    padding: 0 0 0.3em;
+}
+ul#tabs li {
+    display: inline;
+}
+ul#tabs li a {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    color: #999999;
+    background-color: #323232;
+    border-color: #1E1E1E #1E1E1E -moz-use-text-color;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 1px 1px medium;
+    padding: 0.3em;
+    text-decoration: none;
+}
+ul#tabs li a:hover {
+    background-color: #272727;
+    color: #D3D3D3;
+}
+ul#tabs li a.selected {
+    background-color: #1E1E1E;
+    color: #D3D3D3;
+    font-weight: bold;
+    padding: 0.7em 0.3em 0.38em;
+}
+div.tabContent {
+    background-color: #1E1E1E;
+    border: 1px solid #1E1E1E;
+    padding: 0.5em;
+}
+div.tabContent.hide {
+    display: none;
+}
+input {
+    background-color: #323232;
+    color: #D3D3D3;
+    border: 1px solid #333333
+}
+select {
+    background-color: #141414;
+    color: #D3D3D3;
+    border: 1px solid #333333;
+}
+.settings {
+    width: 32px;
+    height: 32px;
+    background: url('settings2.png') no-repeat center center;
+    background-position: -64px 0px
+}
+button {
+	background-color: #323232;
+	color: #D3D3D3;
+	border: 1px solid #333333
+}
+button:hover {
+	background-color: #484848
+}

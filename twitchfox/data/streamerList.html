@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="light.css" id="!csslink" />
+</head>
+
+<body>
+
+    <div class="header">
+        <span id="!oncount" class="online" style="position: absolute; z-index: 1; left:21px; bottom: 7px; z-index: 4"></span>
+        <table border="0" class="headd" style="position: relative; right: 8px; bottom: 8px; width: 100%; border-spacing: 0px; text-align: center; table-layout: fixed">
+            <tbody>
+                <tr>
+                    <td class="border" style="width: 46px">
+                        <div class="followed" id="!menu" style="position: relative; left: 7px; z-index: 4"> </div>
+                    </td>
+                    <td class="border" style="width: 46px; left: -5px">
+                        <div class="settings" id="!settings" style="position: relative; left: 7px">
+                        </div>
+                    </td>
+
+                    <td class="refresh2" style="width: 46px; position: relative; left: 7px">
+                        <div class="refresh" id="!forcerefresh" </div>
+                    </td>
+                    <td style="text-align: left; width: 0px; position:relative; left: 296px; z-index: 2">
+                        <div class="exit" id="!twitchmode" style="display:none"></div>
+                    </td>
+                    <td id="!connects" style="text-align: left; width: 170px; position:absolute; left: 164px; z-index: 1; display:none">
+                        <div class="connect" id="!connecttwitch"></div>
+                    </td>
+
+                    <td id="!logouts" style="text-align: left; width: 0px; position:absolute; left: 410px; z-index: 2; display:none">
+                        <div class="logout" id="!logout"></div>
+                    </td>
+
+                    <td id="!loggedin" style="text-align: left; width: 270px; position:absolute; left: 147px; bottom: 7px; z-index: 1; font-size: 115%; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: none">
+                        <span data-l10n-id="loggedIn_" style="display:inline-block"></span><span> </span><span class="authed" style="font-weight:bold" id="!authname"></span>
+                    </td>
+
+                    <td id="!searchs" style="text-align: left; width: 0px; position:absolute; left: 410px; bottom: 4px; z-index: 1; display: none">
+                        <div class="search2" id="!searchtwitch"></div>
+                    </td>
+                    <td style="text-align: left">
+                        <span style="line-height: 50%">
+    <span id="!searchform">
+        <input type="text" id="!followsearch" class="search" placeholder="Search" style="position: absolute; bottom: 6px; left: 146px; width: 283px; display:none"> 
+		                        </span>
+                        </span>
+                    </td>
+
+                    <td style="width:0px">
+                        <div class="menu2" style="position: absolute; left: 0px; bottom:-33px; width:48px; height:32px; display: none">
+                            <div class="games" id="!menu2" style="position: absolute; left: 8px; z-index: 5"> </div>
+                        </div>
+                    </td>
+                    <td style="width:0px">
+                        <div class="menu3" style="position: absolute; left: 0px; bottom:-66px; width:48px; height:32px; display: none">
+                            <div class="channels" id="!menu3" style="position: absolute; left: 8px; z-index: 5"> </div>
+                        </div>
+                    </td>
+                    <td style="width:0px">
+                        <div class="menu3" style="position: absolute; left: 0px; bottom:-33px; width:48px; height:32px; z-index: -1; display: none">
+                            <div class="gamefollows" id="!menu4" style="position: absolute; left: 8px; z-index: -1"> </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="outer">
+
+            <!--<h3 id="!tutorial3" style="display: none">
+	  <span data-l10n-id="click_"></span>
+	  <img alt="" height="16" src="leftclick.png" width="16"/>
+	  <span data-l10n-id="toGo_"></span>
+	  <img alt="" height="16" src="rightclick.png" width="16"/>
+	  <span data-l10n-id="toDismiss_"></span>
+	  <br>
+	  <br>
+	</h3>-->
+
+            <span id="!gamefollowsbr" style="line-height:34px; display: none"><br></span>
+
+            <span id="!tutorial1" style="display: none; font-size: large">
+			<span data-l10n-id="click_"></span><span> </span>
+            <div class="follow" style="vertical-align: text-top; height: 26px; width:26px; display:inline-block"></div><span> </span><span data-l10n-id="toFollow_"></span>
+            </span>
+
+            <span id="!tutorial2" style="display: none; font-size: large">
+			<span data-l10n-id="youArent_"></span>
+            <br>
+            <br>
+            <span id="!tutorial2.1"><span data-l10n-id="toAdd_"></span><span> </span><strong data-l10n-id="search_"></strong><span> </span><span data-l10n-id="themBy_"></span><span> </span>
+            <div class="search2" style="vertical-align: text-top; height: 24px; width:24px; display:inline-block"></div><span> </span><span data-l10n-id="toSearch_"></span></span>
+            <span id="!tutorial2.2" style="display: none"><span data-l10n-id="activTwitch_"></span><span> </span><strong data-l10n-id="loggingIn_"></strong><span data-l10n-id="activTwitch2_"></span>
+            <br>
+            <br>
+            <span data-l10n-id="activTwitch3_"></span><span> </span>
+            <div class="search2" style="vertical-align: text-top; height: 24px; width:24px; display:inline-block"></div><span> </span><span data-l10n-id="activTwitch4_"></span>
+            </span>
+            <br>
+            <br>
+            <span data-l10n-id="addit_"></span><span> </span>
+            <div class="settings2" style="vertical-align: text-top; height: 24px; width:24px; display:inline-block"></div><span> </span><span data-l10n-id="aboveTo_"></span><span> </span><strong data-l10n-id="add_"></strong><span> </span><span data-l10n-id="anIndividual_"></span><span> </span><strong data-l10n-id="import_"></strong><span> </span><span data-l10n-id="followersFrom_"></span>
+            <br>
+            <br>
+            <span data-l10n-id="youCan_"></span>
+            </span>
+
+            <span id="!tutorial3" style="display: none; font-size: medium">
+			<span data-l10n-id="byPressing_"></span><span> </span>
+            <div class="followed" style="vertical-align: text-top; height: 32px; width:32px; display:inline-block"></div><span data-l10n-id="inThe_"></span><span> </span> <span> </span>
+            <div class="games" style="vertical-align: text-top; height: 32px; width:32px; display:inline-block"></div><span> </span><span data-l10n-id="gamesTab_"></span><span> </span>
+            <div class="channels" style="vertical-align: text-top; height: 32px; width:32px; display:inline-block"></div><span> </span><span data-l10n-id="streamsTab_"></span>
+            </span>
+
+            <span id="!tutorial4" style="display: none; font-size: medium">
+				<span id="!tutorial4.1">
+			<span data-l10n-id="clickGame_"></span><span> </span>
+            <div class="search2" style="vertical-align: text-top; height: 24px; width:24px; display:inline-block"></div><span> </span><span data-l10n-id="searchingFor_"></span>
+            </span><span id="!tutorial4.2" style="display: none">
+					<span data-l10n-id="youArent2_"></span>
+            </span>
+            </span>
+
+            <span id="!tutorial5" style="display: none; font-size: large">
+			<span data-l10n-id="click_"></span><span> </span>
+            <div class="follow" style="vertical-align: text-top; height: 26px; width:26px; display:inline-block"></div><span> </span><span data-l10n-id="toFollow2_"></span>
+            </span>
+
+            <span id="!tutorial6" style="display: none; font-size: medium">
+			<span data-l10n-id="rightClick_"></span>
+            </span>
+
+            <span id="!tutorial7" style="display: none; font-size: medium">
+			<span data-l10n-id="clickPreview_"></span>
+            </span>
+
+            <span id="!tutorialoff" style="display: none; font-size: medium">
+			<span data-l10n-id="disableTutorial_"></span>
+            </span>
+
+            <span id="!tutorial8" style="display: none; font-size: large">
+			<span data-l10n-id="youFollowed_"></span>
+            <br>
+            <br>
+            <span data-l10n-id="click_"></span><span> </span>
+            <div class="back" style="vertical-align: text-top; height: 32px; width:32px; display:inline-block"></div><span> </span><span data-l10n-id="toBack_"></span>
+            </span>
+
+            <span id="!tutorial9" style="display: none; font-size: medium">
+			<span data-l10n-id="rightClick2_"></span>
+            </span>
+
+            <span id="!onlinespan" style="display: none">
+            <ul id="!online">
+
+            </ul>
+            </span>
+
+            <span id="!onoffdiv" style="display: none"> <hr> </span>
+
+            <span id="!offlinespan" style="display: none">
+			  
+			<span id="!noresults" data-l10n-id="noResults_" style="display:none; font-size: large"></span>
+            <span id="!nochannels" data-l10n-id="noChannels_" style="display:none; font-size: large"></span>
+
+            <table style="table-layout:fixed" id="!upspan">
+                <tr>
+                    <td style="width:432px; position:relative; left:1px">
+                        <span id="!scrollup">
+			<button style="height: 20px; width:100%"><div style="display:inline-block; font-weight: bold; position: relative; bottom: 2px" class="rotate"><</div></button>
+			</span>
+                    </td>
+                    <td style="width:26px; position:relative; left:-2px">
+                        <span id="!sscrollup">
+			<button style="height: 20px; width:100%"><div style="display:inline-block; font-weight: bold; position: relative; bottom: 2px" class="rotate"><<</div></button>
+			</span>
+                    </td>
+                </tr>
+            </table>
+
+            <ul id="!offline">
+
+            </ul>
+
+            <table style="table-layout:fixed" id="!downspan">
+                <tr>
+                    <td style="width:432px; position:relative; left:1px">
+                        <span id="!scrolldown">
+			<button style="height: 20px; width:100%"><div style="display:inline-block; font-weight: bold; position: relative; bottom: 2px" class="rotate">></div></button>
+			</span>
+                    </td>
+                    <td style="width:26px; position:relative; left:-2px">
+                        <span id="!sscrolldown">
+			<button style="height: 20px; width:100%"><div style="display:inline-block; font-weight: bold; position: relative; bottom: 2px" class="rotate">>></div></button>
+			</span>
+                    </td>
+                </tr>
+            </table>
+            </span>
+        </div>
+
+        <script src="pageScript.js"></script>
+</body>
+
+</html>
