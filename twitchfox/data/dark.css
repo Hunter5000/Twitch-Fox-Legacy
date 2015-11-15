@@ -1,30 +1,69 @@
+.option,
 body {
-    background-color: #141414;
-    color: #999999;
+    background-color: #141414
+}
+.follow,
+.mute,
+.unfollow,
+.unmute,
+.video {
+    width: 30px
+}
+.authed:hover,
+.chat:hover,
+.connect:hover,
+.exit:hover,
+.follow:hover,
+.gamefollows:hover,
+.gochannel:hover,
+.live:hover,
+.logout:hover,
+.mute:hover,
+.option:hover,
+.switch:hover,
+.twitch:hover,
+.unfollow:hover,
+.unmute:hover,
+.video:hover,
+.videofollows2:hover,
+.videofollows:hover,
+a,
+a:focus,
+a:hover {
+    cursor: pointer
+}
+.menu2,
+.menu3 {
+    border-top: 1px solid #333
+}
+.search,
+button {
+    border: 1px solid #333
+}
+body {
+    color: #999
 }
 .checkbox {
     text-align: center;
-    font-size: 90%;
+    font-size: 90%
 }
 .option {
     font-size: 90%;
     border-radius: 5px;
-    color: #999999;
-    background-color: #141414;
+    color: #999;
     padding-top: 5px;
     padding-bottom: 5px;
     text-align: left;
     font-family: Helvetica;
-    z-index: 0;
+    z-index: 0
 }
 .option:hover {
     background-color: #1E1E1E;
     color: #D3D3D3;
-    z-index: 3;
-    cursor: pointer;
+    z-index: 3
 }
 .online {
-    color: #FFFFFF
+    color: #FFF
 }
 .offline {
     color: #D44949
@@ -33,358 +72,329 @@ body {
     color: inherit
 }
 .authed:hover {
-    cursor: pointer;
-    color: #FFFFFF
+    color: #FFF
 }
 .follow {
-    width: 30px;
     height: 14px;
-    background: url('follow.png') no-repeat center center;
-    background-position: -2px, 50%;
-    background-color: #6441A5
+    background: url(follow.png)center center no-repeat #6441A5;
+    background-position: -2px, 50%
 }
 .follow:hover {
     background-color: #7550BA;
-    cursor: pointer;
-    background-position: -32px, 50%;
+    background-position: -32px, 50%
 }
 .unfollow {
-    width: 30px;
     height: 12px;
-    background: url('unfollow.png') no-repeat center center;
-    background-position: -2px, 50%;
-    background-color: #00B132
+    background: url(unfollow.png)center center no-repeat #00B132;
+    background-position: -2px, 50%
+}
+.mute,
+.unmute,
+.video {
+    height: 14px
 }
 .unfollow:hover {
-    cursor: pointer;
     background-position: -32px 50%;
     background-color: #D44949
 }
 .mute {
-    width: 30px;
-    height: 14px;
-    background: url('mute.png') no-repeat center center;
-    background-position: -2px 50%;
-    background-color: #7550BA
+    background: url(mute.png)-2px 50% no-repeat #7550BA
 }
 .mute:hover {
-    cursor: pointer;
     background-position: -32px 50%;
     background-color: #6441A5
 }
 .unmute {
-    width: 30px;
-    height: 14px;
-    background: url('mute.png') no-repeat center center;
-    background-position: -32px, 50%;
-    background-color: #D44949
+    background: url(mute.png)center center no-repeat #D44949;
+    background-position: -32px, 50%
 }
 .unmute:hover {
-    cursor: pointer;
     background-position: -2px 50%;
     background-color: #00B132
 }
+.video {
+    background: url(video.png)-2px 50% no-repeat #8C8C9C
+}
+.connect,
+.exit,
+.gamefollows,
+.gamefollows2,
+.logout,
+.switch,
+.videofollows {
+    height: 32px
+}
+.video:hover {
+    background-position: -32px 50%;
+    background-color: #C3C3C4
+}
 .exit {
     width: 32px;
-    height: 32px;
-    background: url('search.png') no-repeat center center;
-    background-position: -32px 0px
+    background: url(search.png)-32px 0 no-repeat
 }
 .exit:hover {
-    cursor: pointer;
-    background-position: 0px 0px
+    background-position: 0 0
 }
 .switch {
     width: 32px;
-    height: 32px;
-    background: url('twitch.png') no-repeat center center;
-    background-position: -32px 0px
+    background: url(twitch.png)-32px 0 no-repeat
 }
 .switch:hover {
-    cursor: pointer;
-    background-position: 0px 0px
+    background-position: 0 0
 }
 .gamefollows {
     width: 32px;
-    height: 32px;
-    background: url('gamefollows.png') no-repeat center center;
-    background-position: -32px 0px
-}
-.gamefollows:hover {
-    cursor: pointer;
+    background: url(gamefollows.png)-32px 0 no-repeat
 }
 .gamefollows2 {
     width: 32px;
-    height: 32px;
-    background: url('gamefollows.png') no-repeat center center;
-    background-position: 0px 0px
+    background: url(gamefollows.png)no-repeat
 }
 .gamefollows2:hover {
-    cursor: pointer;
+    cursor: pointer
+}
+.videofollows {
+    width: 32px;
+    background: url(videofollows.png)-32px 0 no-repeat
+}
+.videofollows2 {
+    width: 32px;
+    height: 32px;
+    background: url(videofollows.png)no-repeat
 }
 .logout {
     width: 32px;
-    height: 32px;
-    background: url('logout.png') no-repeat center center;
-    background-position: -32px 0px
+    background: url(logout.png)-32px 0 no-repeat
 }
 .logout:hover {
-    cursor: pointer;
-    background-position: 0px 0px
+    background-position: 0 0
 }
 .connect {
     width: 170px;
-    height: 32px;
-    background: url('connect.png') no-repeat center center;
-    background-position: 0px -32px
+    background: url(connect.png)0 -32px no-repeat
+}
+.chat,
+.gochannel,
+.live,
+.twitch {
+    height: 20px;
+    width: 30px
 }
 .connect:hover {
-    cursor: pointer;
-    background-position: 0px 0px
+    background-position: 0 0
 }
 .twitch {
-    width: 30px;
-    height: 20px;
-    background: url('options.png') no-repeat center center;
-    background-position: -2px 50%;
-    background-color: #FF0000
+    background: url(options.png)-2px 50% no-repeat red
 }
 .twitch:hover {
-    cursor: pointer;
     background-color: #FF7F00
 }
 .live {
-    width: 30px;
-    height: 20px;
-    background: url('options.png') no-repeat center center;
-    background-position: -32px 50%;
-    background-color: #FF0000
+    background: url(options.png)-32px 50% no-repeat red
 }
 .live:hover {
-    cursor: pointer;
     background-color: #FF7F00
 }
 .chat {
-    width: 30px;
-    height: 20px;
-    background: url('options.png') no-repeat center center;
-    background-position: -62px 50%;
-    background-color: #FF0000
+    background: url(options.png)-62px 50% no-repeat red
 }
 .chat:hover {
-    cursor: pointer;
+    background-color: #FF7F00
+}
+.gochannel {
+    background: url(options.png)-92px 50% no-repeat red
+}
+.gochannel:hover {
     background-color: #FF7F00
 }
 li {
-    list-style-type: none;
+    list-style-type: none
 }
 a {
     text-decoration: none;
     display: block;
-    cursor: pointer;
-    color: black;
+    color: #000
 }
-a:hover,
-a:focus {
-    background-color: white;
-    color: black;
-    cursor: pointer;
+.channel,
+.followers,
+.game,
+.streamer,
+.time,
+.vid,
+.viewers,
+.views {
+    display: inline-block
+}
+a:focus,
+a:hover {
+    background-color: #fff;
+    color: #000
 }
 .header {
     position: fixed;
     z-index: 99;
-    width: 100%;
+    width: 100%
 }
 table {
-    cursor: default;
+    cursor: default
 }
 table.headd {
-    background-color: #1E1E1E;
+    background-color: #1E1E1E
 }
 .outer {
     background-color: #141414;
     position: relative;
     height: 100px;
-    top: 35px;
+    top: 35px
 }
 .settings {
     width: 32px;
     height: 32px;
-    background: url('settings2.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(settings2.png)-64px 0 no-repeat
 }
 .settings:hover {
     cursor: pointer;
-    background-position: -96px 0px
+    background-position: -96px 0
 }
 .settings2 {
     width: 24px;
     height: 24px;
-    background: url('settings2.png') no-repeat center center;
-    background-size: 96px 24px;
-    background-position: -48px 0px;
+    background: url(settings2.png)-48px 0 no-repeat;
+    background-size: 96px 24px
+}
+.back,
+.channels,
+.followed,
+.games,
+.refresh {
+    height: 32px;
+    width: 32px
 }
 .settings2:hover {
     cursor: pointer;
-    background-position: -72px 0px
+    background-position: -72px 0
 }
 .refresh {
-    width: 32px;
-    height: 32px;
-    background: url('refresh.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(refresh.png)-64px 0 no-repeat
 }
 .refresh:hover {
     cursor: pointer;
-    background-position: -96px 0px
+    background-position: -96px 0
 }
 .followed {
-    width: 32px;
-    height: 32px;
-    background: url('followed.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(followed.png)-64px 0 no-repeat
 }
 .followed:hover {
     cursor: pointer;
-    background-position: -96px 0px
+    background-position: -96px 0
 }
 .games {
-    width: 32px;
-    height: 32px;
-    background: url('games.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(games.png)-64px 0 no-repeat
+}
+.menu2,
+.menu3 {
+    background-color: #1E1E1E
 }
 .games:hover {
     cursor: pointer;
-    background-position: -96px 0px
-}
-.menu2 {
-    background-color: #1E1E1E;
-    border-top: 1px solid #333333;
-}
-.menu3 {
-    border-top: 1px solid #333333;
-    background-color: #1E1E1E;
+    background-position: -96px 0
 }
 .channels {
-    width: 32px;
-    height: 32px;
-    background: url('channels.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(channels.png)-64px 0 no-repeat
 }
 .channels:hover {
     cursor: pointer;
-    background-position: -96px 0px
+    background-position: -96px 0
 }
 .back {
-    width: 32px;
-    height: 32px;
-    background: url('back.png') no-repeat center center;
-    background-position: -64px 0px
+    background: url(back.png)-64px 0 no-repeat
+}
+.search2,
+.search3 {
+    width: 24px;
+    height: 24px
 }
 .back:hover {
     cursor: pointer;
-    background-position: -96px 0px
+    background-position: -96px 0
 }
 .border {
-    border-right: 1px solid #333333
-}
-.refresh2 {
-    /*border-right: 1px solid #333333*/
+    border-right: 1px solid #333
 }
 .search2 {
-    width: 24px;
-    height: 24px;
-    background: url('search.png') no-repeat center center;
-    background-size: 72px 24px;
-    background-position: -24px 0px
+    background: url(search.png)-24px 0 no-repeat;
+    background-size: 72px 24px
 }
 .search2:hover {
     cursor: pointer;
-    background-position: 0px 0px
+    background-position: 0 0
 }
 .search3 {
-    width: 24px;
-    height: 24px;
-    background: url('search.png') no-repeat center center;
-    background-position: -24px 0px
+    background: url(search.png)-24px 0 no-repeat
 }
 ul {
-    padding-left: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0
 }
 .search {
     background-color: #323232;
-    color: #D3D3D3;
-    border: 1px solid #333333
-}
-.preview {
-    width: 139px;
-    height: 78px;
+    color: #D3D3D3
 }
 .preview:hover {
-    cursor:move
-}
-.bigpreview {
-    width: 458px;
-    height: 258px
-}
-.bigpreview:hover {
-    cursor:move
+    cursor: move
 }
 .logo {
     width: 78px;
     height: 78px;
     background-size: 78px 78px
 }
-.streamer {
-    width: 16px;
+.channel,
+.followers,
+.game,
+.streamer,
+.time,
+.vid,
+.viewers,
+.views {
     height: 16px;
-    background: url('streamer.png') no-repeat center center;
-    display: inline-block;
+    width: 16px
+}
+.streamer {
+    background: url(streamer.png)center center no-repeat
 }
 .viewers {
-    width: 16px;
-    height: 16px;
-    background: url('viewers.png') no-repeat center center;
-    display: inline-block;
+    background: url(viewers.png)center center no-repeat
 }
 .channel {
-    width: 16px;
-    height: 16px;
-    background: url('channel.png') no-repeat center center;
-    display: inline-block;
+    background: url(channel.png)center center no-repeat
 }
 .game {
-    width: 16px;
-    height: 16px;
-    background: url('game.png') no-repeat center center;
-    display: inline-block;
+    background: url(game.png)center center no-repeat
 }
 .time {
-    width: 16px;
-    height: 16px;
-    background: url('time.png') no-repeat center center;
-    display: inline-block;
+    background: url(time.png)center center no-repeat
+}
+.vid {
+    background: url(vid.png)center center no-repeat
 }
 .views {
-    width: 16px;
-    height: 16px;
-    background: url('views.png') no-repeat center center;
-    display: inline-block;
+    background: url(views.png)center center no-repeat
 }
 .followers {
-    width: 16px;
-    height: 16px;
-    background: url('followers.png') no-repeat center center;
-    display: inline-block;
+    background: url(followers.png)center center no-repeat
 }
 .box {
     width: 56px;
-    height: 78px;
+    height: 78px
+}
+.videos {
+    width: 32px;
+    height: 32px;
+    background: url(videos.png)-64px 0 no-repeat
+}
+.videos:hover {
+    cursor: pointer;
+    background-position: -96px 0
 }
 .rotate {
     transform: rotate(90deg);
@@ -392,11 +402,10 @@ ul {
     font-stretch: expanded
 }
 button {
-	background-color: #323232;
-	color: #D3D3D3;
-	border: 1px solid #333333
+    background-color: #323232;
+    color: #D3D3D3
 }
 button:hover {
-    cursor:pointer;
-	background-color: #484848
+    cursor: pointer;
+    background-color: #484848
 }

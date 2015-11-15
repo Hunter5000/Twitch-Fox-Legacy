@@ -1,10 +1,14 @@
-const {
+var {
     Cc, Ci, Cu
 } = require("chrome")
 var {
     ToggleButton
 } = require("sdk/ui/button/toggle")
-
+var {
+    setInterval, clearInterval, setTimeout, clearTimeout
+} = require("sdk/timers")
+var Request = require("sdk/request").Request
+var tabs = require("sdk/tabs")
 var _ = require("sdk/l10n").get
 var panels = require("sdk/panel")
 var self = require("sdk/self")
@@ -152,22 +156,21 @@ if (ss.storage.darkMode == null) {
     ss.storage.darkMode = false
 }
 
+if (ss.storage.searchLim == null) {
+    ss.storage.searchLim = 20
+}
+
 var onlineInfo = []
 var onlineInfoS = []
 var gameInfo = []
 var gameInfoS = []
+var videoInfo = []
 var offlineGames = []
 
 var waittime = ss.storage.updateInterval
 
 var blank = self.data.url("blank.html")
 
-var {
-    setInterval, clearInterval, setTimeout, clearTimeout
-} = require("sdk/timers")
-
-var Request = require("sdk/request").Request
-var tabs = require("sdk/tabs")
 var alarmOn = false
 var alarmCause = ""
 var panelOn = false
@@ -177,20 +180,22 @@ var update_interval = null
 var badge_timeout = null
 var badge_interval = null
 var alarm_counter = 0
-var searchedChannel = false
 var panelMode = 0
 var topGames = []
 var topStreams = []
-var srchoff = 0
+var topVideos = []
+var srchoff0 = 0
+var srchoff1 = 0
 var srchoff2 = 0
-var scrollers = [false, false]
-var scrollers2 = [false, false, true]
+var scrollers0 = [false, false]
+var scrollers1 = [false, false]
+var scrollers2 = [false, false]
 var lastSearch = [0, null]
 
 function arrayDiff(a, b) {
     a = a == null ? [] : a
     b = b == null ? [] : b
-    return a.filter(function(i) {
+    return a.filter(function (i) {
         return b.indexOf(i) < 0
     })
 }
@@ -233,7 +238,7 @@ function infoGet(ar, n) {
 }
 
 function sortByN(ar, n, r) {
-    var sortf = ar.sort(function(a, b) {
+    var sortf = ar.sort(function (a, b) {
         if (a[n] < b[n]) return -1;
         if (a[n] > b[n]) return 1;
         return 0;
@@ -278,7 +283,7 @@ var panel = panels.Panel({
 
 function login() {
     panel.hide()
-    twitchOauth.authorize(function() {
+    twitchOauth.authorize(function () {
         //We have obtained a token, or at least a response
         ss.storage.authInfo = ["", "", "", [],
             []
@@ -307,7 +312,7 @@ panel.port.on("login", login)
 
 panel.port.on("logout", logout)
 
-panel.port.on("openProfile", function() {
+panel.port.on("openProfile", function () {
     if (ss.storage.authInfo[0] != "") {
         tabs.open("http://www.twitch.tv/" + ss.storage.authInfo[1] + "/profile")
     }
@@ -316,7 +321,7 @@ panel.port.on("openProfile", function() {
 function authUpdate() {
     //AuthInfo = Token, Name, Display name, Followed channels, Followed games
     if (ss.storage.authInfo[0] != "") {
-        getUser(function(response) {
+        getUser(function (response) {
             if (response.json != null) {
                 if (((response.json.error != null) ? response.json.error : false) == "Unauthorized") {
                     logout();
@@ -335,7 +340,7 @@ function authUpdate() {
 var settingsPanel = panels.Panel({
     contentURL: self.data.url("settings.html"),
     width: 720,
-    height: 735
+    height: 770
         //onHide: handleHide
 })
 
@@ -435,7 +440,7 @@ function resetBadgeColor() {
 
 function cleanse(str) {
     var curvalue = str
-    if (typeof(curvalue) == "string") {
+    if (typeof (curvalue) == "string") {
         curvalue = curvalue.replace(/ /g, "")
         curvalue = curvalue.toLowerCase()
     }
@@ -549,7 +554,7 @@ function genNotif(display_name, game, status, logo, typ) {
         title: stat,
         text: txt,
         iconURL: logo,
-        onClick: function() {
+        onClick: function () {
             if (typ != 3) {
                 var active = utils.getMostRecentBrowserWindow();
                 active.focus()
@@ -625,12 +630,12 @@ function getLivestreamerValidation(url) {
         // Spawn a seperate child to validate in Livestreamer
         livestreamer = process.spawn(path, ["--json", url]);
         // As the stream comes in, grab the data
-        livestreamer.stdout.on('data', function(data) {
+        livestreamer.stdout.on('data', function (data) {
             // Save the data to one global variable
             jsonData += data;
         });
         // When stream capture is finished, sent emit
-        livestreamer.on("exit", function() {
+        livestreamer.on("exit", function () {
             // Convert string to JSON
             ls = JSON.parse(jsonData);
             // Is the url live?
@@ -794,7 +799,7 @@ function checkStreams(callbackFunc, list, offset) {
 
 function searchStreams(callbackFunc, srch, offset) {
     var request = Request({
-        url: "https://api.twitch.tv/kraken/search/streams?limit=20&offset=" + offset + "&q=" + srch,
+        url: "https://api.twitch.tv/kraken/search/streams?limit=" + ss.storage.searchLim + "&offset=" + offset + "&q=" + srch,
         onComplete: callbackFunc,
         headers: httpHeaders()
     })
@@ -803,7 +808,7 @@ function searchStreams(callbackFunc, srch, offset) {
 
 function searchChannels(callbackFunc, srch, offset) {
     var request = Request({
-        url: "https://api.twitch.tv/kraken/search/channels?limit=20&offset=" + offset + "&q=" + srch,
+        url: "https://api.twitch.tv/kraken/search/channels?limit=" + ss.storage.searchLim + "&offset=" + offset + "&q=" + srch,
         onComplete: callbackFunc,
         headers: httpHeaders()
     })
@@ -830,7 +835,7 @@ function searchLiveGames(callbackFunc, srch) {
 
 function findTopGames(callbackFunc, offset) {
     var request = Request({
-        url: "https://api.twitch.tv/kraken/games/top?limit=20&offset=" + offset,
+        url: "https://api.twitch.tv/kraken/games/top?limit=" + ss.storage.searchLim + "&offset=" + offset,
         onComplete: callbackFunc,
         headers: httpHeaders()
     })
@@ -839,7 +844,7 @@ function findTopGames(callbackFunc, offset) {
 
 function findTopStreams(callbackFunc, offset) {
     var request = Request({
-        url: "https://api.twitch.tv/kraken/streams?limit=20&offset=" + offset,
+        url: "https://api.twitch.tv/kraken/streams?limit=" + ss.storage.searchLim + "&offset=" + offset,
         onComplete: callbackFunc,
         headers: httpHeaders()
     })
@@ -848,7 +853,7 @@ function findTopStreams(callbackFunc, offset) {
 
 function searchGame(callbackFunc, game, offset) {
     var request = Request({
-        url: "https://api.twitch.tv/kraken/streams?limit=20&offset=" + offset + "&game=" + game,
+        url: "https://api.twitch.tv/kraken/streams?limit=" + ss.storage.searchLim + "&offset=" + offset + "&game=" + game,
         onComplete: callbackFunc,
         headers: httpHeaders()
     })
@@ -891,12 +896,38 @@ function getFollowedStreams(callbackFunc, offset) {
     request.get()
 }
 
+function findFollowedVideos(callbackFunc, offset) {
+    var request = Request({
+        url: "https://api.twitch.tv/kraken/videos/followed?limit=" + ss.storage.searchLim + "&offset=" + offset,
+        onComplete: callbackFunc,
+        headers: httpHeaders()
+    })
+    request.get()
+}
 
+function findTopVideos(callbackFunc, game, offset) {
+    var gameParam = game != null ? "&game=" + game : ""
+    var request = Request({
+        url: "https://api.twitch.tv/kraken/videos/top?limit=" + ss.storage.searchLim + "&offset=" + offset + gameParam,
+        onComplete: callbackFunc,
+        headers: httpHeaders()
+    })
+    request.get()
+}
+
+function getChannelVideos(callbackFunc, channel, broadcasts, offset) {
+    var request = Request({
+        url: "https://api.twitch.tv/kraken/channels/" + channel + "/videos?limit=" + ss.storage.searchLim + "&offset=" + offset + "&broadcasts=" + broadcasts,
+        onComplete: callbackFunc,
+        headers: httpHeaders()
+    })
+    request.get()
+}
 
 function importFollowers(name, offset, recorded) {
     //console.log("Importing followed channels from " + name + "...")
     var rec = recorded
-    getFollowedChannels(function(response) {
+    getFollowedChannels(function (response) {
         if (response.json == null) {
             return
         }
@@ -920,7 +951,7 @@ function importFollowers(name, offset, recorded) {
             //Add channels that didn't exist before
             var dif1 = arrayDiff(rec, ss.storage.followedStreamers)
             for (var key in dif1) {
-                if (!containsValue(ss.storage.followedStreamers, dif1[key]) && typeof(dif1[key] == "string")) {
+                if (!containsValue(ss.storage.followedStreamers, dif1[key]) && typeof (dif1[key] == "string")) {
                     ss.storage.followedStreamers.push(dif1[key])
                 }
             }
@@ -934,7 +965,7 @@ function importFollowers(name, offset, recorded) {
 function importGames(name, offset, recorded) {
     //console.log("Importing followed channels from " + name + "...")
     var rec = recorded
-    getFollowedGames(function(response) {
+    getFollowedGames(function (response) {
         if (response.json == null) {
             return
         }
@@ -957,7 +988,7 @@ function importGames(name, offset, recorded) {
             //Add games that didn't exist before
             var dif1 = arrayDiff(rec, ss.storage.followedGames)
             for (var key in dif1) {
-                if (!containsValue(ss.storage.followedGames, dif1[key]) && typeof(dif1[key] == "string")) {
+                if (!containsValue(ss.storage.followedGames, dif1[key]) && typeof (dif1[key] == "string")) {
                     ss.storage.followedGames.push(dif1[key])
                 }
             }
@@ -972,7 +1003,7 @@ function authFollowers(offset, recorded, contin) {
         updateChannels()
     } else {
         var rec = recorded
-        getFollowedChannels(function(response) {
+        getFollowedChannels(function (response) {
             if (response.json == null) {
                 return
             }
@@ -995,15 +1026,15 @@ function authFollowers(offset, recorded, contin) {
                 //Remove channels that no longer exist
                 var dif2 = arrayDiff(ss.storage.authInfo[3], rec)
                 for (var key in dif2) {
-                    if (containsValue(ss.storage.authInfo[3], dif2[key]) && typeof(dif2[key] == "string")) {
-                        ss.storage.authInfo[3].splice(ss.storage.authInfo[4].indexOf(dif2[key]), 1)
+                    if (containsValue(ss.storage.authInfo[3], dif2[key]) && typeof (dif2[key] == "string")) {
+                        ss.storage.authInfo[3].splice(ss.storage.authInfo[3].indexOf(dif2[key]), 1)
                         panel.port.emit("authEnd")
                     }
                 }
                 //Add channels that didn't exist before
                 var dif1 = arrayDiff(rec, ss.storage.authInfo[3])
                 for (var key in dif1) {
-                    if (!containsValue(ss.storage.authInfo[3], dif1[key]) && typeof(dif1[key] == "string")) {
+                    if (!containsValue(ss.storage.authInfo[3], dif1[key]) && typeof (dif1[key] == "string")) {
                         ss.storage.authInfo[3].push(dif1[key])
                         panel.port.emit("authEnd")
                     }
@@ -1022,7 +1053,7 @@ function authGames(offset, recorded) {
         genGameInfo()
     } else {
         var rec = recorded
-        getFollowedGames(function(response) {
+        getFollowedGames(function (response) {
             if (response.json == null) {
                 return
             }
@@ -1045,7 +1076,7 @@ function authGames(offset, recorded) {
                 //Remove games that no longer exist
                 var dif2 = arrayDiff(ss.storage.authInfo[4], rec)
                 for (var key in dif2) {
-                    if (containsValue(ss.storage.authInfo[4], dif2[key]) && typeof(dif2[key] == "string")) {
+                    if (containsValue(ss.storage.authInfo[4], dif2[key]) && typeof (dif2[key] == "string")) {
                         ss.storage.authInfo[4].splice(ss.storage.authInfo[4].indexOf(dif2[key]), 1)
                         panel.port.emit("authEnd")
                     }
@@ -1053,7 +1084,7 @@ function authGames(offset, recorded) {
                 //Add games that didn't exist before
                 var dif1 = arrayDiff(rec, ss.storage.authInfo[4])
                 for (var key in dif1) {
-                    if (!containsValue(ss.storage.authInfo[4], dif1[key]) && typeof(dif1[key] == "string")) {
+                    if (!containsValue(ss.storage.authInfo[4], dif1[key]) && typeof (dif1[key] == "string")) {
                         ss.storage.authInfo[4].push(dif1[key])
                         panel.port.emit("authEnd")
                     }
@@ -1220,11 +1251,18 @@ function updateChannels(offset) {
         genGameInfo()
     }
     if (ss.storage.authInfo[0] != "") {
-        getFollowedStreams(function(response) {
-            streamsResponse(response, offs)
+        getFollowedStreams(function (response) {
+            if (response.json != null) {
+                if (((response.json.error != null) ? response.json.error : false) == "Unauthorized") {
+                    logout()
+                } else {
+                    streamsResponse(response, offs)
+                }
+            }
+
         }, offs)
     } else {
-        checkStreams(function(response) {
+        checkStreams(function (response) {
             streamsResponse(response, offs)
         }, ss.storage.followedStreamers, offs)
     }
@@ -1265,33 +1303,47 @@ function forceRefresh(payload) {
                 panelUpdate()
             }
             getTopStreams()
+        } else if (panelMode == 3) {
+            topVideos = []
+            videoInfo = []
+            if (panelOn) {
+                panelUpdate()
+            }
+            getTopVideos()
+            if (ss.storage.authInfo[0] != "") {
+                genVideoInfo()
+            }
         }
     } else {
         if (lastSearch[0] == 0) {
-            searchTwitch(lastSearch[1])
+            searchTwitch0(lastSearch[1])
         } else if (lastSearch[0] == 1) {
-            searchTwitch2(lastSearch[1])
+            searchTwitch1(lastSearch[1])
         } else if (lastSearch[0] == 2) {
-            searchTwitch3(lastSearch[1])
+            searchTwitch2(lastSearch[1])
         } else if (lastSearch[0] == 3) {
+            searchTwitch3(lastSearch[1])
+        } else if (lastSearch[0] == 4) {
             searchTwitch4(lastSearch[1])
+        } else if (lastSearch[0] == 5) {
+            searchTwitch5(lastSearch[1])
         }
     }
 }
 
-panel.on("show", function() {
+panel.on("show", function () {
     //console.log("Shipping payload...")
     panelUpdate()
 })
 
-panel.port.on("openTab", function(payload) {
+panel.port.on("openTab", function (payload) {
     tabs.open("http://www.twitch.tv/" + payload)
 })
 
 function follow(channel) {
     var followedStreamers = ss.storage.authInfo[0] != "" ? ss.storage.authInfo[3] : ss.storage.followedStreamers
     if (!(containsValue(followedStreamers, channel))) {
-        getChannel(function(response) {
+        getChannel(function (response) {
             var err = (response.json.error != null) ? response.json.error : false
             if (!err) {
                 if (ss.storage.authInfo[0] == "") {
@@ -1299,7 +1351,7 @@ function follow(channel) {
                     updateChannels()
                     packageSettings()
                 } else {
-                    followChannel(function(response) {
+                    followChannel(function (response) {
                         if (response.json == null) {
                             return
                         }
@@ -1325,7 +1377,7 @@ function unfollow(channel) {
             updateChannels()
             packageSettings()
         } else {
-            unfollowChannel(function(response) {
+            unfollowChannel(function (response) {
                 panel.port.emit("authStart")
                 authFollowers(0, [])
                 if (response.json == null) {
@@ -1355,7 +1407,7 @@ function follow2(game) {
             genGameInfo()
             packageSettings()
         } else {
-            followGame(function(response) {
+            followGame(function (response) {
                 if (response.json == null) {
                     return
                 }
@@ -1379,7 +1431,7 @@ function unfollow2(game) {
             genGameInfo()
             packageSettings()
         } else {
-            unfollowGame(function(response) {
+            unfollowGame(function (response) {
                 panel.port.emit("authStart")
                 authGames(0, [])
                 if (response.json == null) {
@@ -1400,7 +1452,7 @@ panel.port.on("unfollow2", unfollow2)
 settingsPanel.port.on("follow2", follow)
 settingsPanel.port.on("unfollow2", unfollow)
 
-panel.port.on("mute", function(payload) {
+panel.port.on("mute", function (payload) {
     var newname = payload
     if (!containsValue(ss.storage.mutedChannels, newname)) {
         ss.storage.mutedChannels.unshift(newname)
@@ -1410,7 +1462,7 @@ panel.port.on("mute", function(payload) {
     }
 })
 
-panel.port.on("unmute", function(payload) {
+panel.port.on("unmute", function (payload) {
     var newname = payload
     if (containsValue(ss.storage.mutedChannels, newname)) {
         var namekey = ss.storage.mutedChannels.indexOf(newname)
@@ -1421,7 +1473,7 @@ panel.port.on("unmute", function(payload) {
     }
 })
 
-panel.port.on("follow2", function(payload) {
+panel.port.on("follow2", function (payload) {
     var newname = payload
     if (!(containsValue(ss.storage.followedGames, newname))) {
         ss.storage.followedGames.unshift(newname)
@@ -1429,7 +1481,7 @@ panel.port.on("follow2", function(payload) {
     }
 })
 
-panel.port.on("unfollow2", function(payload) {
+panel.port.on("unfollow2", function (payload) {
     var newname = payload
     if (containsValue(ss.storage.followedGames, newname)) {
         console.log("Yes")
@@ -1444,14 +1496,14 @@ panel.port.on("unfollow2", function(payload) {
     }
 })
 
-settingsPanel.port.on("importFromFile", function(payload) {
+settingsPanel.port.on("importFromFile", function (payload) {
     if (ss.storage.authInfo[0] != "") {
         return
     }
     //Channels
     var dif2 = arrayDiff(ss.storage.followedStreamers, payload[0])
     for (var key in dif2) {
-        if (containsValue(ss.storage.followedStreamers, dif2[key]) && typeof(dif2[key] == "string")) {
+        if (containsValue(ss.storage.followedStreamers, dif2[key]) && typeof (dif2[key] == "string")) {
             ss.storage.followedStreamers.splice(ss.storage.followedStreamers.indexOf(dif2[key]))
             if (containsValue(ss.storage.mutedChannels, dif2[key])) {
                 ss.storage.mutedChannels.splice(ss.storage.mutedChannels.indexOf(dif2[key]), 1)
@@ -1460,7 +1512,7 @@ settingsPanel.port.on("importFromFile", function(payload) {
     }
     var dif1 = arrayDiff(payload[0], ss.storage.followedStreamers)
     for (var key in dif1) {
-        if (!containsValue(ss.storage.followedStreamers, dif1[key]) && typeof(dif1[key] == "string")) {
+        if (!containsValue(ss.storage.followedStreamers, dif1[key]) && typeof (dif1[key] == "string")) {
             ss.storage.followedStreamers.unshift(dif1[key])
             if (containsValue(payload[1], dif1[key]) && !containsValue(ss.storage.mutedChannels, dif1[key])) {
                 ss.storage.mutedChannels.push(dif1[key])
@@ -1473,13 +1525,13 @@ settingsPanel.port.on("importFromFile", function(payload) {
     //Games
     var dif4 = arrayDiff(ss.storage.followedGames, payload[2])
     for (var key in dif4) {
-        if (containsValue(ss.storage.followedGames, dif4[key]) && typeof(dif4[key] == "string")) {
+        if (containsValue(ss.storage.followedGames, dif4[key]) && typeof (dif4[key] == "string")) {
             ss.storage.followedGames.splice(ss.storage.followedGames.indexOf(dif4[key]))
         }
     }
     var dif3 = arrayDiff(payload[2], ss.storage.followedGames)
     for (var key in dif3) {
-        if (!containsValue(ss.storage.followedGames, dif3[key]) && typeof(dif3[key] == "string")) {
+        if (!containsValue(ss.storage.followedGames, dif3[key]) && typeof (dif3[key] == "string")) {
             ss.storage.followedGames.unshift(dif3[key])
         }
     }
@@ -1487,20 +1539,20 @@ settingsPanel.port.on("importFromFile", function(payload) {
     genGameInfo()
 })
 
-panel.port.on("openLive", function(payload) {
+panel.port.on("openLive", function (payload) {
     errorcause = payload
     getLivestreamerValidation("http://www.twitch.tv/" + payload)
 })
 
-panel.port.on("openSettings", function(payload) {
+panel.port.on("openSettings", function (payload) {
     openSettings()
 })
 
-settingsPanel.port.on("updateChans", function() {
+settingsPanel.port.on("updateChans", function () {
     updateChannels()
 })
 
-settingsPanel.port.on("importSettings", function(payload) {
+settingsPanel.port.on("importSettings", function (payload) {
     //Retrieve setting updates
     ss.storage.updateInterval = payload[0]
     ss.storage.soundAlarm = payload[1]
@@ -1541,6 +1593,7 @@ settingsPanel.port.on("importSettings", function(payload) {
     ss.storage.alertOff = payload[27]
     ss.storage.alertGames = payload[28]
     ss.storage.mutedChannels = payload[29]
+    ss.storage.searchLim = payload[30]
 })
 
 function packageSettings() {
@@ -1581,15 +1634,16 @@ function packageSettings() {
         followedGames,
         ss.storage.alertGames,
         ss.storage.mutedChannels,
-        ss.storage.authInfo[1]
+        ss.storage.authInfo[1],
+        ss.storage.searchLim
     ])
 }
 
-settingsPanel.port.on("importUser", function(payload) {
+settingsPanel.port.on("importUser", function (payload) {
     importFollowers(payload, 0, [])
 })
 
-settingsPanel.port.on("clearAll", function() {
+settingsPanel.port.on("clearAll", function () {
     delete ss.storage.followedStreamers
     ss.storage.followedStreamers = []
     updateChannels()
@@ -1601,24 +1655,31 @@ settingsPanel.port.on("clearAll", function() {
     packageSettings()
 })
 
-panel.port.on("forceRefresh", function(payload) {
+panel.port.on("forceRefresh", function (payload) {
     forceRefresh(payload)
 })
 
-panel.port.on("endAlarm", function() {
+panel.port.on("endAlarm", function () {
     manageAlert(false)
 })
 
-panel.port.on("modeChange", function(payload) {
-    srchoff = 0
-    srchoff2 = 0
-    scrollers = [false, false]
+panel.port.on("modeChange", function (payload) {
+    srchoff0 = 0
+    srchoff1 = 0
+    scrollers0 = [false, false]
+    scrollers1 = [false, false]
     scrollers2 = [false, false]
     panelMode = payload
     if (panelMode == 1) {
         getTopGames()
+        genGameInfo()
     } else if (panelMode == 2) {
         getTopStreams()
+    } else if (panelMode == 3) {
+        getTopVideos()
+        if (ss.storage.authInfo[0] != "") {
+            genVideoInfo()
+        }
     }
 })
 
@@ -1641,7 +1702,7 @@ function genGameInfo() {
         }
     }
     for (var key in followedGames) {
-        gameSummary(function(response) {
+        gameSummary(function (response) {
             truekey = truekey + 1
             if ((response.json != null) ? response.json._links != null : false) {
                 var name = response.json._links.self.substr(50)
@@ -1681,80 +1742,114 @@ function genGameInfo() {
     }
 }
 
-function handleScroll(payload) {
-    payload = payload[0]
-    if (payload.length > 0) {
-        if (panelMode == 0) {
-            searchTwitch(payload)
-        } else if (panelMode == 1) {
-            searchTwitch4(payload)
-        } else if (panelMode == 2) {
-            searchTwitch3(payload)
+function handleScroll(typ, payload) {
+    var term = payload[0]
+    var srcht = payload[1]
+    var scrolltype = 0
+    if (srcht == null) {
+        scrolltype = 0
+    } else if (srcht <= 3) {
+        scrolltype = 1
+    } else if (srcht >= 4) {
+        scrolltype = 2
+    }
+    if (typ == 0) {
+        if (scrolltype == 0) {
+            srchoff0 = 0
+        } else if (scrolltype == 1) {
+            srchoff1 = 0
+        } else if (scrolltype == 2) {
+            srchoff2 = 0
         }
-    } else {
+    } else if (typ == 1) {
+        if (scrolltype == 0) {
+            srchoff0 = srchoff0 - ss.storage.searchLim
+            if (srchoff0 < 0) {
+                srchoff0 = 0
+            }
+        } else if (scrolltype == 1) {
+            srchoff1 = srchoff1 - ss.storage.searchLim
+            if (srchoff1 < 0) {
+                srchoff1 = 0
+            }
+        } else if (scrolltype == 2) {
+            srchoff2 = srchoff2 - ss.storage.searchLim
+            if (srchoff2 < 0) {
+                srchoff2 = 0
+            }
+        }
+    } else if (typ == 2) {
+        if (scrolltype == 0) {
+            srchoff0 = srchoff0 + ss.storage.searchLim
+        } else if (scrolltype == 1) {
+            srchoff1 = srchoff1 + ss.storage.searchLim
+        } else if (scrolltype == 2) {
+            srchoff2 = srchoff2 + ss.storage.searchLim
+        }
+    } else if (typ == 3) {
+        if (scrolltype == 0) {
+            srchoff0 = 999999
+        } else if (scrolltype == 1) {
+            srchoff1 = 999999
+        } else if (scrolltype == 2) {
+            srchoff2 = 999999
+        }
+    }
+    if (srcht == null) {
         if (panelMode == 1) {
             getTopGames()
         } else if (panelMode == 2) {
             getTopStreams()
+        } else if (panelMode == 3) {
+            getTopVideos()
+        }
+    } else if (srcht == 0) {
+        searchTwitch0(term)
+    } else if (srcht == 1) {
+        searchTwitch1(term)
+    } else if (srcht == 2) {
+        searchTwitch2(term)
+    } else if (srcht == 3) {
+        searchTwitch3(term)
+    } else if (srcht == 4) {
+        searchTwitch4(term)
+    } else if (srcht == 5) {
+        searchTwitch5(term)
+    } else if (srcht == 6) {
+        if (ss.storage.authInfo[0] != "") {
+            genVideoInfo()
         }
     }
 }
 
-panel.port.on("sscrollup", function(payload) {
-    if (payload[1]) {
-        srchoff2 = 0
-    } else {
-        srchoff = 0
-    }
-    handleScroll(payload)
+panel.port.on("sscrollup", function (payload) {
+    handleScroll(0, payload)
 })
 
-
-panel.port.on("scrollup", function(payload) {
-    if (payload[1]) {
-        srchoff2 = srchoff2 - 20
-        if (srchoff2 < 0) {
-            srchoff2 = 0
-        }
-    } else {
-        srchoff = srchoff - 20
-        if (srchoff < 0) {
-            srchoff = 0
-        }
-    }
-    handleScroll(payload)
+panel.port.on("scrollup", function (payload) {
+    handleScroll(1, payload)
 })
 
-panel.port.on("scrolldown", function(payload) {
-    if (payload[1]) {
-        srchoff2 = srchoff2 + 20
-    } else {
-        srchoff = srchoff + 20
-    }
-    handleScroll(payload)
+panel.port.on("scrolldown", function (payload) {
+    handleScroll(2, payload)
 })
 
-panel.port.on("sscrolldown", function(payload) {
-    if (payload[1]) {
-        srchoff2 = 999999
-    } else {
-        srchoff = 999999
-    }
-    handleScroll(payload)
+panel.port.on("sscrolldown", function (payload) {
+    handleScroll(3, payload)
 })
 
 function getTopGames() {
     var output = []
-    findTopGames(function(response) {
+    findTopGames(function (response) {
         if (response.json != null) {
             var total = response.json._total
-            if ((srchoff2 >= total) && (total > 0)) {
-                srchoff2 = Math.floor(total / 20) * 20
+            if ((srchoff0 >= total) && (total > 0)) {
+                srchoff0 = Math.floor(total / ss.storage.searchLim) * ss.storage.searchLim
                 getTopGames()
             } else {
                 var tops = response.json.top
-                scrollers2[0] = !(srchoff2 < 20)
-                scrollers2[1] = !(tops.length < 20)
+                scrollers0[0] = !(srchoff0 < ss.storage.searchLim)
+                scrollers0[1] = (total > srchoff0 + ss.storage.searchLim)
                 for (var key in tops) {
                     var top = tops[key]
                     var viewers = top.viewers
@@ -1770,32 +1865,27 @@ function getTopGames() {
                 }
             }
         }
-    }, srchoff2)
+    }, srchoff0)
 }
 
 panel.port.on("getGames", getTopGames)
 
-panel.port.on("clearOffset", function() {
-    srchoff = 0
-})
-
 function getTopStreams() {
     var output = []
-    findTopStreams(function(response) {
+    findTopStreams(function (response) {
         if (response.json != null) {
             var total = response.json._total
-            if ((srchoff >= total) && (total > 0)) {
-                srchoff = Math.floor(total / 20) * 20
+            if ((srchoff0 >= total) && (total > 0)) {
+                srchoff0 = Math.floor(total / ss.storage.searchLim) * ss.storage.searchLim
                 getTopStreams()
             } else {
                 var streams = response.json.streams
                 if (streams == null) {
-                    scrollers[0] = false
-                    scrollers[1] = false
+                    scrollers0[0] = false
+                    scrollers0[1] = false
                 } else {
-                    scrollers[2] = !(srchoff != 0)
-                    scrollers[0] = !(srchoff < 20)
-                    scrollers[1] = !(streams.length < 20)
+                    scrollers0[0] = !(srchoff0 < ss.storage.searchLim)
+                    scrollers0[1] = (total > srchoff0 + ss.storage.searchLim)
                     for (var key in streams) {
                         var stream = streams[key]
                         var name = stream.channel.name
@@ -1819,26 +1909,27 @@ function getTopStreams() {
                 panelUpdate()
             }
         }
-    }, srchoff)
+    }, srchoff0)
 }
 
+//0 = channels, 1 = games, 2 = streams, 3 = streams of game, 4 = videos of channel, 5 = videos of game
 
-function searchTwitch(searchTerm) {
+function searchTwitch0(searchTerm) {
+    //Find channels with a search term
     var output = []
     var foundchans = []
         //console.log("Now searching " + searchTerm)
-    searchChannels(function(response) {
+    searchChannels(function (response) {
         if (response.json != null) {
             var total = response.json._total
-            if ((srchoff >= total) && (total > 0)) {
-                srchoff = Math.floor((total - 1) / 20) * 20
-                srchoff = (srchoff < 0) ? 0 : srchoff
-                searchTwitch(searchTerm)
+            if ((srchoff1 >= total) && (total > 0)) {
+                srchoff1 = Math.floor((total - 1) / ss.storage.searchLim) * ss.storage.searchLim
+                srchoff1 = (srchoff1 < 0) ? 0 : srchoff1
+                searchTwitch0(searchTerm)
             } else {
                 var channels = response.json.channels
-                scrollers[2] = !(srchoff != 0)
-                scrollers[0] = !(srchoff < 20)
-                scrollers[1] = !(channels.length < 20)
+                scrollers1[0] = !(srchoff1 < ss.storage.searchLim)
+                scrollers1[1] = (total > srchoff1 + ss.storage.searchLim)
                 for (var key in channels) {
                     var channel = channels[key]
                     var name = channel.name
@@ -1854,7 +1945,7 @@ function searchTwitch(searchTerm) {
                     foundchans.push(name)
                     output.push([name, display_name, game, status, logo, null, null, views, followers])
                 }
-                checkStreams(function(response) {
+                checkStreams(function (response) {
                     if (response.json != null) {
                         var streams = response.json.streams
                         for (var key in streams) {
@@ -1875,15 +1966,16 @@ function searchTwitch(searchTerm) {
         } else {
             finishSearch(null)
         }
-    }, searchTerm, srchoff)
+    }, searchTerm, srchoff1)
 }
 
-function searchTwitch2(searchTerm) {
+function searchTwitch1(searchTerm) {
+    //Find games with a search term
     var output = []
     var foundgames = []
-    searchGames(function(response) {
-        scrollers[0] = false
-        scrollers[1] = false
+    searchGames(function (response) {
+        scrollers1[0] = false
+        scrollers1[1] = false
         if (response.json != null) {
             var games = response.json.games
             for (var key in games) {
@@ -1893,7 +1985,7 @@ function searchTwitch2(searchTerm) {
                 var box = game.box.template
                 output.push([name, box, false, null, null])
             }
-            searchLiveGames(function(response) {
+            searchLiveGames(function (response) {
                 if (response.json != null) {
                     var games = response.json.games
                     for (var key in games) {
@@ -1913,19 +2005,20 @@ function searchTwitch2(searchTerm) {
     }, searchTerm)
 }
 
-function searchTwitch3(searchTerm) {
+function searchTwitch2(searchTerm) {
+    //Find streams with a search term
     var output = []
-    searchStreams(function(response) {
+    searchStreams(function (response) {
         if (response.json != null) {
             var total = response.json._total
-            if ((srchoff2 >= total) && (total > 0)) {
-                srchoff2 = Math.floor((total - 1) / 20) * 20
-                srchoff2 = (srchoff2 < 0) ? 0 : srchoff2
-                searchTwitch3(searchTerm)
+            if ((srchoff1 >= total) && (total > 0)) {
+                srchoff1 = Math.floor((total - 1) / ss.storage.searchLim) * ss.storage.searchLim
+                srchoff1 = (srchoff1 < 0) ? 0 : srchoff1
+                searchTwitch2(searchTerm)
             } else {
                 var streams = response.json.streams
-                scrollers2[0] = !(srchoff2 < 20)
-                scrollers2[1] = !(streams.length < 20)
+                scrollers1[0] = !(srchoff1 < ss.storage.searchLim)
+                scrollers1[1] = (total > srchoff1 + ss.storage.searchLim)
                 for (var key in streams) {
                     var stream = streams[key]
                     var name = stream.channel.name
@@ -1947,22 +2040,22 @@ function searchTwitch3(searchTerm) {
         } else {
             finishSearch(null)
         }
-    }, searchTerm, srchoff2)
+    }, searchTerm, srchoff1)
 }
 
-function searchTwitch4(gamee) {
+function searchTwitch3(gamee) {
+    //Find streams playing a specific game
     var output = []
-    searchGame(function(response) {
+    searchGame(function (response) {
         if (response.json != null) {
             var total = response.json._total
-            if ((srchoff >= total) && (total > 0)) {
-                srchoff = Math.floor((total - 1) / 20) * 20
-                searchTwitch4(gamee)
+            if ((srchoff1 >= total) && (total > 0)) {
+                srchoff1 = Math.floor((total - 1) / ss.storage.searchLim) * ss.storage.searchLim
+                searchTwitch3(gamee)
             } else {
                 var streams = response.json.streams
-                scrollers[2] = !(srchoff != 0)
-                scrollers[0] = !(srchoff < 20)
-                scrollers[1] = !(streams.length < 20)
+                scrollers1[0] = !(srchoff1 < ss.storage.searchLim)
+                scrollers1[1] = (total > srchoff1 + ss.storage.searchLim)
                 for (var key in streams) {
                     var stream = streams[key]
                     var name = stream.channel.name
@@ -1984,60 +2077,245 @@ function searchTwitch4(gamee) {
         } else {
             finishSearch(null)
         }
-    }, gamee, srchoff)
+    }, gamee, srchoff1)
+}
+
+function searchTwitch4(channel) {
+    //Find videos of a specific channel
+    var output = []
+    var tempoff = srchoff2
+    var reload = false
+    getChannelVideos(function (response) { //Get highlights
+        if (response.json != null) {
+            var total = response.json._total
+            if ((tempoff >= total) && (total > 0)) {
+                tempoff = Math.floor((total - 1) / ss.storage.searchLim) * ss.storage.searchLim
+                reload = true
+            }
+            var videos = response.json.videos
+            scrollers2[0] = !(srchoff2 < ss.storage.searchLim)
+            scrollers2[1] = (total > srchoff2 + ss.storage.searchLim)
+            for (var key in videos) {
+                var video = videos[key]
+                var title = video.title
+                var description = video.description
+                var views = video.views
+                var time = video.recorded_at
+                var game = video.game
+                var preview = video.preview
+                var name = video.channel.name
+                var link = video.url.slice(21)
+                var length = video.length
+                var display_name = video.channel.display_name
+                var isHighlight = video.broadcast_type == "highlight"
+                game = (game == null) ? "!null!" : game
+                description = (description == null) ? "" : description
+                output.push([title, description, views, genTime(time), name, game, preview, isHighlight, link, length, display_name])
+            }
+            getChannelVideos(function (response) { //Get past broadcasts
+                if (response.json != null) {
+                    var total2 = response.json._total
+                    if ((srchoff2 >= total2) && (total2 > 0) && (total2 >= total)) {
+                        srchoff2 = Math.floor((total2 - 1) / ss.storage.searchLim) * ss.storage.searchLim
+                        searchTwitch4(channel)
+                    } else if (total > total2 && reload) {
+                        srchoff2 = tempoff
+                        searchTwitch4(channel)
+                    } else {
+                        var videos = response.json.videos
+                        if (!scrollers2[0]) {
+                            scrollers2[0] = !(srchoff2 < ss.storage.searchLim)
+                        }
+                        if (!scrollers2[1]) {
+                            scrollers2[1] = (total2 > srchoff2 + ss.storage.searchLim)
+                        }
+                        for (var key in videos) {
+                            var video = videos[key]
+                            var title = video.title
+                            var description = video.description
+                            var views = video.views
+                            var time = video.recorded_at
+                            var game = video.game
+                            var preview = video.preview
+                            var name = video.channel.name
+                            var link = video.url.slice(21)
+                            var length = video.length
+                            var display_name = video.channel.display_name
+                            var isHighlight = video.broadcast_type == "highlight"
+                            game = (game == null) ? "!null!" : game
+                            description = (description == null) ? "" : description
+                            output.push([title, description, views, genTime(time), name, game, preview, isHighlight, link, length, display_name])
+                        }
+                        output = output.length > 0 ? sortByN(output, 3, true) : output
+                        finishSearch(output)
+                    }
+                } else {
+                    finishSearch(null)
+                }
+            }, channel, true, srchoff2)
+        } else {
+            finishSearch(null)
+        }
+    }, channel, false, srchoff2)
+}
+
+function searchTwitch5(gamee) {
+    //Find the most popular recent videos and choose to limit them to a specific game
+    var output = []
+    findTopVideos(function (response) {
+        if (response.json != null) {
+            var videos = response.json.videos
+            if (!(videos.length > 0) && videoInfo.length > 0) {
+                srchoff2 = srchoff2 - ss.storage.searchLim
+                searchTwitch5(gamee)
+            } else {
+                scrollers2[0] = !(srchoff2 < ss.storage.searchLim)
+                scrollers2[1] = !(videos.length < ss.storage.searchLim)
+                for (var key in videos) {
+                    var video = videos[key]
+                    var title = video.title
+                    var description = video.description
+                    var views = video.views
+                    var time = video.recorded_at
+                    var game = video.game
+                    var preview = video.preview
+                    var name = video.channel.name
+                    var link = video.url.slice(21)
+                    var length = video.length
+                    var display_name = video.channel.display_name
+                    var isHighlight = video.broadcast_type == "highlight"
+                    game = (game == null) ? "!null!" : game
+                    description = (description == null) ? "" : description
+                    output.push([title, description, views, genTime(time), name, game, preview, isHighlight, link, length, display_name])
+                }
+                finishSearch(output)
+            }
+        } else {
+            finishSearch(null)
+        }
+    }, gamee, srchoff2)
+}
+
+function getTopVideos() {
+    var output = []
+    findTopVideos(function (response) {
+        if (response.json != null) {
+            var videos = response.json.videos
+            if (!(videos.length > 0) && topVideos.length > 0) {
+                srchoff0 = srchoff0 - ss.storage.searchLim
+                getTopVideos()
+            } else {
+                scrollers0[0] = !(srchoff0 < ss.storage.searchLim)
+                scrollers0[1] = !(videos.length < ss.storage.searchLim)
+                for (var key in videos) {
+                    var video = videos[key]
+                    var title = video.title
+                    var description = video.description
+                    var views = video.views
+                    var time = video.recorded_at
+                    var game = video.game
+                    var preview = video.preview
+                    var name = video.channel.name
+                    var link = video.url.slice(21)
+                    var length = video.length
+                    var display_name = video.channel.display_name
+                    var isHighlight = video.broadcast_type == "highlight"
+                    game = (game == null) ? "!null!" : game
+                    description = (description == null) ? "" : description
+                    output.push([title, description, views, genTime(time), name, game, preview, isHighlight, link, length, display_name])
+                }
+                topVideos = output
+                if (panelOn) {
+                    panelUpdate()
+                }
+            }
+        }
+    }, null, srchoff0)
+}
+
+function genVideoInfo() {
+    var output = []
+    findFollowedVideos(function (response) {
+        if (response.json != null) {
+            if (((response.json.error != null) ? response.json.error : false) == "Unauthorized") {
+                logout();
+                return
+            }
+            var videos = response.json.videos
+            if (!(videos.length > 0) && videoInfo.length > 0) {
+                srchoff2 = srchoff2 - ss.storage.searchLim
+                if (ss.storage.authInfo[0] != "") {
+                    genVideoInfo()
+                }
+            } else {
+                scrollers2[0] = !(srchoff2 < ss.storage.searchLim)
+                scrollers2[1] = !(videos.length < ss.storage.searchLim)
+                for (var key in videos) {
+                    var video = videos[key]
+                    var title = video.title
+                    var description = video.description
+                    var views = video.views
+                    var time = video.recorded_at
+                    var game = video.game
+                    var preview = video.preview
+                    var name = video.channel.name
+                    var link = video.url.slice(21)
+                    var length = video.length
+                    var display_name = video.channel.display_name
+                    var isHighlight = video.broadcast_type == "highlight"
+                    game = (game == null) ? "!null!" : game
+                    description = (description == null) ? "" : description
+                    output.push([title, description, views, genTime(time), name, game, preview, isHighlight, link, length, display_name])
+                }
+                videoInfo = output
+                if (panelOn) {
+                    panelUpdate()
+                }
+            }
+        }
+    }, null, srchoff2)
 }
 
 function finishSearch(payload) {
-    searchedChannel = false
-    panel.port.emit("searchedChannel", [payload, scrollers])
+    panel.port.emit("searchedChannel", [payload, [scrollers0, scrollers1, scrollers2]])
 }
 
-panel.port.on("searchTwitch", function(payload) {
+panel.port.on("searchTwitch", function (payload) {
     var searchTerm = payload[0]
+    srchoff2 = 0
     if (searchTerm != null) {
-        if (searchedChannel) {
-            finishSearch(null)
-            searchedChannel = true
-            if (payload[1] == 0) {
-                lastSearch = [0, searchTerm]
-                searchTwitch(searchTerm)
-            } else if (payload[1] == 1) {
-                lastSearch = [1, searchTerm]
-                searchTwitch2(searchTerm)
-            } else if (payload[1] == 2) {
-                lastSearch = [2, searchTerm]
-                searchTwitch3(searchTerm)
-            } else {
-                lastSearch = [3, searchTerm]
-                searchTwitch4(searchTerm)
-            }
-        } else {
-            searchedChannel = true
-            if (payload[1] == 0) {
-                lastSearch = [0, searchTerm]
-                searchTwitch(searchTerm)
-            } else if (payload[1] == 1) {
-                lastSearch = [1, searchTerm]
-                searchTwitch2(searchTerm)
-            } else if (payload[1] == 2) {
-                lastSearch = [2, searchTerm]
-                searchTwitch3(searchTerm)
-            } else {
-                lastSearch = [3, searchTerm]
-                searchTwitch4(searchTerm)
-            }
+        if (payload[1] == 0) {
+            lastSearch = [0, searchTerm]
+            searchTwitch0(searchTerm)
+        } else if (payload[1] == 1) {
+            lastSearch = [1, searchTerm]
+            searchTwitch1(searchTerm)
+        } else if (payload[1] == 2) {
+            lastSearch = [2, searchTerm]
+            searchTwitch2(searchTerm)
+        } else if (payload[1] == 3) {
+            lastSearch = [3, searchTerm]
+            searchTwitch3(searchTerm)
+        } else if (payload[1] == 4) {
+            lastSearch = [4, searchTerm]
+            searchTwitch4(searchTerm)
+        } else if (payload[1] == 5) {
+            lastSearch = [5, searchTerm]
+            searchTwitch5(searchTerm)
         }
     } else {
         finishSearch(null)
     }
 })
 
-preferences.on("settingsButton", function() {
+preferences.on("settingsButton", function () {
     openSettings()
 })
 
 function genLocal1() {
-    return (_("streamingFor2_") != "streamingFor2_") ? [_("streamingFor_"), _("streamingFor2_")] : [_("streamingFor_"), ""]
+    var output1 = (_("streamingFor2_") != "streamingFor2_") ? [_("streamingFor_"), _("streamingFor2_")] : [_("streamingFor_"), ""]
+    var output2 = [_("recorded_")]
+    return output1.concat(output2)
 }
 
 function panelUpdate() {
@@ -2063,21 +2341,24 @@ function panelUpdate() {
         errorcause,
         ss.storage.hidePreview,
         genLocal1(),
-        _("separator_"), [_("searchStreamers_"), _("searchGames_"), _("searchStreams_")],
+        _("separator_"), [_("searchStreamers_"), _("searchGames_"), _("searchStreams_"), _("searchVids_")],
         ss.storage.darkMode,
         topGames,
         topStreams,
         followedGames,
         gameInfoS,
-        scrollers,
-        scrollers2,
+        scrollers0,
+        scrollers1,
         ss.storage.mutedChannels,
         offlineGames,
-        ss.storage.authInfo[2]
+        ss.storage.authInfo[2],
+        scrollers2,
+        topVideos,
+        videoInfo
     ])
 }
 
-exports.onUnload = function(reason) {
+exports.onUnload = function (reason) {
     //console.log(reason)
     if ((reason == "disable") || (reason == "uninstall")) {
         //Reset all of the storage values
@@ -2120,6 +2401,7 @@ exports.onUnload = function(reason) {
         delete ss.storage.previewWait
         delete ss.storage.tutorialOn
         delete ss.storage.darkMode
+        delete ss.storage.searchLim
 
         //console.log("Good bye!")
     } else if (reason == "upgrade") {

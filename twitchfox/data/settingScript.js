@@ -40,6 +40,7 @@ settings.set("previewWait", null)
 settings.set("tutorialOn", null)
 settings.set("hidePreview", null)
 settings.set("darkMode", null)
+settings.set("searchLim", null)
 
 //Other variables
 
@@ -106,6 +107,7 @@ interChat = document.getElementById("popout")
 interQual = document.getElementById("livequality")
 interPath = document.getElementById("livepath")
 interDark = document.getElementById("darkmode")
+interLim = document.getElementById("searchlim")
 
 versionSpan = document.getElementById("versionspan")
 
@@ -148,7 +150,7 @@ function init() {
     var i = 0
     for (var id in tabLinks) {
         tabLinks[id].onclick = showTab
-        tabLinks[id].onfocus = function() {
+        tabLinks[id].onfocus = function () {
             this.blur()
         }
         if (i == 0) tabLinks[id].className = 'selected'
@@ -189,13 +191,13 @@ function getHash(url) {
 
 //Follower settings
 
-followClear.onclick = function() {
+followClear.onclick = function () {
     addon.port.emit("clearAll")
     mutedChannels = []
     updateSettings()
 }
 
-followAdd.onkeydown = function(e) {
+followAdd.onkeydown = function (e) {
     if (e.keyCode == 13) {
         if (followAdd.value != "") {
             var curvalue = followAdd.value
@@ -208,7 +210,7 @@ followAdd.onkeydown = function(e) {
     }
 }
 
-followSubmit.onclick = function() {
+followSubmit.onclick = function () {
     if (followAdd.value != "") {
         var curvalue = followAdd.value
         curvalue = curvalue.replace(/ /g, "")
@@ -219,12 +221,12 @@ followSubmit.onclick = function() {
     followAdd.value = ""
 }
 
-followSearch.oninput = function() {
+followSearch.oninput = function () {
     searchTerm = followSearch.value
     updateFollowed()
 }
 
-document.onkeydown = function(e) {
+document.onkeydown = function (e) {
     if (e.keyCode == 46) {
         var selected = getSelectValues(followList)
         for (var key in selected) {
@@ -233,26 +235,26 @@ document.onkeydown = function(e) {
     }
 }
 
-followRemove.onclick = function() {
+followRemove.onclick = function () {
     var selected = getSelectValues(followList)
     for (var key in selected) {
         addon.port.emit("unfollow", selected[key])
     }
 }
 
-followMute.onclick = function() {
+followMute.onclick = function () {
     mutedChannels = followedStreamers.join(",").split(",")
     updateSettings()
     addon.port.emit("updateChans")
 }
 
-followUnmute.onclick = function() {
+followUnmute.onclick = function () {
     mutedChannels = []
     updateSettings()
     addon.port.emit("updateChans")
 }
 
-followImporter.onkeydown = function(e) {
+followImporter.onkeydown = function (e) {
     if (e.keyCode == 13) {
         if ((followImporter.value != "") && !authorized) {
             addon.port.emit("importUser", followImporter.value)
@@ -261,14 +263,14 @@ followImporter.onkeydown = function(e) {
     }
 }
 
-followImport.onclick = function() {
+followImport.onclick = function () {
     if ((followImporter.value != "") && !authorized) {
         addon.port.emit("importUser", followImporter.value)
     }
     followImporter.value = ""
 }
 
-followIfile.onchange = function() {
+followIfile.onchange = function () {
     var file = this.files[0]
     var reader = new FileReader()
     var smode = false
@@ -276,7 +278,7 @@ followIfile.onchange = function() {
     var importfollows = []
     var importmutes = []
     var importgames = []
-    reader.onload = function(progressEvent) {
+    reader.onload = function (progressEvent) {
         var lines = this.result.split('\n')
         for (var key in lines) {
             if (lines[key] != "") {
@@ -312,7 +314,7 @@ followIfile.onchange = function() {
     reader.readAsText(file)
 }
 
-followEfile.onclick = function() {
+followEfile.onclick = function () {
     var textToWrite = createText()
     var textFileAsBlob = new Blob([textToWrite], {
         type: 'text/plain'
@@ -330,7 +332,7 @@ followEfile.onclick = function() {
 
 //Alarm settings
 
-alarmDefault.onclick = function() {
+alarmDefault.onclick = function () {
     //Default alarm settings
 
     settings.set("updateInterval", 60)
@@ -352,57 +354,60 @@ alarmDefault.onclick = function() {
     updateSettings()
 }
 
-alarmWait.onchange = function() {
+alarmWait.onchange = function () {
+    if (alarmWait.value < 60) {
+        alarmWait.value = 60
+    }
     settings.set("updateInterval", alarmWait.value)
     updateSettings()
 }
 
-alarmOn.onchange = function() {
+alarmOn.onchange = function () {
     settings.set("alertOn", alarmOn.checked)
     updateSettings()
 }
 
-alarmChange.onchange = function() {
+alarmChange.onchange = function () {
     settings.set("alertChange", alarmChange.checked)
     updateSettings()
 }
 
-alarmOff.onchange = function() {
+alarmOff.onchange = function () {
     settings.set("alertOff", alarmOff.checked)
     updateSettings()
 }
 
-alarmGames.onchange = function() {
+alarmGames.onchange = function () {
     settings.set("alertGames", alarmGames.checked)
     updateSettings()
 }
 
-alarmNotifs.onchange = function() {
+alarmNotifs.onchange = function () {
     settings.set("desktopNotifs", alarmNotifs.checked)
     updateSettings()
 }
 
-alarmSound.onchange = function() {
+alarmSound.onchange = function () {
     settings.set("soundAlarm", alarmSound.checked)
     updateSettings()
 }
 
-alarmVol.oninput = function() {
+alarmVol.oninput = function () {
     settings.set("alarmVolume", alarmVol.value)
     updateSettings()
 }
 
-alarmInterval.onchange = function() {
+alarmInterval.onchange = function () {
     settings.set("soundInterval", alarmInterval.value)
     updateSettings()
 }
 
-alarmRestrict.onchange = function() {
+alarmRestrict.onchange = function () {
     settings.set("restrictAlarm", alarmRestrict.checked)
     updateSettings()
 }
 
-alarmFrom.onchange = function() {
+alarmFrom.onchange = function () {
     var dat = (alarmFrom.value).replace(/\D/g, '')
     var dat2 = (alarmFrom.value).replace(/\d/g, '')
     if ((dat == "") || (dat2 != "::") || ((alarmFrom.value).length < 8)) {
@@ -418,7 +423,7 @@ alarmFrom.onchange = function() {
     }
 }
 
-alarmTo.onchange = function() {
+alarmTo.onchange = function () {
     var dat = (alarmTo.value).replace(/\D/g, '')
     var dat2 = (alarmTo.value).replace(/\d/g, '')
     if ((dat == "") || (dat2 != "::") || ((alarmTo.value).length < 8)) {
@@ -434,29 +439,29 @@ alarmTo.onchange = function() {
     }
 }
 
-alarmCustom.onchange = function() {
+alarmCustom.onchange = function () {
     settings.set("customAlarm", alarmCustom.value)
     updateSettings()
 }
 
-alarmLim.onchange = function() {
+alarmLim.onchange = function () {
     settings.set("alarmLimit", alarmLim.checked)
     updateSettings()
 }
 
-alarmLen.onchange = function() {
+alarmLen.onchange = function () {
     settings.set("alarmLength", alarmLen.value)
     updateSettings()
 }
 
-alarmId.onchange = function() {
+alarmId.onchange = function () {
     settings.set("uniqueIds", alarmId.checked)
     updateSettings()
 }
 
 //Interface settings
 
-interDefault.onclick = function() {
+interDefault.onclick = function () {
     //Default interface settings
 
     settings.set("liveQuality", "best")
@@ -471,20 +476,21 @@ interDefault.onclick = function() {
     settings.set("openPopout", false)
     settings.set("previewWait", 30)
     settings.set("tutorialOn", true)
+    settings.set("searchLim", 20)
     updateSettings()
 }
 
-interTutorial.onchange = function() {
+interTutorial.onchange = function () {
     settings.set("tutorialOn", interTutorial.checked)
     updateSettings()
 }
 
-interHidepreview.onchange = function() {
+interHidepreview.onchange = function () {
     settings.set("hidePreview", interHidepreview.checked)
     updateSettings()
 }
 
-interRecent.onclick = function() {
+interRecent.onclick = function () {
     if (interRecent.checked) {
         settings.set("sortMethod", "recent")
     } else if (interViewers.checked) {
@@ -495,7 +501,7 @@ interRecent.onclick = function() {
     updateSettings()
 }
 
-interViewers.onclick = function() {
+interViewers.onclick = function () {
     if (interRecent.checked) {
         settings.set("sortMethod", "recent")
     } else if (interViewers.checked) {
@@ -506,7 +512,7 @@ interViewers.onclick = function() {
     updateSettings()
 }
 
-interAlpha.onclick = function() {
+interAlpha.onclick = function () {
     if (interRecent.checked) {
         settings.set("sortMethod", "recent")
     } else if (interViewers.checked) {
@@ -517,48 +523,59 @@ interAlpha.onclick = function() {
     updateSettings()
 }
 
-interPreview.onchange = function() {
+interPreview.onchange = function () {
     settings.set("previewWait", interPreview.value)
     updateSettings()
 }
 
-interHideoff.onchange = function() {
+interHideoff.onchange = function () {
     settings.set("hideOffline", interHideoff.checked)
     updateSettings()
 }
 
-interHideavatar.onchange = function() {
+interHideavatar.onchange = function () {
     settings.set("hideAvatar", interHideavatar.checked)
     updateSettings()
 }
 
-interTab.onchange = function() {
+interTab.onchange = function () {
     settings.set("openTab", interTab.checked)
     updateSettings()
 }
 
-interLive.onchange = function() {
+interLive.onchange = function () {
     settings.set("openLive", interLive.checked)
     updateSettings()
 }
 
-interChat.onchange = function() {
+interChat.onchange = function () {
     settings.set("openPopout", interChat.checked)
     updateSettings()
 }
 
-interQual.onchange = function() {
+interQual.onchange = function () {
     settings.set("liveQuality", interQual.value)
     updateSettings()
 }
 
-interPath.onchange = function() {
+interPath.onchange = function () {
     settings.set("livePath", interPath.value)
     updateSettings()
 }
 
-interDark.onchange = function() {
+interDark.onchange = function () {
     settings.set("darkMode", interDark.checked)
+    updateSettings()
+}
+
+interLim.onchange = function () {
+    if (interLim.value < 8) {
+        interLim.value = 8
+    }
+    if (interLim.value > 100) {
+        interLim.value = 100
+    }
+    settings.set("searchLim", Number(interLim.value))
     updateSettings()
 }
 
@@ -566,7 +583,7 @@ interDark.onchange = function() {
 
 function onRightClick(obj) {
     if (obj != null) {
-        obj.oncontextmenu = function() {
+        obj.oncontextmenu = function () {
             var actname = obj.value
             if (!containsValue(mutedChannels, actname)) {
                 mutedChannels.unshift(actname)
@@ -719,6 +736,7 @@ function updateSettings() {
     interChat.checked = settings.get("openPopout")
     interPreview.value = settings.get("previewWait")
     interDark.checked = settings.get("darkMode")
+    interLim.value = settings.get("searchLim")
 
     if (settings.get("darkMode")) {
         document.getElementById("!csslink").href = "darkset.css"
@@ -753,8 +771,8 @@ function destroyClickedElement(event) {
 
 function createText() {
     var tex = "/S\n"
-    settings.forEach(function(v, k) {
-        if (typeof(v) == "string") {
+    settings.forEach(function (v, k) {
+        if (typeof (v) == "string") {
             v.replace("|", "")
             tex = tex + k + "|" + '"' + v + '"\n'
         } else {
@@ -806,11 +824,12 @@ function exportSettings() {
         settings.get("alertChange"),
         settings.get("alertOff"),
         settings.get("alertGames"),
-        mutedChannels
+        mutedChannels,
+        settings.get("searchLim")
     ])
 }
 
-addon.port.on("onSettings", function(payload) {
+addon.port.on("onSettings", function (payload) {
     //console.log("Payload received")
     followedStreamers = payload[0]
     settings.set("updateInterval", payload[1])
@@ -846,6 +865,7 @@ addon.port.on("onSettings", function(payload) {
     settings.set("alertGames", payload[31])
     mutedChannels = payload[32]
     authorized = (payload[33] != "") ? true : false
+    settings.set("searchLim", payload[34])
 
     updateSettings()
 })
