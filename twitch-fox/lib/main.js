@@ -68,9 +68,9 @@ var defaultSettings = {
 
 function cleanSettings(setDefault) {
     var key;
-    //If a setting is undefined, define it as its default
+    //If a setting is undefined or of the wrong type, define it as its default
     for (key in defaultSettings) {
-        if (defaultSettings.hasOwnProperty(key) && !ss.storage.hasOwnProperty(key)) {
+        if (defaultSettings.hasOwnProperty(key) && (!ss.storage.hasOwnProperty(key) || typeof ss.storage[key] !== typeof defaultSettings[key])) {
             ss.storage[key] = defaultSettings[key];
         } else if (setDefault) {
             ss.storage[key] = defaultSettings[key];
@@ -83,6 +83,16 @@ function cleanSettings(setDefault) {
             delete ss.storage[key];
         }
     }
+	
+	//Check to make sure the user has the correct object types
+	
+	if (ss.storage.followedChannels[0] && !ss.storage.followedChannels[0].hasOwnProperty("type")) {
+		ss.storage.followedChannels = defaultSettings.followedChannels;
+	}
+	
+	if (ss.storage.followedGames[0] && !ss.storage.followedGames[0].hasOwnProperty("type")) {
+		ss.storage.followedGames = defaultSettings.followedGames;
+	}
 }
 
 //Arrays
@@ -1467,7 +1477,7 @@ function prePanelUpdate(action) {
     }
 }
 
-update = function (forced) {
+update = function () {
     //This function is called every how many seconds as defined in the options
     
     if (ss.storage.followedAuthInfo.token) {
@@ -1611,14 +1621,14 @@ panel.port.on("searchDirectory", function (payload) {
     panel.port.emit("searchDirectory", searchHistory);
 });
 
-panel.port.on("searchBack", function (payload) {
+panel.port.on("searchBack", function () {
     if (searchHistory.length) {
         searchHistory.pop();
     }
     panel.port.emit("searchBack", searchHistory);
 });
 
-panel.port.on("endSearch", function (payload) {
+panel.port.on("endSearch", function () {
     searchHistory = [];
     panel.port.emit("endSearch", searchHistory);
 });
@@ -1628,7 +1638,7 @@ panel.port.on("settingsUpdate", function (payload) {
     panel.port.emit("settingsUpdate", ss.storage);
 });
 
-panel.port.on("toggleSettingsMode", function (payload) {
+panel.port.on("toggleSettingsMode", function () {
     settingsMode = !settingsMode;
     panel.port.emit("toggleSettingsMode", settingsMode);
 });
@@ -1758,7 +1768,7 @@ panel.port.on("newLivePath", function(path) {
 	livestreamerHandler.checkIfReady();
 });
 
-panel.port.on("panelReady", function(path) {
+panel.port.on("panelReady", function() {
 	panel.port.emit("l10n", {
 		separator: _("separator"),
 		onlineFor: _("streamingFor"),

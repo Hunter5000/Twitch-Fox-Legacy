@@ -2,7 +2,6 @@
 /*globals document, addon, console, window, Blob, FileReader */
 
 var settings;
-var followedMode = false;
 var settingsMode = false;
 var settingsTab = "follows";
 var info = [];
@@ -196,9 +195,6 @@ function createDate(time) {
     var year = a.getFullYear();
     var month = months[a.getMonth()];
     var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var sec = a.getSeconds();
     var output = "";
     if (l10n.separator === ",") {
         output = month + ' ' + date + ' ' + year;
@@ -221,7 +217,6 @@ function getPosByProp(arr, prop, val) {
 function getSelectValues(select) {
     var result = [];
     var options = select && select.options;
-    var opt;
     for (var i = 0; i < options.length; i += 1) {
         if (options[i].selected) {
             result.push(options[i].value);
@@ -494,7 +489,7 @@ function createInfoCard(obj) {
                 createPrompt();
             };
 			
-            infoCard.onclick = function(ev) {
+            infoCard.onclick = function() {
 				if (obj.online) {
 					requests.send("searchDirectory", {type: "getGameStreams", target: obj.name, scrollY: window.scrollY, prompt: prompt});
 				} else {
@@ -962,7 +957,7 @@ function filterContent(filter = searchBox.value.toLowerCase()) {
 }
 
 function updateContent() {
-    var stillExists, i;
+    var i;
 	var infoCards = [];
     
     for (i = 0; i < info.length; i += 1) {
@@ -1190,7 +1185,7 @@ function onSettingsDownload() {
 document.getElementById("uploadButton").onchange = function() {
     var file = this.files[0];
     var reader = new FileReader();
-    reader.onload = function (progressEvent) {
+    reader.onload = function () {
         requests.send("importSettings", JSON.parse(this.result));
     };
     reader.readAsText(file);
@@ -1305,7 +1300,7 @@ function onFollowListMute() {
 	}
 }
 
-window.onscroll = function(ev) {
+window.onscroll = function() {
     if (infoContent.clientHeight - window.scrollY <= window.innerHeight - 64 && (searchHistory.length || !settings.interFollowedMode || settings.interMode === "videos") && !settingsMode) {
         //onBottomOfPage
         requests.send("infoUpdate", "scroll");
@@ -1419,15 +1414,15 @@ addon.port.on("infoUpdate", function(payload) {
 	}
 });
 
-addon.port.on("openTab", function(payload) {
+addon.port.on("openTab", function() {
     requests.remove("openTab");
 });
 
-addon.port.on("login", function(payload) {
+addon.port.on("login", function() {
     requests.remove("login");
 });
 
-addon.port.on("logout", function(payload) {
+addon.port.on("logout", function() {
     requests.remove("logout");
 });
 
@@ -1458,7 +1453,7 @@ addon.port.on("getQualities", function(payload) {
     }
 });
 
-addon.port.on("openLive", function(payload) {
+addon.port.on("openLive", function() {
     requests.remove("openLive");
 });
 
