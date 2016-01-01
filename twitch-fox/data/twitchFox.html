@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="general.css"/>
+		<link rel="stylesheet" type="text/css" href="light.css" id="styleLink"/>
+    </head>
+    <body>
+        
+        <div class="screenLock" id="previewContent" onclick="onHidePreview()" oncontextmenu="onHidePreview()"> 
+            <div class="preview enlarged" id="enlargedPreview">
+
+            </div>
+        </div>
+        
+        <div class="screenLock" id="clickPrompt" onclick="onClosePrompt(event)" oncontextmenu="onClosePrompt(event)"> 
+            <div class="miniHeader">
+                <div class="preButtons">
+                    <div class="infoBlock" style="margin-left: 10px; vertical-align: middle; height: 100%">
+                        <div class="smallIcon channel" id="promptIcon">
+                            
+                        </div>
+                        <span class="bold online" id="promptName">
+
+                        </span>
+                    </div>
+                </div>
+                <div class= "promptFollow" id="promptFollow" onclick="onFollowUnfollow()">
+                
+                </div>
+                <div class= "promptStreams" id="promptStreams" onclick="onOpenGameDirectory()">
+                
+                </div>
+                <div class= "promptVideos" id="promptVideos" onclick="onOpenVideos()">
+                
+                </div>
+                <div class= "promptMute" id="promptMute" onclick="onMuteUnmute()">
+                
+                </div>
+                <div class= "promptExit" id="promptExit" style="display: inline-block">
+                
+                </div>
+            </div>
+            <div class="option" id="openTwitch" data-l10n-id="openTwitch" onclick="onOpenTwitchPage()" style="display: inline-block">
+
+            </div>
+            <div class="option" id="openLive" onclick="onOpenLivestreamer(event)">
+                <span data-l10n-id="openLive" id="liveStreamSpan" style="display: none"> </span>
+                <span data-l10n-id="openVideoLive" id="liveVideoSpan" style="display: none"> </span>
+                <span data-l10n-id="findingQualities" id="qualityFinding" style="display: none"> </span>
+                <span data-l10n-id="noStreams" id="qualityError" style="display: none"> </span>
+                <span data-l10n-id="livestreamerQuality" id="qualitySpan" style="display: none"> </span>
+                <select id="qualitySelect" style="display: none">
+                </select>
+            </div>
+            <div class="option" id="openPopout" data-l10n-id="openPopout" onclick="onOpenStreamPopout()">
+
+            </div>
+            <div class="option" id="openChat" data-l10n-id="openChat" onclick="onOpenChatPopout()">
+
+            </div>
+            <div class="option" id="openVideoPopout" data-l10n-id="openVideoPopout" onclick="onOpenVideoPopout()">
+
+            </div>
+        </div>
+        
+        <div class="header">
+            <div class = "topRow">
+                <div class = "menuElement">
+                    <div class = "menuButton twitch" id="followedButton" onclick="onFollowedModeToggle()">
+
+                    </div>
+                    <div class = "menuButton back" id="backButton" onclick="onSearchBack()" style="display: none">
+
+                    </div>
+                    <div class = "menuButton twitchLogin" id="loginLogoutButton" onclick="onLoginLogout()" style="display: none">
+
+                    </div>
+                </div>
+                <div class = "tabs" id = "tabs">
+                    <div class = "tabElement" onclick="onChannelsMode()" id = "channelsTab">
+                        <div class = "tabButton channels">
+
+                        </div>
+                        <div class = "counter" id = "channelsCounter">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" onclick="onGamesMode()" id = "gamesTab">
+                        <div class = "tabButton games">
+
+                        </div>
+                        <div class = "counter" id = "gamesCounter">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" onclick="onVideosMode()" id = "videosTab">
+                        <div class = "tabButton videos">
+
+                        </div>
+                    </div>
+                </div>
+                <div class = "menuElement big" id="searchResults" style="display: none">
+                    <div style="display: inline-block; width: 100%; height: 100%; font-size: 12px">
+                        <span style="vertical-align: middle; padding-left: 4px; padding-right: 4px">
+                            <span data-l10n-id="searching" id="searchingSpan" style="display:none">
+
+                            </span>
+                            <span data-l10n-id="noResults" id="noResultsSpan" style="display:none">
+
+                            </span>
+                            <span data-l10n-id="showing" id="showingSpan" style="display:none">
+
+                            </span>
+                            <span id="resultsCounter" style="display:none">
+
+                            </span>
+                            <span id="resultsFor" data-l10n-id="resultsFor" style="display:none">
+
+                            </span>
+                            <span id="resultsIn" data-l10n-id="resultsIn" style="display:none">
+
+                            </span>
+                            <span class="bold" id="searchTarget" style="display:none">
+
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class = "tabs small" id="searchTabs" style="display: none">
+                    <div class = "tabElement selected" style="width: 100%" id="resultsTab">
+                        <div class = "tabButton channels" id="searchType">
+
+                        </div>
+                        <div class = "counter" id = "totalCounter">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement selected" style="width: 50%; display: none" id="leftSearchTab" onclick="onLeftTab()">
+                        <div class = "tabButton generalChannels" id="leftTabButton">
+
+                        </div>
+                        <div class = "counter" id = "leftCounter">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" style="width: 50%; display: none" id="rightSearchTab" onclick="onRightTab()">
+                        <div class = "tabButton channels" id="rightTabButton">
+
+                        </div>
+                        <div class = "counter" id = "rightCounter">
+
+                        </div>
+                    </div>
+                </div>
+                <div class = "tabs" id = "settingsTabs" style="display: none">
+                    <div class = "tabElement selected" style="width: 25%" onclick="onFollowsTab()" id = "followsTab">
+                        <div class = "tabButton follows">
+
+                        </div>
+                        <div class = "counter" id = "followsCounter">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" onclick="onAlarmTab()" style="width: 25%" id = "alarmTab">
+                        <div class = "tabButton alarm">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" onclick="onInterfaceTab()" style="width: 25%" id = "interfaceTab">
+                        <div class = "tabButton interface">
+
+                        </div>
+                    </div>
+                    <div class = "tabElement" onclick="onAboutTab()" style="width: 25%" id = "aboutTab">
+                        <div class = "tabButton about">
+
+                        </div>
+                        <div class = "counter" id = "versionCounter">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class = "bottomRow"> 
+                <div class = "menuElement">
+                    <div class = "menuButton settings" id = "settingsButton" onclick="onSettingsModeToggle()">
+                        
+                    </div>
+                </div>
+                <div class = "searchBar" id="searchBar">
+                    <input type="text" id="search" class="searchBox" placeholder="Search" oninput="onSearchInput()" onkeydown="onSearchKeyDown(event)">
+                    <div class = "menuButton refresh" id = "refreshButton" onclick="onRefresh()">
+
+                    </div>
+                    <div class = "menuButton search" id = "searchButton" onclick="onSearch()" style="display: none">
+
+                    </div>
+                    <div class = "menuButton add" id = "addButton" onclick="onAdd()" style="display: none">
+
+                    </div>
+                    <div class = "menuButton remove" id = "removeButton" onclick="onRemove()" style="display: none">
+
+                    </div>
+                </div>
+                <div class = "menuElement small" id = "muteElement">
+                    <div class = "menuButton mute" id = "muteButton" onclick="onMuteToggle()">
+                        
+                    </div>
+                </div>
+                <div class = "menuElement small" id="rightElement">
+                    <div class = "menuButton viewersSort" id="rightButton" onclick="onRightButton()">
+                        
+                    </div>
+                </div>
+                <div class = "menuElement small" id="downloadElement" style="display: none">
+                    <div class = "menuButton download" id = "downloadButton" onclick="onSettingsDownload()">
+                        
+                    </div>
+                </div>
+                <div class = "menuElement small" id="uploadElement" style="display: none">
+                    <div class = "menuButton upload">
+						<input type="file" class = "uploadInput" id = "uploadButton" accept=".txt">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" id="infoContent">
+			
+        </div>
+		<span style="position: absolute; margin-top: 70px; margin-left: 10px; font-size: 16px">
+			<span data-l10n-id="youArent" id="noFollowedChannels" style="display: none"></span>
+			<span data-l10n-id="youArent2" id="noFollowedGames" style="display: none"></span>
+			<span data-l10n-id="youMust" id="noFollowedVideos" style="display: none"></span>
+		</span>
+        <div class="content" id="settingsContent">
+  			<div id="followsSettings" class="settingsContainer">
+				<select style="width: 100%; margin-bottom: 7px" id="followList" size="23" onchange="onFollowListChange()" oncontextmenu="onFollowListMute()" multiple>
+
+				</select>
+                <div class = "importInput" id="importElement">
+                    <input type="text" id="importFollows" class="searchBox" placeholder="Import" onkeydown="onImportKeyDown(event)">
+                    <div class = "menuButton add" id = "importButton" onclick="onImportFollows()">
+
+                    </div>
+                </div>
+				<div class = "button" id="clearElement" data-l10n-id="clearAll" onclick="onClearFollows()">
+				</div>
+			</div>
+  			<div id="alarmSettings" class="settingsContainer" style="display: none">
+				<span id="updateSpan">
+					<span style="font-weight:bold" data-l10n-id="secondsTo"></span>
+					<input type="number" id="alarmUpdate" min="60" value="60">
+					<br>
+					<br>
+				</span>
+				<span style="font-weight:bold" data-l10n-id="receiveAlert"></span>
+				<br>
+				<input type="checkbox" id="alarmOnOnlineChannel" onchange="onBoolSetting(event)" checked>
+				<span data-l10n-id="comesOnline"></span>
+				<br>
+				<input type="checkbox" id="alarmOnStatusChange" onchange="onBoolSetting(event)">
+				<span data-l10n-id="changesStatus"></span>
+				<br>
+				<input type="checkbox" id="alarmOnOfflineChannel" onchange="onBoolSetting(event)">
+				<span data-l10n-id="goesOffline"></span>
+				<br>
+				<br>
+				<span style="font-weight:bold" data-l10n-id="alertGame"></span>
+				<input type="checkbox" id="alarmOnOnlineGame" onchange="onBoolSetting(event)">
+				<br>
+				<br>
+				<span style="font-weight:bold" data-l10n-id="enableNotifs"></span>
+				<input type="checkbox" id="alarmNotifs" onchange="onBoolSetting(event)" checked>
+				<br>
+				<br>
+				<span style="font-weight:bold" data-l10n-id="disableFlashing"></span>
+				<input type="checkbox" id="alarmDisableIconFlashing" onchange="onBoolSetting(event)" checked>
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="alarmInterval"></span>
+				<input type="number" id="alarmInterval" min="1" value="1">
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="enableSound"></span>
+				<input type="checkbox" id="alarmSound" onchange="onBoolSetting(event)" checked>
+				<br>
+				<br>
+				<span id="soundSpan">
+					<span style="font-weight:bold" data-l10n-id="alarmVolume"></span>
+					<input type="number" id="alarmVolume" min="0" max="100" value="100">
+					<br>
+					<br>
+					<span style="font-weight: bold" data-l10n-id="disable"></span>
+					<input type="checkbox" id="alarmRestrict" onchange="onBoolSetting(event)">
+					<span id="restrictSpan">
+						<br>
+						<span data-l10n-id="between"></span><span> </span>
+						<input type="text" id="alarmRestrictFrom" maxlength="8" placeholder="HH:MM:SS" style="width: 62px">
+						<span> </span>
+						<span data-l10n-id="and"></span>
+						<span></span>
+						<input type="text" id="alarmRestrictTo" maxlength="8" placeholder="HH:MM:SS" style="width: 62px">
+					</span>
+					<br>
+					<br>
+					<span style="font-weight: bold" data-l10n-id="custom"></span>
+					<input type="text" id="alarmPath" placeholder="Custom alarm path" style="width: 50%">
+					<br>
+					<br>
+				</span>
+				<span style="font-weight: bold" data-l10n-id="setMaximum"></span>
+				<input type="checkbox" id="alarmLimit" onchange="onBoolSetting(event)">
+				<span id="limitSpan">
+					<br>
+					<br>
+					<span style="font-weight: bold" data-l10n-id="maximumAlarm"></span>
+					<input type="number" id="alarmLength" min="1" value="10">
+				</span>
+				<div class = "button" data-l10n-id="resetTo" style="margin-top: 10px; margin-bottom: 6px" onclick="onAlarmDefaults()"> </div>
+			</div>
+  			<div id="interfaceSettings" class="settingsContainer" style="display: none">
+				<span style="font-weight: bold" data-l10n-id="darkMode"></span>
+				<input type="checkbox" id="interDarkMode" onchange="onBoolSetting(event)">
+				<br>
+				<br>
+				<span style="font-weight: bold"><span data-l10n-id="searchResults"></span></span>
+				<input type="number" id="interSearchLim" min="12" max="100" value="20">
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="hideOffline"></span>
+				<input type="checkbox" id="interHideOffline" onchange="onBoolSetting(event)">
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="hideAvatar"></span>
+				<input type="checkbox" id="interHideAvatar" onchange="onBoolSetting(event)">
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="hidePreview"></span>
+				<input type="checkbox" id="interHidePreview" onchange="onBoolSetting(event)">
+				<br>
+				<br>
+				<span style="font-weight: bold" data-l10n-id="livestreamerPath"></span>
+				<input type="text" id="interLivestreamerPath" placeholder="Livestreamer path" style="width: 50%">
+				<br>
+				<br>
+				<span class="bold offline" id="livestreamerStatus" style="font-size: 14px"></span>
+				<div class = "button" data-l10n-id="resetTo" style="margin-top: 20px" onclick="onInterfaceDefaults()"> </div>
+			</div>
+  			<div id="aboutSettings"  class="settingsContainer" style="display: none; font-size: 15px">
+				<p style="font-weight: bold">TwitchFox, <span data-l10n-id="version"></span><span> </span><span id="versionSpan" style="font-size: larger"></span><span> </span><span data-l10n-id="version2"></span></p>
+				<p><span data-l10n-id="thankYou"></span></p>
+				<p><span data-l10n-id="iveMade"></span><span> </span><a href="https://addons.mozilla.org/en-US/firefox/addon/twitchfox/" target="_blank"><span data-l10n-id="addonPage"></span></a><span> </span><span data-l10n-id="addonPage2_"></span></p>
+				<p><span data-l10n-id="ifYoure"></span><span> </span><a href="https://github.com/Hunter5000/TwitchFox/" target="_blank"><span data-l10n-id="gitHub"></span></a><span> </span><span data-l10n-id="gitHub2"></span></p>
+				<p><span data-l10n-id="perhapsEven"></span></p>
+				<p><span data-l10n-id="ifYou"></span><span> </span><a href="mailto:hunter8750@gmail.com"><span data-l10n-id="emailMe"></span></a><span> </span><span data-l10n-id="orAdd"></span><span> </span><a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a><span> </span><span data-l10n-id="steam2"></span></p>
+				<p style="font-weight: bold; font-size: larger">-Hunter</p>
+			</div>
+        </div>
+        <script src="twitchFox.js"></script>
+    </body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

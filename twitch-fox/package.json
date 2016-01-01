@@ -1,0 +1,19 @@
+{
+  "name": "twitch_fox",
+  "title": "Twitch Fox",
+  "id": "jid1-PmBVeuWLfYr73g@jetpack",
+  "description": "Quickly browse Twitch. Receive notifications for channels and games. Many customizable features.",
+  "author": "hunter",
+  "license": "MPL 2.0",
+  "version": "3.0.0",
+  "icon" : "data/ico48.png",
+  "icon64": "data/ico64.png",
+  "main": "lib/main.js",
+  "preferences": [{
+    "type": "control",
+    "label": "Click to access the settings",
+    "name": "settingsButton",
+    "title": "Settings"
+  }]
+}
+

@@ -1,0 +1,173 @@
+body {
+    background-color: #141414;
+	color: #999;
+}
+
+.header {
+    background-color: #1E1E1E;
+}
+
+#previewContent {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+#clickPrompt {
+    background-color: rgba(127, 127, 127, 0.6);
+}
+
+.miniHeader {
+    border: 1px solid #333;
+    background-color: #1E1E1E;
+}
+
+.option {
+    border: 1px solid #333;
+    background-color: #141414;
+	color: #F2F2F2;
+}
+
+.option:hover {
+    background-color: #484848;
+}
+
+.searchBar {
+	border-left: 1px solid #333;
+}
+
+.counter {
+    color: #F2F2F2;
+}
+
+.infoCard {
+    background-color: #141414;
+}
+
+.infoCard:hover {
+    background-color: #1E1E1E;
+}
+
+.bold.game:hover, .bold.channel:hover {
+	color: #F2F2F2;
+}
+
+.bold.online {
+    color: #F2F2F2;
+}
+
+.bold.offline {
+    color: #D44949;
+}
+
+.small.online {
+    color: #F2F2F2;
+}
+
+.online {
+    color: #F2F2F2;
+}
+
+.offline {
+	color: #D44949;
+}
+
+.settingsContainer {
+    background-color: #141414;
+}
+
+.button {
+    background-color: #333;
+    border: 1px solid #1E1E1E;
+}
+
+.button:hover {
+    background-color: #484848;
+}
+
+.menuElement.big {
+    border-left: 1px solid #333;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+}
+
+.menuButton, .tabButton {
+    transition: transform .8s ease-in-out, filter .2s linear;
+	filter: grayscale(1) brightness(1.7);
+}
+
+.menuButton:hover {
+    filter: grayscale(1) brightness(2.6);
+}
+
+.menuButton.settings:hover, .menuButton.settings.selected {
+    filter: grayscale(1) brightness(2.6);
+}
+
+.menuButton.refresh, .menuButton.search, .menuButton.add, .menuButton.remove {
+    filter: brightness(0.5);
+    transition: transform .8s ease-in-out, filter .2s linear;
+}
+
+.menuButton.refresh:hover, .menuButton.search:hover, .menuButton.add:hover, .menuButton.remove:hover {
+    filter: brightness(1);
+}
+
+.promptVideos, .promptMute, .promptExit, .promptStreams {
+    filter: brightness(0.6);
+    transition: filter .2s linear;
+}
+
+.promptVideos:hover, .promptMute:hover, .promptExit:hover, .promptStreams:hover {
+    filter: brightness(0.4);
+}
+
+.tabElement {
+    border-left: 1px solid #333;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
+    background-color: #1E1E1E;
+	transition: filter .2s linear;
+}
+
+.tabElement:hover {
+    filter: brightness(1.2);
+}
+
+.tabElement.selected {
+    filter: brightness(1.5);
+}
+
+.tabElement.selected:hover {
+    filter: brightness(1.5);
+}
+
+.tabButton.about {
+    filter: none;
+}
+
+input {
+    background-color: #323232;
+    color: #D3D3D3;
+	border: 1px solid #1E1E1E;
+}
+
+select {
+	background-color: #1E1E1E;
+	border: 1px solid #323232;
+}
+
+option {
+	color: #F2F2F2;
+}
+
+a:link {
+    color: #CCC
+}
+a:visited {
+    color: #BBB
+}
+a:hover {
+    color: #FFF
+}
+a:active {
+    color: #6441A5
+}

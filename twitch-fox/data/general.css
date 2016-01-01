@@ -1,0 +1,540 @@
+body {
+    font-family: Helvetica;
+    padding: 0;
+    margin: 0;
+	-moz-user-select: -moz-none;
+}
+
+.header {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    z-index: 1;
+}
+
+.content {
+    position: absolute;
+    top: 64px;
+    text-align: left;
+    width: 100%;
+    font-size: 0;
+}
+
+#settingsContent {
+    display: none;
+}
+    
+.screenLock {
+    font-size: 0;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0.2s linear, opacity 0.2s ease-in-out;
+}
+
+#clickPrompt {
+	padding-top: 150px;
+}
+
+.screenLock.selected {
+    opacity: 1;
+    visibility: visible;
+}
+
+.miniHeader {
+    font-size: 0;
+    display: inline-block;
+    width: 80%;
+	min-height: 44px;
+    box-sizing: border-box;
+    position: relative;
+    text-align: right;
+}
+
+.option {
+    font-size: 14px;
+    display: none;
+    width: 80%;
+    height: 30px;
+    box-sizing: border-box;
+    transition: background-color .2s linear;
+}
+
+.option:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.preButtons {
+    font-size: 13px;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    text-align: left;
+    display: inline-block;
+    height: 100%;
+	-moz-user-select: text;
+	width: calc(100% - 160px);
+}
+
+.promptFollow {
+    display: none;
+    height: 32px;
+    width: 32px;
+    background: url(sprites.png) no-repeat;
+    background-position: -512px 0px;
+}
+
+.promptFollow.followed {
+    background-position: -576px 0px;
+}
+
+.promptFollow:hover {
+    cursor: pointer;
+    background-position: -544px 0px;
+}
+
+.promptFollow.followed:hover {
+    background-position: -608px 0px;
+}
+
+.promptVideos, .promptMute, .promptExit, .promptStreams {
+    display: none;
+    height: 32px;
+    width: 32px;
+    background: url(sprites.png) no-repeat;
+}
+
+.promptVideos:hover, .promptMute:hover, .promptExit:hover, .promptStreams:hover {
+    cursor: pointer;
+}
+
+.promptMute {
+    background-position: -672px 0px;
+}
+
+.promptMute.muted {
+    background-position: -704px 0px;
+}
+
+.promptVideos {
+    background-position: -736px 0px;
+}
+
+.promptStreams {
+    background-position: -768px 0px;
+}
+
+.promptChannel {
+    background-position: -768px 0px;
+}
+
+.promptExit {
+    background-position: -640px 0px;
+}
+
+.topRow {
+    font-size: 0;
+    height: 50%;
+    width: 100%;
+}
+
+.bottomRow {
+    box-sizing: border-box;
+    font-size: 0;
+    height: 50%;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.menuElement {
+    text-align: center;
+    display: inline-block;
+    width: 10%;
+    height: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.menuElement.small {
+    width: 10%;
+}
+
+.menuElement.big {
+    width: 50%;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.tabs {
+    display: inline-block;
+    width: 90%;
+    height: 100%;
+}
+
+.tabs.small {
+    width: 40%;
+}
+
+.tabElement {
+    text-align: center;
+    box-sizing: border-box;
+    display: inline-block;
+    width: calc(100% / 3);
+    height: 100%;
+    vertical-align: top;
+}
+
+.tabElement:hover {
+    cursor: pointer;
+}
+
+.searchBar {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 70%;
+    height: 100%;
+}
+
+.searchBox {
+    position: relative;
+    left: 7px;
+    top: 4px;
+    width: calc(100% - 20px);
+}
+
+.counter {
+    font-size: 14px;
+    display: inline-block;
+    position: relative;
+    bottom: 2px;
+    height: 32px;
+}
+
+.menuButton, .tabButton {
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    background: url(sprites.png) no-repeat;
+}
+
+.menuButton:hover {
+    cursor: pointer;
+}
+
+.menuButton.settings {
+    background-position: 0px 0px;
+}
+
+.menuButton.settings:hover, .menuButton.settings.selected {
+    transform: rotate(112.5deg);
+}
+
+.menuButton.followed, .tabButton.follows {
+    background-position: -32px 0px;
+}
+
+.menuButton.twitch {
+    background-position: -288px 0px;
+}
+
+.menuButton.twitchLogin {
+	background-position: -896px 0px;
+}
+
+.menuButton.twitchLogout {
+	background-position: -928px 0px;
+}
+
+.menuButton.back {
+    background-position: -448px 0px;
+}
+
+.tabButton.channels {
+    background-position: -64px 0px;
+}
+.tabButton.games {
+    background-position: -96px 0px;
+}
+
+.tabButton.generalChannels {
+    background-position: -128px 0px;
+}
+
+.tabButton.videos {
+    background-position: -160px 0px;
+}
+
+.tabButton.highlights {
+    background-position: -480px 0px;
+}
+
+.tabButton.alarm {
+    background-position: -960px 0px;
+}
+
+.tabButton.interface {
+    background-position: -992px 0px;
+}
+
+.tabButton.about {
+    background-position: -1024px 0px;
+}
+
+.menuButton.refresh, .menuButton.search, .menuButton.add, .menuButton.remove {
+    height: 18px;
+    width: 18px;
+    position: relative;
+    left: calc(100% - 30px);
+    bottom: 16px;
+}
+
+.menuButton.refresh:hover {
+    transform: rotate(90deg);
+}
+
+.menuButton.refresh {
+    background-position: -256px 0px;
+}
+
+.menuButton.refresh.thinking {
+    animation-name: rotate; 
+    animation-duration: 1s; 
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.menuButton.search {
+    background-position: -416px 0px;
+}
+
+.menuButton.add {
+    background-position: -1056px 0px;
+}
+
+.menuButton.remove {
+    background-position: -1088px 0px;
+}
+
+.menuButton.mute {
+    background-position: -192px 0px;
+}
+
+.menuButton.unmute {
+    background-position: -224px 0px;
+}
+
+.menuButton.viewersSort {
+    background-position: -320px 0px;
+}
+
+.menuButton.recentSort {
+    background-position: -352px 0px;
+}
+
+.menuButton.alphabeticalSort {
+    background-position: -384px 0px;
+}
+
+.menuButton.home {
+    background-position: -800px 0px;
+}
+
+.menuButton.download {
+    background-position: -832px 0px;
+}
+
+.menuButton.upload {
+    background-position: -864px 0px;
+}
+
+.uploadInput {
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+}
+
+.uploadInput:hover {
+	cursor: pointer;
+}
+
+.infoCard {
+    display: inline-block;
+    font-size: 11px;
+    text-align: left;
+    width: calc(100% - 20px);
+    margin-top: 5px;
+    margin-left: 10px;
+    overflow: hidden;
+    transition: background-color .25s ease-in-out;
+}
+
+.infoCard.half {
+    width: calc(50% - 15px);
+}
+
+.infoCard:hover {
+    cursor: pointer;
+}
+
+.infoCard.fade, .infoCard.half.fade {
+	animation: fade 1s;
+}
+
+.logo, .boxArt, .preview {
+    height: 78px;
+    vertical-align: middle;
+}
+
+.logo {
+    width: 78px;
+    vertical-align: middle;
+    background: url("http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png") no-repeat;
+    background-size: 78px 78px;
+} 
+
+.boxArt {
+    width: 56px;
+    background: url("http://static-cdn.jtvnw.net/ttv-static/404_boxart-56x78.jpg") no-repeat;
+    background-size: 56px 78px;
+}
+
+.textInfo {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.infoBlock {
+    display: inline-block;
+    margin-bottom: 6px;
+    margin-right: 5px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.small.online {
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.preview {
+    width: 139px;
+    background: url("http://static-cdn.jtvnw.net/ttv-static/404_preview-139x78.jpg") no-repeat;
+    background-size: 139px 78px;
+}
+
+.preview.enlarged {
+    display: inline-block;
+    width: 458px;
+    height: 258px;
+    margin-top: calc(50% - 106px);
+    background: url("") no-repeat;
+    background-size: 458px 258px;
+}
+
+.preview:hover {
+    cursor: zoom-in;
+}
+
+.preview.enlarged:hover {
+    cursor: zoom-out;
+}
+
+.smallIcon {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    background: url(sprites.png) no-repeat;
+    vertical-align: top;
+    margin-right: 4px;
+}
+
+.smallIcon.channel {
+    background-position: 0px -32px;
+}
+
+.smallIcon.viewers {
+    background-position: -16px -32px;
+}
+
+.smallIcon.status {
+    background-position: -32px -32px;
+}
+
+.smallIcon.game {
+    background-position: -48px -32px;
+}
+
+.smallIcon.time {
+    background-position: -64px -32px;
+}
+
+.smallIcon.views {
+    background-position: -80px -32px;
+}
+
+.smallIcon.followers {
+    background-position: -96px -32px;
+}
+
+.smallIcon.video {
+    background-position: -112px -32px;
+}
+
+#qualitySelect {
+    text-transform: capitalize;
+}
+
+.settingsContainer {
+    display: inline-block;
+    font-size: 12px;
+    text-align: left;
+    width: calc(100% - 20px);
+    margin-top: 5px;
+    margin-left: 10px;
+    overflow: hidden;
+	line-height: 100%;
+}
+
+.importInput {
+    display: inline-block;
+	margin-top: 5px;
+    width: 100%;
+    height: 100%;
+}
+
+.button {
+    display: inline-block;
+    font-size: 14px;
+    text-align: center;
+    width: calc(100% - 12px);
+    box-sizing: border-box;
+    margin-top: -8px;
+	margin-left: 6px;
+    overflow: hidden;
+    transition: background-color .25s ease-in-out;
+	padding: 5px;
+	font-weight: bold;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+@keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+@keyframes fade {
+    from {opacity: 0}
+    to {opacity: 1}
+}

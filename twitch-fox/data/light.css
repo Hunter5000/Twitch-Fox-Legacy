@@ -1,0 +1,137 @@
+body {
+    background-color: white;
+	color: #202020;
+}
+
+.header {
+    background-color: #F2F2F2;
+}
+
+#previewContent {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+#clickPrompt {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.miniHeader {
+    border: 1px solid #BFBFBF;
+    background-color: #F2F2F2;
+}
+
+.option {
+    border: 1px solid #BFBFBF;
+    background-color: white;
+}
+
+.option:hover {
+    background-color: lightgray;
+}
+
+.searchBar {
+    border-left: 1px solid #BFBFBF;
+}
+
+.counter {
+    color: #6441A5;
+}
+
+.infoCard {
+    background-color: white;
+}
+
+.infoCard:hover {
+    background-color: #F2F2F2;
+}
+
+.bold.game:hover, .bold.channel:hover {
+	color: #6441A5;
+}
+
+.bold.online {
+    color: #6441A5;
+}
+
+.bold.offline {
+    color: #D44949;
+}
+
+.small.online {
+    color: #6441A5;
+}
+
+.online {
+    color: #6441A5;
+}
+
+.offline {
+	color: #D44949;
+}
+
+.settingsContainer {
+    background-color: white;
+}
+
+.button {
+    background-color: #F2F2F2;
+    border: 1px solid #BFBFBF;
+}
+
+.button:hover {
+    background-color: lightgray;
+}
+
+.menuElement.big {
+    border-left: 1px solid #BFBFBF;
+}
+
+.menuButton, .tabButton {
+    transition: transform .8s ease-in-out, filter .2s linear;
+}
+
+.menuButton:hover {
+    filter: brightness(0);
+}
+
+.menuButton.settings:hover, .menuButton.settings.selected {
+    filter: brightness(0);
+}
+
+.menuButton.refresh, .menuButton.search, .menuButton.add, .menuButton.remove {
+    filter: brightness(0.5);
+    transition: transform .8s ease-in-out, filter .2s linear;
+}
+
+.menuButton.refresh:hover, .menuButton.search:hover, .menuButton.add:hover, .menuButton.remove:hover {
+    filter: brightness(0);
+}
+
+.promptVideos, .promptMute, .promptExit, .promptStreams {
+    filter: brightness(0.6);
+    transition: filter .2s linear;
+}
+
+.promptVideos:hover, .promptMute:hover, .promptExit:hover, .promptStreams:hover {
+    filter: brightness(0.4);
+}
+
+.tabElement {
+    border-left: 1px solid #BFBFBF;
+	border-right: 1px solid #BFBFBF;
+	border-bottom: 1px solid #BFBFBF;
+    background-color: #F2F2F2;
+	transition: filter .2s linear;
+}
+
+.tabElement:hover {
+    filter: brightness(0.9);
+}
+
+.tabElement.selected {
+    filter: brightness(0.85);
+}
+
+.tabElement.selected:hover {
+    filter: brightness(0.85);
+}
