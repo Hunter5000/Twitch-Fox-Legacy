@@ -8,7 +8,7 @@ body {
 }
 
 #previewContent {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #clickPrompt {
@@ -89,6 +89,10 @@ body {
 	border-bottom: 1px solid #333;
 }
 
+.menuElement.topLeft {
+	border-bottom: 1px solid #333;
+}
+
 .menuButton, .tabButton {
     transition: transform .8s ease-in-out, filter .2s linear;
 	filter: grayscale(1) brightness(1.7);
@@ -145,14 +149,15 @@ body {
 }
 
 input {
-    background-color: #323232;
+    background-color: #141414;
     color: #D3D3D3;
-	border: 1px solid #1E1E1E;
+	border: 1px solid #323232;
 }
 
 select {
 	background-color: #1E1E1E;
 	border: 1px solid #323232;
+	color: #F2F2F2;
 }
 
 option {

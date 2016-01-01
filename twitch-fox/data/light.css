@@ -84,6 +84,12 @@ body {
 
 .menuElement.big {
     border-left: 1px solid #BFBFBF;
+	border-right: 1px solid #BFBFBF;
+	border-bottom: 1px solid #BFBFBF;
+}
+
+.menuElement.topLeft {
+	border-bottom: 1px solid #BFBFBF;
 }
 
 .menuButton, .tabButton {

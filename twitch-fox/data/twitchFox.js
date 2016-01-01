@@ -17,27 +17,7 @@ var onlineGames = 0;
 
 var restrictChange;
 
-var l10n = {
-    separator: "",
-    onlineFor: "",
-    recorded: "",
-    searchGames: "",
-    searchChannels: "",
-	filterAdd: "",
-    filterVideos: "",
-    filterFollowedGames: "",
-    filterFollowedChannels: "",
-    filterFollowedVideos: "",
-    filterSearchResults: "",
-	loggedIn: "",
-	version: "",
-	livestreamerReady: "",
-	livestreamerNotFound: "",
-	leaveBlank: "",
-	custom2: "",
-	importFollowed: "",
-	searching: ""
-};
+var l10n = {};
 
 var infoContent = document.getElementById("infoContent");
 var settingsContent = document.getElementById("settingsContent");
@@ -218,7 +198,7 @@ function getSelectValues(select) {
     var result = [];
     var options = select && select.options;
     for (var i = 0; i < options.length; i += 1) {
-        if (options[i].selected) {
+        if (options[i].selected && options[i].style.display !== "none") {
             result.push(options[i].value);
         }
     }
@@ -533,16 +513,18 @@ function createInfoCard(obj) {
             nameBlock.appendChild(nameSpan);
             mainCell.appendChild(nameBlock);
             
-            gameBlock = document.createElement("div");
-            gameBlock.className = "infoBlock";
-            gameIcon = document.createElement("div");
-            gameIcon.className = "smallIcon game";
-            gameBlock.appendChild(gameIcon);
-            gameSpan = document.createElement("span");
-            gameSpan.className = "bold game";
-            gameSpan.textContent = obj.game;
-            gameBlock.appendChild(gameSpan);
-            mainCell.appendChild(gameBlock);
+			if (obj.game) {
+				gameBlock = document.createElement("div");
+				gameBlock.className = "infoBlock";
+				gameIcon = document.createElement("div");
+				gameIcon.className = "smallIcon game";
+				gameBlock.appendChild(gameIcon);
+				gameSpan = document.createElement("span");
+				gameSpan.className = "bold game";
+				gameSpan.textContent = obj.game;
+				gameBlock.appendChild(gameSpan);
+				mainCell.appendChild(gameBlock);
+			}
             
             viewsBlock = document.createElement("div");
             viewsBlock.className = "infoBlock";
@@ -689,10 +671,11 @@ function updateUI() {
 	document.getElementById("aboutSettings").style.display = "none";
 	document.getElementById("importElement").style.display = "none";
 	document.getElementById("clearElement").style.display = "none";
-	document.getElementById("searchBar").style.visibility = "hidden";
+	searchBox.style.visibility = "hidden";
 	document.getElementById("noFollowedChannels").style.display = "none";
 	document.getElementById("noFollowedGames").style.display = "none";
 	document.getElementById("noFollowedVideos").style.display = "none";
+	document.getElementById("noResultsSpan").style.display = "none";
 	
 	searchBox.placeholder = "";
 	
@@ -723,8 +706,10 @@ function updateUI() {
 		}
 		
 		if (settingsTab === "follows") {
-			document.getElementById("searchBar").style.visibility = "visible";
+			searchBox.style.visibility = "visible";
 			document.getElementById("importButton").className = "menuButton add";
+			document.getElementById("addButton").className = "menuButton add";
+			document.getElementById("removeButton").className = "menuButton remove";
 			document.getElementById("addButton").style.display = "inline-block";
 			searchBox.placeholder = settings.followedAuthInfo.display_name ? l10n.loggedIn + " " + settings.followedAuthInfo.display_name : l10n.filterAdd;
 			
@@ -736,26 +721,49 @@ function updateUI() {
 				document.getElementById("clearElement").style.display = "inline-block";
 			}
 			
-			while (followList.firstChild) {
-				followList.removeChild(followList.firstChild);
-			}
-			
 			followedChannels = followedChannels.sort(function(a,b) {
 				if (a.display_name.toLowerCase() < b.display_name.toLowerCase()) {return -1; }
 				if (a.display_name.toLowerCase() > b.display_name.toLowerCase()) {return 1; } 
 				return 0;
 			});
 			
-			for (i = 0; i < followedChannels.length; i += 1) {
-				if (followedChannels[i].display_name.toLowerCase().search(searchBox.value.toLowerCase()) > -1) {
-					var miniCard = document.createElement("option");
-					miniCard.value = followedChannels[i].name;
-					miniCard.textContent = followedChannels[i].display_name;
-					if (settings.followedMutedChannels.indexOf(followedChannels[i].name) > -1) {
-						miniCard.className = "offline";
-					}
-					followList.appendChild(miniCard);
+			var options = followList.cloneNode(true).children, found;
+			
+			//Remove options for channels that are no longer followed
+			
+			for (i = 0; i < options.length; i += 1) {
+				if (getPosByProp(followedChannels, "name", options[i].value) < 0) {
+					document.getElementById(options[i].id).remove();
 				}
+			}	
+			
+			for (i = 0; i < followedChannels.length; i += 1) {
+				if (!document.getElementById("!!" + followedChannels[i].name)) {
+					//Add options that didn't exist before
+					var newOption = document.createElement("option");
+					newOption.id = "!!" + followedChannels[i].name;
+					newOption.value = followedChannels[i].name;
+					newOption.textContent = followedChannels[i].display_name;
+					followList.appendChild(newOption);
+				}
+				
+				var thisOption = document.getElementById("!!" + followedChannels[i].name);
+				
+				if (thisOption) {
+					//Update the appearance of existing options
+					thisOption.className = settings.followedMutedChannels.indexOf(followedChannels[i].name) > -1 ? "offline" : "";
+					if (followedChannels[i].display_name.toLowerCase().search(searchBox.value.toLowerCase()) > -1) {
+						thisOption.style.display = "block";
+						thisOption.style.visibility = "visible";
+						found = true;
+					} else {
+						thisOption.style.display = "none";
+					}
+				}
+			}
+			if (followList.firstElementChild && !found) {
+				followList.firstElementChild.style.display = "block";
+				followList.firstElementChild.style.visibility = "hidden";
 			}
 		}
 		
@@ -801,7 +809,7 @@ function updateUI() {
 		document.getElementById("muteButton").className = settings.alarmSound && !alarmRestricted() ? "menuButton mute" : "menuButton unmute";
 		document.getElementById("rightButton").className = "menuButton " + (searchHistory.length ? "home" : settings.interSortMethod + "Sort");
 		
-		document.getElementById("searchBar").style.visibility = "visible";
+		searchBox.style.visibility = "visible";
 		
 		if (settings.interFollowedMode || settings.interMode === "videos" || searchHistory.length) {
 			document.getElementById("refreshButton").style.display = "inline-block";
@@ -834,7 +842,9 @@ function updateUI() {
 
 			if (!searchHistory[searchHistory.length - 1].result.length && requests.pending.indexOf("infoUpdate") < 0) {
 				document.getElementById("noResultsSpan").style.display = "inline";
-			} else if (requests.pending.length) {
+			}
+			
+			if (requests.pending.length) {
 				document.getElementById("searchingSpan").style.display = "inline";
 			} else {
 				document.getElementById("showingSpan").style.display = "inline";
@@ -852,7 +862,7 @@ function updateUI() {
 				document.getElementById("leftTabButton").className = "tabButton " + (searchHistory[searchHistory.length - 1].type === "channels" ? "generalChannels" : "highlights");
 				document.getElementById("rightTabButton").className = "tabButton " + (searchHistory[searchHistory.length - 1].type === "channels" ? "channels" : "videos");
 
-				if (searchHistory[searchHistory.length - 1].result.length) {
+				if (!requests.pending.length) {
 					document.getElementById("resultsFor").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "inline" : "none";
 					document.getElementById("resultsIn").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "none" : "inline";
 				}
@@ -870,7 +880,7 @@ function updateUI() {
 				document.getElementById("leftTabButton").className = "tabButton " + (searchHistory[searchHistory.length - 1].type === "streams" ? "generalChannels" : "highlights");
 				document.getElementById("rightTabButton").className = "tabButton " + (searchHistory[searchHistory.length - 1].type === "streams" ? "channels" : "videos");
 
-				if (searchHistory[searchHistory.length - 1].result.length) {
+				if (!requests.pending.length) {
 					document.getElementById("resultsFor").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "inline" : "none";
 					document.getElementById("resultsIn").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "none" : "inline";
 				}
@@ -884,7 +894,7 @@ function updateUI() {
 				document.getElementById("rightSearchTab").style.display = "none";
 				document.getElementById("searchType").className = "tabButton " + searchHistory[searchHistory.length - 1].resultType;
 
-				if (searchHistory[searchHistory.length - 1].result.length) {
+				if (!requests.pending.length) {
 					document.getElementById("resultsFor").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "inline" : "none";
 					document.getElementById("resultsIn").style.display = searchHistory[searchHistory.length - 1].fromUserInput ? "none" : "inline";
 				}
@@ -1073,15 +1083,17 @@ function onSearch(term = searchBox.value) {
 function onAdd() {
 	var terms = searchBox.value.replace(/\s/g, '').split(",");
 	if (terms.length) {
-		requests.send("followChannels", terms);
 		searchBox.value = "";
 		updateUI();
+		document.getElementById("addButton").className = "menuButton refresh thinking";
+		requests.send("followChannels", terms);
 	}
 }
 
 function onRemove() {
 	var terms = getSelectValues(followList);
 	if (terms.length) {
+		document.getElementById("removeButton").className = "menuButton refresh thinking";
 		requests.send("unfollowChannels", terms);
 	}
 }
@@ -1253,7 +1265,7 @@ function onOpenVideoPopout() {
 }
 
 function onBoolSetting(ev) {
-    requests.send("settingsUpdate", {prop: ev.target.id, val: ev.target.checked});
+    requests.send("settingsUpdate", {prop: ev.target.id, val: ev.target.checked, alarmUpdate: ev.target.id === "alarmRestrict" || ev.target.id === "alarmSound" || ev.target.id === "alarmDisableIconFlashing"});
 }
 
 function onImportFollows() {
@@ -1318,7 +1330,7 @@ document.getElementById("alarmInterval").onchange = function() {
 	if (Number(this.value) < 1) {
 		this.value = 1;
 	}
-	requests.send("settingsUpdate", {prop: this.id, val: Number(this.value)});
+	requests.send("settingsUpdate", {prop: this.id, val: Number(this.value), alarmUpdate: true});
 };
 
 document.getElementById("alarmVolume").onchange = function() {
@@ -1327,25 +1339,48 @@ document.getElementById("alarmVolume").onchange = function() {
 	} else if (Number(this.value) > 100) {
 		this.value = 100;
 	}
-	requests.send("alarmUpdate", Number(this.value));
+	requests.send("settingsUpdate", {prop: this.id, val: Number(this.value), alarmUpdate: true});
 };
 
 restrictChange = function() {
-	if (Number(this.value.replace(/:/g, '')) < 0) {
-		this.value = "00:00:00";
-	} else if (Number(this.value.replace(/:/g, '')) > 245959) {
-		this.value = "24:59:59";
-	} else if (isNaN(Number(this.value.replace(/:/g, '')))) {
-		this.value = "00:00:00";
+	var hh = Number(this.value.slice(0,2));
+	var mm = Number(this.value.slice(3,5));
+	var ss = Number(this.value.slice(6,8));
+	if (isNaN(hh)) {
+		hh = 12;
 	}
-	requests.send("settingsUpdate", {prop: this.id, val: this.value});
+	if (hh > 24) {
+		hh = 24;
+	}
+	if (isNaN(mm)) {
+		mm = 0;
+	}
+	if (mm > 59) {
+		mm = 59;
+	}
+	if (isNaN(ss)) {
+		ss = 0;
+	}
+	if (ss > 59) {
+		ss = 59;
+	}
+	if (hh < 10) {
+		hh = "0" + hh;
+	}
+	if (mm < 10) {
+		mm = "0" + mm;
+	}
+	if (ss < 10) {
+		ss = "0" + ss;
+	}
+	requests.send("settingsUpdate", {prop: this.id, val: hh + ":" + mm + ":" + ss, alarmUpdate: true});
 };
 
 document.getElementById("alarmRestrictFrom").onchange = restrictChange;
 document.getElementById("alarmRestrictTo").onchange = restrictChange;
 
 document.getElementById("alarmPath").onchange = function() {
-	requests.send("alarmUpdate", this.value);
+	requests.send("settingsUpdate", {prop: this.id, val: this.value, alarmUpdate: true});
 };
 
 document.getElementById("alarmLength").onchange = function() {
@@ -1375,7 +1410,6 @@ document.getElementById("interLivestreamerPath").onchange = function() {
 addon.port.on("forcePrompt", function(payload) {
     if (prompt.type !== payload.type && prompt.name !== payload.name) {
 		prompt = new Prompt();
-		
 		switch (payload.type) {
 			case "channel":
                 prompt.type = payload.type;
@@ -1442,7 +1476,6 @@ addon.port.on("getQualities", function(payload) {
         }
         document.getElementById("qualitySelect").appendChild(newOption);
     }
-    
     
     document.getElementById("qualityFinding").style.display = "none";
     if (payload.length) {
@@ -1586,7 +1619,7 @@ addon.port.on("settingsUpdate", function(payload) {
         requests.send("infoUpdate", "sort");
     }
 	
-	if (prompt.type) {
+	if (!settingsMode && prompt && prompt.type) {
 		createPrompt();
 	}
 	

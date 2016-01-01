@@ -160,6 +160,7 @@ body {
     height: 100%;
     vertical-align: top;
     overflow: hidden;
+	box-sizing: border-box;
 }
 
 .menuElement.small {
@@ -169,7 +170,6 @@ body {
 .menuElement.big {
     width: 50%;
     font-size: 14px;
-    box-sizing: border-box;
 }
 
 .tabs {

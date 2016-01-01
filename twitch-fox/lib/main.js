@@ -107,8 +107,8 @@ var searchHistory = [];
 
 //Bools
 
-var panelOn = false;
 var settingsMode = false;
+var autoLogout = false;
 
 //Intervals
 
@@ -146,10 +146,6 @@ var twitchOauth = OAuth2.addAdapter({
     }
 });
 
-function setPanelMode(newmode) {
-    panel.port.emit("setMode", newmode);
-}
-
 function getPosByProp(arr, prop, val) {
     var i;
     for (i = 0; i < arr.length; i += 1) {
@@ -185,31 +181,23 @@ function parseTime(time) {
     return Date.UTC(time.slice(0, 4), Number(time.slice(5, 7)) - 1, time.slice(8, 10), time.slice(11, 13), time.slice(14, 16), time.slice(17, 19));
 }
 
-function handleChange(state) {
-    if (state.checked || state === "override") {
-        //Open the panel
-        button.label = _("clickClose");
-        button.state('window', {
-            checked: true
-        });
-        panel.show({
-            position: button
-        });
-        panelOn = true;
-		if (alarm.on) {
-			panel.port.emit("forcePrompt", alarm.cause);
-			alarm.end();
-		}
-        panelUpdate();
-    }
+function onPanelOpen() {
+	button.state('window', {
+		checked: true
+	});
+	if (alarm.on) {
+		panel.port.emit("forcePrompt", alarm.cause);
+		alarm.end();
+	}
+	panelUpdate();
 }
 
-function handleHide() {
-    panelOn = false;
-    updateBadge();
+function onPanelClose() {
+	//Close the panel
     button.state('window', {
         checked: false
     });
+    updateBadge();
 }
 
 button = ToggleButton({
@@ -222,12 +210,16 @@ button = ToggleButton({
     },
     badge: null,
     badgeColor: "#6441A5",
-    onChange: handleChange
+    onChange: function(state) {
+		if (state.checked) {
+			panel.show();
+		}	
+	},
 });
 
 sp.on("settingsButton", function () {
     settingsMode = true;
-    handleChange("override");
+    panel.show();
 	panel.port.emit("toggleSettingsMode", settingsMode);
 });
 
@@ -283,16 +275,17 @@ alarm = {
             iconURL: obj.logo || obj.type === "game" && "http://static-cdn.jtvnw.net/ttv-boxart/" + obj.name + "-56x78.jpg" || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png",
             onClick: function () {
 				setTimeout(function() {
-					var active = utils.getMostRecentBrowserWindow();
-					active.focus();
-					setPanelMode(type !== "onOnlineGame" ? "streams" : "games");
-					handleChange("override");
+					utils.getMostRecentBrowserWindow().focus();
+					ss.storage.interFollowedMode = true;
+					ss.storage.interMode = type !== "onOnlineGame" ? "channels" : "games";
+					panel.port.emit("settingsUpdate", ss.storage);
+					panel.show();
 				}, 200);
             }
         });
     },
     set: function (obj, type) {
-		if (panelOn) {
+		if (panel.isShowing) {
 			panel.port.emit("forcePrompt", obj);
 			if (ss.storage.alarmSound && !this.restricted()) {
 				alarmHandler.port.emit("play");
@@ -346,12 +339,11 @@ alarm = {
 };
 
 panelUpdate = function () {
-    //A panel update gives the panel Twitch info, such as online channels, searched games, etc.
-    //It does not give the panel the current settings
-	
+    //Give the panel Twitch info, such as online channels, searched games, etc.
+
 	updateBadge();
 	
-    if (!panelOn) {return; }
+    if (!panel.isShowing) {return; }
 
     //We will give the panel an array that contains the information it needs. It's only going to need one array at a time.
     
@@ -730,7 +722,9 @@ function authSync() {
     twitchAPI({type: "getUser"}, function (response) {
 		if (response.json) {
 			if (response.json.error === "Unauthorized") {
-				//logout();
+				if (autoLogout) {
+					logout();
+				}
 				return;
 			}
 			ss.storage.followedAuthInfo.name = response.json.name;
@@ -766,7 +760,9 @@ function followChannel(target) {
                 if (ss.storage.followedAuthInfo.token) {
                     twitchAPI({type: "followChannel", target: target}, function (thisResponse) {
                         if (thisResponse.json && thisResponse.json.error === "Unauthorized") {
-                            logout();
+                            if (autoLogout) {
+								logout();
+							}
                             return;
                         }
                         syncFollowedChannels();
@@ -792,7 +788,9 @@ function unfollowChannel(target) {
         if (ss.storage.followedAuthInfo.token) {
             twitchAPI({type: "unfollowChannel", target: target}, function (thisResponse) {
                 if (thisResponse.json && thisResponse.json.error === "Unauthorized") {
-                    logout();
+					if (autoLogout) {
+						logout();
+					}
                     return;
                 }
                 syncFollowedChannels();
@@ -814,7 +812,9 @@ function followGame(target) {
         if (ss.storage.followedAuthInfo.token) {
             twitchAPI({type: "followGame", target: target}, function (thisResponse) {
                 if (thisResponse.json && thisResponse.json.error === "Unauthorized") {
-                    logout();
+					if (autoLogout) {
+						logout();
+					}
                     return;
                 }
                 syncFollowedGames();
@@ -836,7 +836,9 @@ function unfollowGame(target) {
         if (ss.storage.followedAuthInfo.token) {
             twitchAPI({type: "unfollowGame", target: target}, function (thisResponse) {
                 if (thisResponse.json && thisResponse.json.error === "Unauthorized") {
-                    logout();
+					if (autoLogout) {
+						logout();
+					}
                     return;
                 }
                 syncFollowedGames();
@@ -1143,51 +1145,54 @@ function searchTwitch(search, callback) {
 }
 
 updateBadge = function () {
-    button.badge = null;
-    var text = _("clickOpen");
-    var sortedInfo = [];
-    var i;
-    if (onlineInfo.length) {
-        button.badge = onlineInfo.length;
-        switch (ss.storage.interSortMethod) {
-            case "viewers":
-                sortedInfo = sortByProp(onlineInfo, "viewers", true);
-                break;
-            case "recent":
-                sortedInfo = sortByProp(onlineInfo, "time", true);
-                break;
-            case "alphabetical":
-                sortedInfo = sortByProp(onlineInfo, "display_name");
-                break;
-        }
-        text += "\n\n";
-        for (i = 0; i < sortedInfo.length; i += 1) {
-            if (sortedInfo[i].game) {
-                text += sortedInfo[i].display_name + " | " + sortedInfo[i].game + "\n";
-            } else {
-                text += sortedInfo[i].display_name;
-            }
-        }
-    }
-    if (gameInfo.length && ss.storage.alarmOnOnlineGame) {
-        text += "\n\n";
-		switch (ss.storage.interSortMethod) {
-			case "viewers":
-				sortedInfo = sortByProp(gameInfo, "viewers", true);
-				break;
-			case "recent":
-				sortedInfo = sortByProp(gameInfo, "channels", true);
-				break;
-			case "alphabetical":
-				sortedInfo = sortByProp(gameInfo, "name");
-				break;
+	button.badge = onlineInfo.length || null;
+	var text;
+	if (panel.isShowing) {
+		text = _("clickClose");
+	} else {
+		text = _("clickOpen");
+		var sortedInfo = [];
+		var i;
+		if (onlineInfo.length) {
+			switch (ss.storage.interSortMethod) {
+				case "viewers":
+					sortedInfo = sortByProp(onlineInfo, "viewers", true);
+					break;
+				case "recent":
+					sortedInfo = sortByProp(onlineInfo, "time", true);
+					break;
+				case "alphabetical":
+					sortedInfo = sortByProp(onlineInfo, "display_name");
+					break;
+			}
+			text += "\n\n";
+			for (i = 0; i < sortedInfo.length; i += 1) {
+				text += sortedInfo[i].display_name;
+				if (sortedInfo[i].game) {
+					text += " | " + sortedInfo[i].game;
+				}
+				text += i+1 < sortedInfo.length ? "\n" : "";
+			}
 		}
-        for (i = 0; i < sortedInfo.length; i += 1) {
-            if (sortedInfo[i].name) {
-                text += sortedInfo[i].name + " | " + sortedInfo[i].viewers + "\n";
-            }
-        }
-    }
+		if (gameInfo.length && ss.storage.alarmOnOnlineGame) {
+			switch (ss.storage.interSortMethod) {
+				case "viewers":
+					sortedInfo = sortByProp(gameInfo, "viewers", true);
+					break;
+				case "recent":
+					sortedInfo = sortByProp(gameInfo, "channels", true);
+					break;
+				case "alphabetical":
+					sortedInfo = sortByProp(gameInfo, "name");
+					break;
+			}
+			text += "\n\n";
+			for (i = 0; i < sortedInfo.length; i += 1) {
+				text += sortedInfo[i].name;
+				text += i+1 < sortedInfo.length ? "\n" : "";
+			}
+		}
+	}
     button.label = text;
 };
 
@@ -1264,7 +1269,9 @@ followedChannelUpdate = function(tempInfo = onlineInfo, offset = 0, curOnline = 
         twitchAPI({type: "getFollowedStreams", offset: offset}, function (response) {
             if (response.json) {
                 if (response.json.error === "Unauthorized") {
-                    //logout();
+					if (autoLogout) {
+						logout();
+					}
                 } else {
                     handleStreamResponse(response, tempInfo, offset, curOnline);
                 }
@@ -1339,7 +1346,9 @@ followedVideoUpdate = function () {
     twitchAPI({type: "getFollowedVideos", offset: videoInfo.length}, function (response) {
         if (response.json) {
             if (response.json.error === "Unauthorized") {
-                logout();
+				if (autoLogout) {
+					logout();
+				}
             } else {
                 var videos = response.json.videos;
                 for (var i = 0; i < videos.length; i += 1) {
@@ -1417,6 +1426,7 @@ function topVideoUpdate() {
 
 function prePanelUpdate(action) {
     //This function will be called if the panel is requesting an update. It triggers functions that will update the panel when request are fulfilled
+	
     if (action === "sort") {
         panelUpdate();
         return;
@@ -1487,13 +1497,13 @@ update = function () {
         //Actions to perform if the user is not authorized
         
         //Update followed channels
-        if (ss.storage.alarmOnOnlineChannel || ss.storage.alarmOnOfflineChannel || ss.storage.alarmOnStatusChange || panelOn) {
+        if (ss.storage.alarmOnOnlineChannel || ss.storage.alarmOnOfflineChannel || ss.storage.alarmOnStatusChange || panel.isShowing) {
             //Only bother updating if the user has any interest in receiving one
             followedChannelUpdate();
         }
 
         //Update followed games
-        if (ss.storage.alarmOnOnlineGame || panelOn) {
+        if (ss.storage.alarmOnOnlineGame || panel.isShowing) {
             //Only bother updating if the user has any interest in receiving one
 
             followedGameUpdate();
@@ -1501,7 +1511,7 @@ update = function () {
     }
 };
    
-function onSettingsChange() {
+function onAddonLoad() {
 	cleanSettings();
 	checkFollowedChannels();
 	livestreamerHandler.checkIfReady();
@@ -1538,11 +1548,9 @@ panel = panels.Panel({
     contentURL: self.data.url("twitchFox.html"),
     width: 500,
     height: 530,
-    onHide: handleHide
-});
-
-panel.on("show", function () {
-    update();
+	position: button,
+    onHide: onPanelClose,
+	onShow: onPanelOpen,
 });
 
 panel.port.on("openProfile", function () {
@@ -1635,6 +1643,12 @@ panel.port.on("endSearch", function () {
 
 panel.port.on("settingsUpdate", function (payload) {
     ss.storage[payload.prop] = payload.val;
+	if (payload.alarmUpdate) {
+		alarmHandler.port.emit("update", ss.storage, OS.Path.toFileURI(ss.storage.alarmPath.replace("\\", "\\\\")));
+		if (!ss.storage.alarmSound || alarm.restricted() || ss.storage.alarmDisableIconFlashing) {
+			alarm.end();
+		}
+	}
     panel.port.emit("settingsUpdate", ss.storage);
 });
 
@@ -1694,7 +1708,7 @@ panel.port.on("unmuteGame", function (payload) {
 
 panel.port.on("importSettings", function (payload) {
 	ss.storage = payload;
-	onSettingsChange();
+	onAddonLoad();
 });
 
 panel.port.on("importFollows", function (payload) {
@@ -1753,16 +1767,6 @@ panel.port.on("interfaceDefaults", function() {
 	livestreamerHandler.checkIfReady();
 });
 
-panel.port.on("alarmUpdate", function (payload) {
-    if (isNaN(payload)) {
-		ss.storage.alarmPath = payload;
-	} else {
-		ss.storage.alarmVolume = payload;
-	}
-	alarmHandler.port.emit("update", ss.storage, OS.Path.toFileURI(ss.storage.alarmPath.replace("\\", "\\\\")));
-	panel.port.emit("settingsUpdate", ss.storage);
-});
-
 panel.port.on("newLivePath", function(path) {
 	ss.storage.interLivestreamerPath = path;
 	livestreamerHandler.checkIfReady();
@@ -1770,27 +1774,26 @@ panel.port.on("newLivePath", function(path) {
 
 panel.port.on("panelReady", function() {
 	panel.port.emit("l10n", {
-		separator: _("separator"),
-		onlineFor: _("streamingFor"),
-		recorded: _("recorded"),
-		searchGames: _("searchGames"),
-		searchChannels: _("searchStreamers"),
+		custom2: _("custom2"),
 		filterAdd: _("filterAdd"),
-		filterVideos: _("searchVids"),
-		filterFollowedGames: _("filterGames"),
 		filterFollowedChannels: _("filterChannels"),
+		filterFollowedGames: _("filterGames"),
 		filterFollowedVideos: _("filterVideos"),
 		filterSearchResults: _("filterResults"),
+		filterVideos: _("searchVids"),
+		importFollowed: _("importFollowed"),
+		leaveBlank: _("leaveBlank"),
+		livestreamerNotFound: _("livestreamerNotFound"),
+		livestreamerReady: _("livestreamerReady"),
 		loggedIn: _("loggedIn"),
-		resultsFor: _("resultsFor"),
+		onlineFor: _("streamingFor"),
+		recorded: _("recorded"),
+		searchChannels: _("searchStreamers"),
+		searchGames: _("searchGames"),
+		searching: _("searching"),
+		separator: _("separator"),
 		version: self.version,
 		versionWord: _("version"),
-		livestreamerReady: _("livestreamerReady"),
-		livestreamerNotFound: _("livestreamerNotFound"),
-		leaveBlank: _("leaveBlank"),
-		custom2: _("custom2"),
-		importFollowed: _("importFollowed"),
-		searching: _("searching")
 	});
 	
 	panel.port.emit("settingsUpdate", ss.storage);
@@ -1802,8 +1805,6 @@ panel.port.on("panelReady", function() {
 
 //Stuff that needs to be done every time the add-on is loaded
 
-onSettingsChange();
+onAddonLoad();
 
 updateInterval = setInterval(update, ss.storage.alarmUpdate * 1000);
-
-//Extra debug stuff down here

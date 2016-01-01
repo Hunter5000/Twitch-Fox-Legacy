@@ -2,17 +2,15 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="general.css"/>
+        <link rel="stylesheet" type="text/css" href="twitchFox.css"/>
 		<link rel="stylesheet" type="text/css" href="light.css" id="styleLink"/>
     </head>
-    <body>
-        
+    <body>  
         <div class="screenLock" id="previewContent" onclick="onHidePreview()" oncontextmenu="onHidePreview()"> 
             <div class="preview enlarged" id="enlargedPreview">
 
             </div>
         </div>
-        
         <div class="screenLock" id="clickPrompt" onclick="onClosePrompt(event)" oncontextmenu="onClosePrompt(event)"> 
             <div class="miniHeader">
                 <div class="preButtons">
@@ -63,10 +61,9 @@
 
             </div>
         </div>
-        
         <div class="header">
             <div class = "topRow">
-                <div class = "menuElement">
+                <div class = "menuElement topLeft">
                     <div class = "menuButton twitch" id="followedButton" onclick="onFollowedModeToggle()">
 
                     </div>
@@ -104,9 +101,6 @@
                     <div style="display: inline-block; width: 100%; height: 100%; font-size: 12px">
                         <span style="vertical-align: middle; padding-left: 4px; padding-right: 4px">
                             <span data-l10n-id="searching" id="searchingSpan" style="display:none">
-
-                            </span>
-                            <span data-l10n-id="noResults" id="noResultsSpan" style="display:none">
 
                             </span>
                             <span data-l10n-id="showing" id="showingSpan" style="display:none">
@@ -188,8 +182,8 @@
                         
                     </div>
                 </div>
-                <div class = "searchBar" id="searchBar">
-                    <input type="text" id="search" class="searchBox" placeholder="Search" oninput="onSearchInput()" onkeydown="onSearchKeyDown(event)">
+                <div class = "searchBar">
+                    <input type="text" id="search" class="searchBox" placeholder="Search" oninput="onSearchInput()" onclick="onSearchInput()" onkeydown="onSearchKeyDown(event)">
                     <div class = "menuButton refresh" id = "refreshButton" onclick="onRefresh()">
 
                     </div>
@@ -232,6 +226,7 @@
 			<span data-l10n-id="youArent" id="noFollowedChannels" style="display: none"></span>
 			<span data-l10n-id="youArent2" id="noFollowedGames" style="display: none"></span>
 			<span data-l10n-id="youMust" id="noFollowedVideos" style="display: none"></span>
+			<span data-l10n-id="noResults" id="noResultsSpan" style="display: none"></span>
 		</span>
         <div class="content" id="settingsContent">
   			<div id="followsSettings" class="settingsContainer">
@@ -295,7 +290,8 @@
 					<input type="checkbox" id="alarmRestrict" onchange="onBoolSetting(event)">
 					<span id="restrictSpan">
 						<br>
-						<span data-l10n-id="between"></span><span> </span>
+						<span data-l10n-id="between"></span>
+						<span> </span>
 						<input type="text" id="alarmRestrictFrom" maxlength="8" placeholder="HH:MM:SS" style="width: 62px">
 						<span> </span>
 						<span data-l10n-id="and"></span>
@@ -324,7 +320,7 @@
 				<input type="checkbox" id="interDarkMode" onchange="onBoolSetting(event)">
 				<br>
 				<br>
-				<span style="font-weight: bold"><span data-l10n-id="searchResults"></span></span>
+				<span style="font-weight: bold" data-l10n-id="searchResults"></span>
 				<input type="number" id="interSearchLim" min="12" max="100" value="20">
 				<br>
 				<br>
@@ -348,28 +344,48 @@
 				<div class = "button" data-l10n-id="resetTo" style="margin-top: 20px" onclick="onInterfaceDefaults()"> </div>
 			</div>
   			<div id="aboutSettings"  class="settingsContainer" style="display: none; font-size: 15px">
-				<p style="font-weight: bold">TwitchFox, <span data-l10n-id="version"></span><span> </span><span id="versionSpan" style="font-size: larger"></span><span> </span><span data-l10n-id="version2"></span></p>
-				<p><span data-l10n-id="thankYou"></span></p>
-				<p><span data-l10n-id="iveMade"></span><span> </span><a href="https://addons.mozilla.org/en-US/firefox/addon/twitchfox/" target="_blank"><span data-l10n-id="addonPage"></span></a><span> </span><span data-l10n-id="addonPage2_"></span></p>
-				<p><span data-l10n-id="ifYoure"></span><span> </span><a href="https://github.com/Hunter5000/TwitchFox/" target="_blank"><span data-l10n-id="gitHub"></span></a><span> </span><span data-l10n-id="gitHub2"></span></p>
-				<p><span data-l10n-id="perhapsEven"></span></p>
-				<p><span data-l10n-id="ifYou"></span><span> </span><a href="mailto:hunter8750@gmail.com"><span data-l10n-id="emailMe"></span></a><span> </span><span data-l10n-id="orAdd"></span><span> </span><a href="http://steamcommunity.com/id/hunter7500/" target="_blank">Steam</a><span> </span><span data-l10n-id="steam2"></span></p>
+				<p style="font-weight: bold">
+					Twitch Fox, 
+					<span data-l10n-id="version"></span>
+					<span> </span>
+					<span id="versionSpan" style="font-size: larger"></span>
+				</p>
+				<p>
+					<span data-l10n-id="thankYou"></span>
+				</p>
+				<p>
+					<span data-l10n-id="iveMade"></span>
+					<span> </span>
+					<a href="https://addons.mozilla.org/en-US/firefox/addon/twitchfox/" target="_blank">
+						<span data-l10n-id="addonPage"></span>
+					</a>
+				</p>
+				<p>
+					<span data-l10n-id="ifYoure"></span>
+					<span> </span>
+					<a href="https://github.com/Hunter5000/Twitch-Fox/" target="_blank">
+						<span data-l10n-id="gitHub"></span>
+					</a>
+				</p>
+				<p>
+					<span data-l10n-id="perhapsEven"></span>
+				</p>
+				<p>
+					<span data-l10n-id="ifYou"></span>
+					<span> </span>
+					<a href="mailto:hunter8750@gmail.com">
+						<span data-l10n-id="emailMe"></span>
+					</a>
+					<span> </span>
+					<span data-l10n-id="orAdd"></span>
+					<span> </span>
+					<a href="http://steamcommunity.com/id/hunter7500/" target="_blank">
+						Steam
+					</a>
+				</p>
 				<p style="font-weight: bold; font-size: larger">-Hunter</p>
 			</div>
         </div>
         <script src="twitchFox.js"></script>
     </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

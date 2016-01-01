@@ -1,3 +1,4 @@
+/*jshint bitwise: true, curly: true, eqeqeq: true, forin: true, freeze: true, nocomma: true, noarg: true, nonbsp: true, nonew: true, singleGroups: true, plusplus: true, undef: true, latedef: true, moz: true*/
 /* global Audio, self, window, console */
 
 var audio = new Audio();
@@ -29,7 +30,7 @@ self.port.on("end", function() {
 
 self.port.on("update", function(settings, fileURI){
     audio.volume = settings.alarmVolume / 100;
-    audio.src = settings.alarmPath ? (((settings.alarmPath.search("http://") > -1) || (settings.alarmPath.search("https://") > -1)) ? settings.alarmPath : fileURI) : "alarm.ogg";
+    audio.src = settings.alarmPath ? settings.alarmPath.search("http://") > -1 || settings.alarmPath.search("https://") > -1 ? settings.alarmPath : fileURI : "alarm.ogg";
     period = settings.alarmInterval * 1000;
     if (on) {
         window.clearInterval(interval);
