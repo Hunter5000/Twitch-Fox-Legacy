@@ -239,7 +239,7 @@ function createInfoCard(obj) {
             mainCell = document.createElement("td");
             mainCell.className = "textInfo";
             
-            if (getPosByProp(followedChannels, "name", obj.name) > -1 && !settings.interFollowedMode) {
+            if (getPosByProp(followedChannels, "name", obj.name) > -1 && (!settings.interFollowedMode || searchHistory.length)) {
                 followedBlock = document.createElement("div");
                 followedBlock.className = "infoBlock";
                 followedIcon = document.createElement("div");
@@ -408,7 +408,7 @@ function createInfoCard(obj) {
             mainCell = document.createElement("td");
             mainCell.className = "textInfo";
             
-            if (getPosByProp(followedGames, "name", obj.name) > -1 && !settings.interFollowedMode) {
+            if (getPosByProp(followedGames, "name", obj.name) > -1 && (!settings.interFollowedMode || searchHistory.length)) {
                 followedBlock = document.createElement("div");
                 followedBlock.className = "infoBlock";
                 followedIcon = document.createElement("div");
@@ -1302,13 +1302,27 @@ function onFollowListChange() {
 	}
 }
 
-function onFollowListMute() {
-	if (followList.selectedIndex < 0) {
-		updateUI();
+function onFollowListMute(ev) {
+	if (ev.target.nodeName !== "OPTION") {
+		followList.selectedIndex = -1;
+		document.getElementById("removeButton").style.display = "none";
+		document.getElementById("addButton").style.display = "inline-block";
 	} else {
-		var muted = followList.children[followList.selectedIndex].className === "offline";
-		var terms = getSelectValues(followList);
-    	requests.send(muted ? "unmuteChannels" : "muteChannels", terms);
+		if (followList.selectedIndex < 0) {
+			updateUI();
+		} else {
+			var muted = followList.children[followList.selectedIndex].className === "offline";
+			var terms = getSelectValues(followList);
+			requests.send(muted ? "unmuteChannels" : "muteChannels", terms);
+		}
+	}
+}
+
+function onFollowListClick(ev) {
+	if (ev.target.nodeName !== "OPTION") {
+		followList.selectedIndex = -1;
+		document.getElementById("removeButton").style.display = "none";
+		document.getElementById("addButton").style.display = "inline-block";
 	}
 }
 

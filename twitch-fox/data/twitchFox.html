@@ -230,7 +230,7 @@
 		</span>
         <div class="content" id="settingsContent">
   			<div id="followsSettings" class="settingsContainer">
-				<select style="width: 100%; margin-bottom: 7px" id="followList" size="23" onchange="onFollowListChange()" oncontextmenu="onFollowListMute()" multiple>
+				<select style="width: 100%; margin-bottom: 7px" id="followList" size="23" onchange="onFollowListChange()" oncontextmenu="onFollowListMute(event)" onclick="onFollowListClick(event)" multiple>
 
 				</select>
                 <div class = "importInput" id="importElement">
