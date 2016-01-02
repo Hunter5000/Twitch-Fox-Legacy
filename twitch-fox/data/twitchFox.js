@@ -211,6 +211,14 @@ function insSeparators(num) {
     }
 }
 
+function onOpenStreamPopout(url = prompt.url) {
+    window.open("http://www.twitch.tv/" + url + "/popout",'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
+}
+
+function onOpenChatPopout(url = prompt.url) {
+    window.open("http://www.twitch.tv/" + url + "/chat?popout=",'_blank','right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
+}
+
 function createInfoCard(obj) {
     var mainRow, mainCell, nameBlock, gameBlock, gameIcon, gameSpan, nameSpan, viewersBlock, viewersIcon, viewersSpan, viewsBlock, viewsIcon, viewsSpan, timeBlock, timeIcon, timeSpan, preview, previewCell, onChannelPrompt, onGamePrompt, onVideoPrompt, followedBlock, followedIcon;
 	var infoCard = document.createElement("table");
@@ -383,7 +391,25 @@ function createInfoCard(obj) {
                 } else if (ev.target.className === "bold game") {
 					onGamePrompt();
 				} else {
-                    onChannelPrompt();
+					if (obj.online) {
+						if (settings.interOpenPopup) {
+							onChannelPrompt();
+						}
+						if (settings.interOpenPage) {
+							requests.send("openTab", obj.name);
+						}
+						if (settings.interOpenLive && livestreamerReady) {
+							requests.send("openLiveUncertain", {url: obj.name, quality: settings.interLivestreamerQuality});
+						}
+						if (settings.interOpenPopout) {
+							onOpenStreamPopout(obj.name);
+						}
+						if (settings.interOpenChat) {
+							onOpenChatPopout(obj.name);
+						}
+					} else {
+						onChannelPrompt();
+					}
                 }
             };
             
@@ -771,6 +797,8 @@ function updateUI() {
 		document.getElementById("restrictSpan").style.display = settings.alarmRestrict ? "inline" : "none";
 		document.getElementById("soundSpan").style.display = settings.alarmSound ? "inline" : "none";
 		document.getElementById("limitSpan").style.display = settings.alarmLimit ? "inline" : "none";
+		document.getElementById("liveSpan").style.display = livestreamerReady ? "inline" : "none";
+		document.getElementById("liveSpan2").style.display = settings.interOpenLive && livestreamerReady ? "inline" : "none";
 		
 		//Set the settings
 		
@@ -792,10 +820,16 @@ function updateUI() {
 		document.getElementById("alarmVolume").value = settings.alarmVolume;
 		
 		document.getElementById("interDarkMode").checked = settings.interDarkMode;
+		document.getElementById("interOpenPopup").checked = settings.interOpenPopup;
+		document.getElementById("interOpenPage").checked = settings.interOpenPage;
+		document.getElementById("interOpenLive").checked = settings.interOpenLive;
+		document.getElementById("interOpenPopout").checked = settings.interOpenPopout;
+		document.getElementById("interOpenChat").checked = settings.interOpenChat;
 		document.getElementById("interHideAvatar").checked = settings.interHideAvatar;
 		document.getElementById("interHideOffline").checked = settings.interHideOffline;
 		document.getElementById("interHidePreview").checked = settings.interHidePreview;
 		document.getElementById("interLivestreamerPath").value = settings.interLivestreamerPath;
+		document.getElementById("interLivestreamerQuality").value = settings.interLivestreamerQuality;
 		document.getElementById("interSearchLim").value = settings.interSearchLim;
 	} else {
 		tabs = document.getElementById("tabs").children;
@@ -1252,14 +1286,6 @@ function onOpenLivestreamer(ev) {
     }
 }
 
-function onOpenStreamPopout() {
-    window.open("http://www.twitch.tv/" + prompt.url + "/popout",'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
-}
-
-function onOpenChatPopout() {
-    window.open("http://www.twitch.tv/" + prompt.url + "/chat?popout=",'_blank','right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
-}
-
 function onOpenVideoPopout() {
     window.open("http://www.twitch.tv/" + prompt.name + "/popout?videoId=" + prompt._id,'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
 }
@@ -1419,6 +1445,10 @@ document.getElementById("interLivestreamerPath").onchange = function() {
 	requests.send("newLivePath", this.value);
 };
 
+document.getElementById("interLivestreamerQuality").onchange = function() {
+	requests.send("settingsUpdate", {prop: this.id, val: this.value});
+};
+
 //Ports below here
 
 addon.port.on("forcePrompt", function(payload) {
@@ -1502,6 +1532,7 @@ addon.port.on("getQualities", function(payload) {
 
 addon.port.on("openLive", function() {
     requests.remove("openLive");
+	requests.remove("openLiveUncertain");
 });
 
 addon.port.on("toggleSettingsMode", function(payload) {

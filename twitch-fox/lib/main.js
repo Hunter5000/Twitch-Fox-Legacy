@@ -60,8 +60,13 @@ var defaultSettings = {
 	interHideOffline: false,
 	interHidePreview: false,
 	interLivestreamerPath: "",
-	interLivestreamerQuality: "",
+	interLivestreamerQuality: "best",
 	interMode: "games",
+	interOpenChat: false,
+	interOpenLive: false,
+	interOpenPage: false,
+	interOpenPopout: false,
+	interOpenPopup: true,
 	interSearchLim: 20,
 	interSortMethod: "viewers",
 };
@@ -484,7 +489,7 @@ livestreamerHandler = {
         }
         panel.port.emit("openLive");
     },
-    getQualities: function(stream) {
+    getQualities: function(stream, callback) {
         var url = "http://www.twitch.tv/" + stream;
         var i,
             path,
@@ -522,7 +527,7 @@ livestreamerHandler = {
                     }
                 }
             }
-            panel.port.emit("getQualities", results);
+			callback(results);
         });
     }
 };
@@ -1566,12 +1571,26 @@ panel.port.on("openTab", function (payload) {
 
 panel.port.on("getQualities", function (payload) {
     //We're expecting a string of the stream's name
-    livestreamerHandler.getQualities(payload);
+    livestreamerHandler.getQualities(payload, function(results) {
+		panel.port.emit("getQualities", results);
+	});
 });
 
 panel.port.on("openLive", function (payload) {
     //We're expecting an object with the desired arguments 
     livestreamerHandler.run(["http://www.twitch.tv/" + payload.url, payload.quality]);
+});
+
+panel.port.on("openLiveUncertain", function (payload) {
+    livestreamerHandler.getQualities(payload.url, function(results) {
+		if (results.indexOf(payload.quality) > -1) {
+			//Our quality is safe to use
+			livestreamerHandler.run(["http://www.twitch.tv/" + payload.url, payload.quality]);
+		} else {
+			//Our quality is not usable. Default to the best quality available
+			livestreamerHandler.run(["http://www.twitch.tv/" + payload.url, results[0]]);
+		}
+	});
 });
 
 panel.port.on("login", login);
@@ -1763,6 +1782,12 @@ panel.port.on("interfaceDefaults", function() {
 	ss.storage.interHideOffline = false;
 	ss.storage.interHidePreview = false;
 	ss.storage.interLivestreamerPath = "";
+	ss.storage.interLivestreamerQuality = "best";
+	ss.storage.interOpenChat = false;
+	ss.storage.interOpenLive = false;
+	ss.storage.interOpenPage = false;
+	ss.storage.interOpenPopout = false;
+	ss.storage.interOpenPopup = true;
 	ss.storage.interSearchLim = 20;
 	livestreamerHandler.checkIfReady();
 });

@@ -320,6 +320,41 @@
 				<input type="checkbox" id="interDarkMode" onchange="onBoolSetting(event)">
 				<br>
 				<br>
+				<span style="font-weight:bold" data-l10n-id="whenAn"></span>
+				<br>
+				<input type="checkbox" id="interOpenPopup" onchange="onBoolSetting(event)" checked>
+				<span data-l10n-id="createPopup"></span>
+				<br>
+				<input type="checkbox" id="interOpenPage" onchange="onBoolSetting(event)">
+				<span data-l10n-id="openTwitch"></span>
+				<br>
+				<span id="liveSpan">
+					<input type="checkbox" id="interOpenLive" onchange="onBoolSetting(event)">
+					<span data-l10n-id="openLive"></span>
+					<br>
+				</span>
+				<input type="checkbox" id="interOpenPopout" onchange="onBoolSetting(event)">
+				<span data-l10n-id="openPopout"></span>
+				<br>
+				<input type="checkbox" id="interOpenChat" onchange="onBoolSetting(event)">
+				<span data-l10n-id="openChat"></span>
+				<br>
+				<br>
+				<span id="liveSpan2">
+					<span style="font-weight: bold" data-l10n-id="preferredQuality"></span>
+					<select id="interLivestreamerQuality">
+						<option value="best">Best</option>
+						<option value="source">Source</option>
+						<option value="high">High</option>
+						<option value="medium">Medium</option>
+						<option value="low">Low</option>
+						<option value="mobile">Mobile</option>
+						<option value="worst">Worst</option>
+						<option value="audio">Audio</option>
+					</select>
+					<br>
+					<br>
+				</span>
 				<span style="font-weight: bold" data-l10n-id="searchResults"></span>
 				<input type="number" id="interSearchLim" min="12" max="100" value="20">
 				<br>
