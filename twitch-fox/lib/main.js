@@ -190,11 +190,11 @@ function onPanelOpen() {
 	button.state('window', {
 		checked: true
 	});
+	panelUpdate();
 	if (alarm.on) {
 		panel.port.emit("forcePrompt", alarm.cause);
 		alarm.end();
 	}
-	panelUpdate();
 }
 
 function onPanelClose() {
@@ -284,6 +284,10 @@ alarm = {
 					ss.storage.interFollowedMode = true;
 					ss.storage.interMode = type !== "onOnlineGame" ? "channels" : "games";
 					panel.port.emit("settingsUpdate", ss.storage);
+					if (searchHistory.length) {
+						searchHistory = [];
+						panel.port.emit("endSearch", searchHistory);
+					}
 					panel.show();
 				}, 200);
             }
