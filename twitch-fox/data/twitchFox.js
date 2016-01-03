@@ -206,9 +206,12 @@ function getSelectValues(select) {
 }
 
 function insSeparators(num) {
+	num = num || 0;
     if (!isNaN(num)) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, l10n.separator);
-    }
+        return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, l10n.separator);
+    } else {
+		return num;
+	}
 }
 
 function onOpenStreamPopout(url) {
