@@ -211,11 +211,13 @@ function insSeparators(num) {
     }
 }
 
-function onOpenStreamPopout(url = prompt.url) {
+function onOpenStreamPopout(url) {
+	url = url || prompt.url;
     window.open("http://www.twitch.tv/" + url + "/popout",'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
 }
 
-function onOpenChatPopout(url = prompt.url) {
+function onOpenChatPopout(url) {
+	url = url || prompt.url;
     window.open("http://www.twitch.tv/" + url + "/chat?popout=",'_blank','right=50,top=50,width=400,height=600,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
 }
 
@@ -961,13 +963,11 @@ function updateUI() {
 	}
 }
 
-function filterContent(filter = searchBox.value.toLowerCase()) {
+function filterContent() {
 	if (!settings) {return; }
-    var key, thisInfo, nameSearch, gameSearch, statusSearch, titleSearch;
-    var cards = infoContent.children;
+    var cards = infoContent.children, filter = searchBox.value.toLowerCase(), key, thisInfo, nameSearch, gameSearch, statusSearch, titleSearch;
     for (var i = 0; i < cards.length; i += 1) {
-        var card = cards[i];
-        var mode = searchHistory.length ? searchHistory[searchHistory.length - 1].resultType : settings.interMode;
+        var card = cards[i], mode = searchHistory.length ? searchHistory[searchHistory.length - 1].resultType : settings.interMode;
         switch (mode) {
             case "channels":
 			case "generalChannels":
@@ -1107,11 +1107,11 @@ function onSearchInput() {
     filterContent();
 }
 
-function onSearch(term = searchBox.value) {
+function onSearch() {
     if (settings.interFollowedMode || settings.interMode === "videos" || searchHistory.length) {
         return;
     }
-    requests.send("searchTwitch", {target: term, scrollY: window.scrollY, prompt: prompt});
+    requests.send("searchTwitch", {target: searchBox.value, scrollY: window.scrollY, prompt: prompt});
 }
 
 function onAdd() {

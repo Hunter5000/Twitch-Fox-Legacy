@@ -1215,6 +1215,9 @@ function handleStreamResponse(response, tempInfo, offset, curOnline) {
                 var key = getPosByProp(onlineInfo, "name", channel.name);
                 if (key > -1) {
                     //A followed channel that was online before is still online
+                    if (ss.storage.alarmStreamIds.indexOf(_id) < 0) {
+                        ss.storage.alarmStreamIds.push(_id);
+                    }
                     if (channel.status !== onlineInfo[key].status) {
                         if (ss.storage.alarmOnStatusChange && ss.storage.followedMutedChannels.indexOf(channel.name) < 0) {
                             alarm.set(channel, "onStatusChange");
