@@ -454,7 +454,6 @@ livestreamerHandler = {
             path = "/Applications/livestreamer.app";
         }
         // Test file
-        pathError = false;
         try {
             file.initWithPath(path);
         } catch (e) {
@@ -464,11 +463,7 @@ livestreamerHandler = {
         }
     },
     checkIfReady: function() {
-        if (this.getPath()) {
-            this.ready = true;
-        } else {
-            this.ready = false;
-        }
+		this.ready = this.getPath() ? true : false;
         panel.port.emit("livestreamerReady", this.ready);
 		panel.port.emit("settingsUpdate", ss.storage);
     },
