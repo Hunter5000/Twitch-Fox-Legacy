@@ -5,8 +5,8 @@
   "description": "Quickly browse Twitch. Receive notifications for channels and games. Many customizable features.",
   "author": "hunter",
   "license": "MPL 2.0",
-  "version": "3.1.3",
-  "icon" : "resource://jid1-PmBVeuWLfYr73g-at-jetpack/data/ico48.png",
+  "version": "3.1.4",
+  "icon" : "resource://jid1-PmBVeuWLfYr73g-at-jetpack/data/icon.png",
   "main": "lib/main.js",
   "preferences": [{
     "type": "control",

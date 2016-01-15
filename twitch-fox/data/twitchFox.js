@@ -178,7 +178,7 @@ function createDate(time) {
     var output = "";
     if (l10n.separator === ",") {
         output = month + ' ' + date + ' ' + year;
-    } else if (l10n.separator === ".") {
+    } else {
         output = date + ' ' + month + ' ' + year;
     }
     return output;
@@ -207,8 +207,9 @@ function getSelectValues(select) {
 
 function insSeparators(num) {
 	num = num || 0;
+	var separator = l10n.separator === "(space)" ? " " : l10n.separator;
     if (!isNaN(num)) {
-        return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, l10n.separator);
+        return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
     } else {
 		return num;
 	}

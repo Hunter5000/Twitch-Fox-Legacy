@@ -208,11 +208,7 @@ function onPanelClose() {
 button = ToggleButton({
     id: "my-button",
     label: _("clickOpen"),
-    icon: {
-        "16": "./ico16.png",
-        "32": "./ico32.png",
-        "64": "./ico64.png"
-    },
+    icon: "./icon.png",
     badge: null,
     badgeColor: "#6441A5",
     onChange: function(state) {
