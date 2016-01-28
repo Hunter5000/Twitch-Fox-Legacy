@@ -61,6 +61,7 @@ var defaultSettings = {
 	interHidePreview: false,
 	interLivestreamerPath: "",
 	interLivestreamerQuality: "best",
+	interLivestreamerReady: false,
 	interMode: "games",
 	interOpenChat: false,
 	interOpenLive: false,
@@ -438,7 +439,6 @@ panelUpdate = function () {
 };
 
 livestreamerHandler = {
-    ready: false,
     getPath: function () {
         var path,
             pathError = false,
@@ -463,8 +463,7 @@ livestreamerHandler = {
         }
     },
     checkIfReady: function() {
-		this.ready = this.getPath() ? true : false;
-        panel.port.emit("livestreamerReady", this.ready);
+		ss.storage.interLivestreamerReady = this.getPath() ? true : false;
 		panel.port.emit("settingsUpdate", ss.storage);
     },
     run: function (args) {
@@ -1524,7 +1523,8 @@ function onAddonLoad() {
 }
 
 exports.onUnload = function (reason) {
-    if (reason === "disable" || reason === "uninstall") {
+    //if (reason === "disable" || reason === "uninstall") {
+	if (reason === "uninstall") { //Hopefully Mozilla fixes this... people are losing settings by disabling and re-enabling
         //onAddonRemoved
         for (var key in ss.storage) {
             if (ss.storage.hasOwnProperty(key)) {

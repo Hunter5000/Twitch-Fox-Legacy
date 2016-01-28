@@ -6,7 +6,6 @@ var settingsMode = false;
 var settingsTab = "follows";
 var info = [];
 var searchHistory = [];
-var livestreamerReady = false;
 var preSearchInfo = [];
 var preSearchScrollY = 0;
 var preSearchPrompt;
@@ -131,13 +130,13 @@ function createPrompt() {
     document.getElementById("promptMute").style.display = followed === 1? "inline-block" : "none"; 
     document.getElementById("promptMute").className = muted ? "promptMute muted" : "promptMute";
     
-    document.getElementById("openLive").style.display = livestreamerReady && (prompt.type === "channel" && prompt.online) || prompt.type === "video" ? "inline-block" : "none"; 
+    document.getElementById("openLive").style.display = settings.interLivestreamerReady && (prompt.type === "channel" && prompt.online) || prompt.type === "video" ? "inline-block" : "none"; 
     
     document.getElementById("openPopout").style.display = prompt.type === "channel" && prompt.online ? "inline-block" : "none"; 
     document.getElementById("openChat").style.display = prompt.type === "channel" ? "inline-block" : "none"; 
     
-    document.getElementById("liveStreamSpan").style.display = livestreamerReady && prompt.type === "channel" && prompt.online ? "inline" : "none";
-    document.getElementById("liveVideoSpan").style.display = livestreamerReady && prompt.type === "video" ? "inline" : "none";
+    document.getElementById("liveStreamSpan").style.display = settings.interLivestreamerReady && prompt.type === "channel" && prompt.online ? "inline" : "none";
+    document.getElementById("liveVideoSpan").style.display = settings.interLivestreamerReady && prompt.type === "video" ? "inline" : "none";
     document.getElementById("qualitySpan").style.display = "none";
     document.getElementById("qualitySelect").style.display = "none";
     document.getElementById("qualityFinding").style.display = "none";
@@ -404,7 +403,7 @@ function createInfoCard(obj) {
 						if (settings.interOpenPage) {
 							requests.send("openTab", obj.name);
 						}
-						if (settings.interOpenLive && livestreamerReady) {
+						if (settings.interOpenLive && settings.interLivestreamerReady) {
 							requests.send("openLiveUncertain", {url: obj.name, quality: settings.interLivestreamerQuality});
 						}
 						if (settings.interOpenPopout) {
@@ -729,7 +728,7 @@ function updateUI() {
 		document.getElementById(settingsTab + "Tab").className = "tabElement selected";
 		document.getElementById(settingsTab + "Settings").style.display = "inline-block";
 		
-		if (livestreamerReady) {
+		if (settings.interLivestreamerReady) {
 			document.getElementById("livestreamerStatus").className = "bold online";
 			document.getElementById("livestreamerStatus").textContent = l10n.livestreamerReady;
 		} else {
@@ -803,8 +802,8 @@ function updateUI() {
 		document.getElementById("restrictSpan").style.display = settings.alarmRestrict ? "inline" : "none";
 		document.getElementById("soundSpan").style.display = settings.alarmSound ? "inline" : "none";
 		document.getElementById("limitSpan").style.display = settings.alarmLimit ? "inline" : "none";
-		document.getElementById("liveSpan").style.display = livestreamerReady ? "inline" : "none";
-		document.getElementById("liveSpan2").style.display = settings.interOpenLive && livestreamerReady ? "inline" : "none";
+		document.getElementById("liveSpan").style.display = settings.interLivestreamerReady ? "inline" : "none";
+		document.getElementById("liveSpan2").style.display = settings.interOpenLive && settings.interLivestreamerReady ? "inline" : "none";
 		
 		//Set the settings
 		
@@ -1615,11 +1614,6 @@ addon.port.on("endSearch", function(payload) {
 	window.scrollTo(0, preSearchScrollY);
     searchBox.value = "";
     onSearchInput();
-});
-
-addon.port.on("livestreamerReady", function(payload) {
-    requests.remove("livestreamerReady");
-    livestreamerReady = payload;
 });
 
 addon.port.on("l10n", function(payload) {
