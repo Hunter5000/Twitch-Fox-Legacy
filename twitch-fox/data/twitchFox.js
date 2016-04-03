@@ -125,7 +125,7 @@ function createPrompt() {
     document.getElementById("promptFollow").className = followed ? "promptFollow followed" : "promptFollow";
     
     document.getElementById("promptVideos").style.display = prompt.type !== "video" ? "inline-block" : "none"; 
-	document.getElementById("promptStreams").style.display = prompt.type === "game" && prompt.online ? "inline-block" : "none"; 
+	document.getElementById("promptStreams").style.display = prompt.type === "game" ? "inline-block" : "none"; // && prompt.online
     
     document.getElementById("promptMute").style.display = followed === 1? "inline-block" : "none"; 
     document.getElementById("promptMute").className = muted ? "promptMute muted" : "promptMute";
