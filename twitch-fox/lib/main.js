@@ -905,7 +905,7 @@ function Video(video) {
     this.highlight = video.broadcast_type === "highlight";
     this._id = video._id;
     this.length = video.length * 1000;
-    this.link = video.url.slice(21);
+    this.link = video.url.slice(24);
     this.name = video.channel.name;
     this.preview = video.preview;
     this.time = parseTime(video.recorded_at);

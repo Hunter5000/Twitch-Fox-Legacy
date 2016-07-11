@@ -216,7 +216,7 @@ function insSeparators(num) {
 
 function onOpenStreamPopout(url) {
 	url = url || prompt.url;
-    window.open("http://www.twitch.tv/" + url + "/popout",'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
+    window.open("http://player.twitch.tv/?channel=" + url,'_blank','width=853,height=450,toolbar=no,menubar=no,scrollbars=no,location=no,status=no');
 }
 
 function onOpenChatPopout(url) {
@@ -1290,7 +1290,7 @@ function onOpenLivestreamer(ev) {
 }
 
 function onOpenVideoPopout() {
-    window.open("http://www.twitch.tv/" + prompt.name + "/popout?videoId=" + prompt._id,'_blank','right=50,top=50,width=630,height=381,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no');
+    window.open("http://player.twitch.tv/?video=" + prompt._id,'_blank','width=853,height=450,toolbar=no,menubar=no,scrollbars=no,location=no,status=no');
 }
 
 function onBoolSetting(ev) {
