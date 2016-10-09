@@ -538,6 +538,9 @@ function twitchAPI(obj, callback) {
         target = Array.isArray(target) ? target.join(",") : target;
         switch (obj.type) {
             case "checkStreams":
+				if (target === "") {
+					target = ",";
+				}
                 url += "streams?limit=100&offset=" + offset + "&channel=" + target;
                 break;
             case "followChannel":
@@ -778,6 +781,7 @@ function followChannel(target) {
     } else {
 		panel.port.emit("settingsUpdate", ss.storage);
 	}
+	panelUpdate();
 }
 
 function unfollowChannel(target) {
@@ -802,6 +806,7 @@ function unfollowChannel(target) {
     } else {
 		panel.port.emit("settingsUpdate", ss.storage);
 	}
+	panelUpdate();
 }
 
 function followGame(target) {
@@ -826,6 +831,7 @@ function followGame(target) {
     } else {
 		panel.port.emit("settingsUpdate", ss.storage);
 	}
+	panelUpdate();
 }
 
 function unfollowGame(target) {
@@ -850,6 +856,7 @@ function unfollowGame(target) {
     } else {
 		panel.port.emit("settingsUpdate", ss.storage);
 	}
+	panelUpdate();
 }
 
 function checkFollowedChannel(channel) {
@@ -905,7 +912,7 @@ function Video(video) {
     this.highlight = video.broadcast_type === "highlight";
     this._id = video._id;
     this.length = video.length * 1000;
-    this.link = video.url.slice(24);
+    this.link = video.url.slice(22);
     this.name = video.channel.name;
     this.preview = video.preview;
     this.time = parseTime(video.recorded_at);
