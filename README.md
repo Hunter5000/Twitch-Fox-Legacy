@@ -7,3 +7,6 @@ An add-on for Mozilla Firefox that let's you fully experience and browse Twitch.
 The .xpi file is what is actually installed into Firefox. The rest of the files are merely the code in its uncompiled format.
 
 Previously known as Twitch Alarm.
+
+
+This version of Twitch Fox is now deprecated because it uses the no-longer supported Firefox Add-on SDK.
