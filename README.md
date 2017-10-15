@@ -10,3 +10,5 @@ Previously known as Twitch Alarm.
 
 
 This version of Twitch Fox is now deprecated because it uses the no-longer supported Firefox Add-on SDK.
+
+See https://github.com/ianhrobinson/Twitch-Fox
